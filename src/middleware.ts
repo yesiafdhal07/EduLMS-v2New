@@ -51,6 +51,16 @@ function checkInMemoryRateLimit(ip: string): { success: boolean; remaining: numb
 // SECURITY HEADERS
 // ========================================================
 function addSecurityHeaders(response: NextResponse): NextResponse {
+    // Content Security Policy - Prevent XSS attacks
+    response.headers.set('Content-Security-Policy', 
+        "default-src 'self'; " +
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+        "font-src 'self' https://fonts.gstatic.com; " +
+        "img-src 'self' data: blob: https:; " +
+        "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.sentry.io; " +
+        "frame-ancestors 'none';"
+    );
     response.headers.set('X-Frame-Options', 'DENY');
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-XSS-Protection', '1; mode=block');

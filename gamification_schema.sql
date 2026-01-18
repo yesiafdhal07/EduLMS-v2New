@@ -145,12 +145,15 @@ VALUES (
 -- ========================================================
 -- Badges: Everyone can read
 ALTER TABLE public.badges ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Badges are viewable by everyone" ON public.badges;
 CREATE POLICY "Badges are viewable by everyone" ON public.badges FOR
 SELECT TO authenticated USING (true);
 -- User Badges: Users see their own, teachers see their students
 ALTER TABLE public.user_badges ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users see own badges" ON public.user_badges;
 CREATE POLICY "Users see own badges" ON public.user_badges FOR
 SELECT TO authenticated USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Teachers see student badges" ON public.user_badges;
 CREATE POLICY "Teachers see student badges" ON public.user_badges FOR
 SELECT TO authenticated USING (
         EXISTS (
@@ -164,24 +167,32 @@ SELECT TO authenticated USING (
     );
 -- User Streaks: Users see their own
 ALTER TABLE public.user_streaks ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users see own streaks" ON public.user_streaks;
 CREATE POLICY "Users see own streaks" ON public.user_streaks FOR
 SELECT TO authenticated USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users update own streaks" ON public.user_streaks;
 CREATE POLICY "Users update own streaks" ON public.user_streaks FOR
 UPDATE TO authenticated USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users insert own streaks" ON public.user_streaks;
 CREATE POLICY "Users insert own streaks" ON public.user_streaks FOR
 INSERT TO authenticated WITH CHECK (user_id = auth.uid());
 -- User Points: Everyone can see (for leaderboard)
 ALTER TABLE public.user_points ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Points are viewable by everyone" ON public.user_points;
 CREATE POLICY "Points are viewable by everyone" ON public.user_points FOR
 SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Users update own points" ON public.user_points;
 CREATE POLICY "Users update own points" ON public.user_points FOR
 UPDATE TO authenticated USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users insert own points" ON public.user_points;
 CREATE POLICY "Users insert own points" ON public.user_points FOR
 INSERT TO authenticated WITH CHECK (user_id = auth.uid());
 -- Point Transactions: Users see their own
 ALTER TABLE public.point_transactions ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users see own transactions" ON public.point_transactions;
 CREATE POLICY "Users see own transactions" ON public.point_transactions FOR
 SELECT TO authenticated USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users insert own transactions" ON public.point_transactions;
 CREATE POLICY "Users insert own transactions" ON public.point_transactions FOR
 INSERT TO authenticated WITH CHECK (user_id = auth.uid());
 -- ========================================================

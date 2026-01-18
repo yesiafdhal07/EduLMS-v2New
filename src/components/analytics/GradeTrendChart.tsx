@@ -113,7 +113,14 @@ export function GradeTrendChart({ classId }: GradeTrendChartProps) {
     useEffect(() => {
         fetchTrendData();
 
-        // Realtime subscription
+        // Debounce realtime updates to prevent excessive refetches
+        let debounceTimeout: NodeJS.Timeout | null = null;
+        const debouncedFetch = () => {
+            if (debounceTimeout) clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => fetchTrendData(), 5000);
+        };
+
+        // Realtime subscription with debouncing
         const channel = supabase
             .channel('grade_trend_changes')
             .on(
@@ -123,13 +130,12 @@ export function GradeTrendChart({ classId }: GradeTrendChartProps) {
                     schema: 'public',
                     table: 'grades'
                 },
-                () => {
-                    fetchTrendData();
-                }
+                debouncedFetch
             )
             .subscribe();
 
         return () => {
+            if (debounceTimeout) clearTimeout(debounceTimeout);
             supabase.removeChannel(channel);
         };
     }, [fetchTrendData]);

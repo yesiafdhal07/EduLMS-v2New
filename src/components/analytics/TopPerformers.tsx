@@ -94,6 +94,13 @@ export function TopPerformers({ classId, limit = 5 }: TopPerformersProps) {
     useEffect(() => {
         fetchTopPerformers();
 
+        // Debounce realtime updates to prevent excessive refetches
+        let debounceTimeout: NodeJS.Timeout | null = null;
+        const debouncedFetch = () => {
+            if (debounceTimeout) clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => fetchTopPerformers(), 5000);
+        };
+
         const channel = supabase
             .channel('top_performers_changes')
             .on(
@@ -103,13 +110,12 @@ export function TopPerformers({ classId, limit = 5 }: TopPerformersProps) {
                     schema: 'public',
                     table: 'grades'
                 },
-                () => {
-                    fetchTopPerformers();
-                }
+                debouncedFetch
             )
             .subscribe();
 
         return () => {
+            if (debounceTimeout) clearTimeout(debounceTimeout);
             supabase.removeChannel(channel);
         };
     }, [fetchTopPerformers]);

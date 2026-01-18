@@ -309,6 +309,13 @@ export function useQuiz(classId?: string) {
 
     // Submit quiz attempt
     const submitAttempt = async (attemptId: string, timeSpent: number): Promise<QuizAttempt | null> => {
+        // SECURITY: Get current user to prevent IDOR attacks
+        const { data: userData } = await supabase.auth.getUser();
+        if (!userData.user) {
+            toast.error('Sesi habis, silakan login ulang');
+            return null;
+        }
+
         // Calculate score
         const { data: answers } = await supabase
             .from('quiz_answers')
@@ -345,7 +352,7 @@ export function useQuiz(classId?: string) {
         const quizData = attempt?.quiz as unknown as { passing_score: number } | null;
         const passed = percentage >= (quizData?.passing_score || 60);
 
-        // Update attempt
+        // Update attempt - SECURITY: Also filter by student_id to prevent IDOR
         const { data, error: updateError } = await supabase
             .from('quiz_attempts')
             .update({
@@ -358,6 +365,7 @@ export function useQuiz(classId?: string) {
                 submitted_at: new Date().toISOString(),
             })
             .eq('id', attemptId)
+            .eq('student_id', userData.user.id) // IDOR prevention
             .select()
             .single();
 

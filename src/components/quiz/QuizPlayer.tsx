@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
     Clock, ChevronLeft, ChevronRight, CheckCircle,
     AlertTriangle, Flag, X, RotateCcw
@@ -33,6 +33,9 @@ export function QuizPlayer({ quizId, classId, onComplete, onExit }: QuizPlayerPr
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
+    
+    // Prevent double-submit with ref guard
+    const isSubmittingRef = useRef(false);
 
     // Load quiz and start attempt
     useEffect(() => {
@@ -111,14 +114,19 @@ export function QuizPlayer({ quizId, classId, onComplete, onExit }: QuizPlayerPr
         });
     };
 
-    // Submit quiz
+    // Submit quiz - Protected with ref guard against double-submit
     const handleSubmit = async () => {
         if (!attempt) return;
+        
+        // DOUBLE-SUBMIT PREVENTION: Check ref before state
+        if (isSubmittingRef.current) return;
+        isSubmittingRef.current = true;
 
         setSubmitting(true);
         const timeSpent = Math.floor((Date.now() - startTime) / 1000);
         const result = await submitAttempt(attempt.id, timeSpent);
         setSubmitting(false);
+        isSubmittingRef.current = false;
 
         if (result) {
             onComplete(result.id);

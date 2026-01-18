@@ -79,6 +79,13 @@ export function GradeDistributionChart({ classId }: GradeDistributionChartProps)
     useEffect(() => {
         fetchDistribution();
 
+        // Debounce realtime updates to prevent excessive refetches
+        let debounceTimeout: NodeJS.Timeout | null = null;
+        const debouncedFetch = () => {
+            if (debounceTimeout) clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => fetchDistribution(), 5000);
+        };
+
         const channel = supabase
             .channel('grade_distribution_changes')
             .on(
@@ -88,13 +95,12 @@ export function GradeDistributionChart({ classId }: GradeDistributionChartProps)
                     schema: 'public',
                     table: 'grades'
                 },
-                () => {
-                    fetchDistribution();
-                }
+                debouncedFetch
             )
             .subscribe();
 
         return () => {
+            if (debounceTimeout) clearTimeout(debounceTimeout);
             supabase.removeChannel(channel);
         };
     }, [fetchDistribution]);
