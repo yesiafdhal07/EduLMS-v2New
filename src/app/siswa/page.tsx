@@ -33,7 +33,7 @@ export default function StudentDashboard() {
     const [selectedAttemptId, setSelectedAttemptId] = useState<string | null>(null);
 
     // Onboarding Tutorial
-    const onboarding = useOnboarding('siswa');
+    const onboarding = useOnboarding(user?.id);
 
     return (
         <EntranceAnimation role="siswa">

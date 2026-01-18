@@ -58,7 +58,8 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
         "font-src 'self' https://fonts.gstatic.com; " +
         "img-src 'self' data: blob: https:; " +
-        "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.sentry.io; " +
+        "connect-src *; " +
+        "prefetch-src 'self'; " +
         "frame-ancestors 'none';"
     );
     response.headers.set('X-Frame-Options', 'DENY');

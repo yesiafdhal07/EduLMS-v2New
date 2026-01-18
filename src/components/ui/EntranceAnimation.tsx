@@ -92,8 +92,11 @@ export function EntranceAnimation({ children, role = 'default' }: EntranceAnimat
         <>
             {/* Splash Screen */}
             <div
-                className={`fixed inset-0 z-[99999] bg-gradient-to-br ${theme.gradient} flex flex-col items-center justify-center transition-all duration-500 ${animationPhase === 'exit' ? 'opacity-0 scale-110' : 'opacity-100 scale-100'
-                    }`}
+                className={`fixed inset-0 z-[99999] bg-gradient-to-br ${theme.gradient} flex flex-col items-center justify-center transition-all duration-500 ${
+                    animationPhase === 'exit' 
+                        ? 'opacity-0 scale-110 pointer-events-none' 
+                        : 'opacity-100 scale-100 pointer-events-auto'
+                }`}
             >
                 {/* Animated background elements */}
                 <div className="absolute inset-0 overflow-hidden">

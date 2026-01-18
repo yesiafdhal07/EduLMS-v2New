@@ -44,7 +44,7 @@ export default function GuruDashboard() {
     } = useGuruDashboard();
 
     // Onboarding Tutorial
-    const onboarding = useOnboarding('guru');
+    const onboarding = useOnboarding(user?.id);
 
     return (
         <EntranceAnimation role="guru">
