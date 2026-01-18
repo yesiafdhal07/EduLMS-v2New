@@ -1,0 +1,292 @@
+@import "tailwindcss";
+
+@theme {
+  /* Fonts */
+  --font-inter: "Inter", sans-serif;
+  --font-outfit: "Outfit", sans-serif;
+
+  /* Border Radius */
+  --radius-card-lg: 3.5rem;
+  /* 56px */
+  --radius-card-md: 3rem;
+  /* 48px */
+  --radius-card-sm: 2.5rem;
+  /* 40px */
+  --radius-card-xs: 2rem;
+  /* 32px */
+  --radius-button: 1.5rem;
+  /* 24px */
+  --radius-input: 0.75rem;
+  /* 12px - matching login */
+  --radius-nav: 40px;
+
+  /* Letter Spacing */
+  --tracking-widest: 0.3em;
+  --tracking-wide: 0.25em;
+  --tracking-normal: 0.2em;
+
+  /* Z-Index Scale */
+  --z-base: 10;
+  --z-dropdown: 20;
+  --z-sticky: 30;
+  --z-nav: 40;
+  --z-sidebar: 50;
+  --z-modal-backdrop: 90;
+  --z-modal: 100;
+
+  /* Shadows */
+  --shadow-card: 0 25px 50px -12px rgba(100, 116, 139, 0.25);
+  --shadow-card-hover: 0 35px 60px -15px rgba(100, 116, 139, 0.35);
+
+  /* ===== Unified Theme (Based on Login Page) ===== */
+
+  /* Brand Colors - Gradient base from login */
+  --color-brand-gradient-start: #312e81;
+  /* indigo-900 */
+  --color-brand-gradient-mid: #1e3a8a;
+  /* blue-900 */
+  --color-brand-gradient-end: #000000;
+  /* black */
+
+  /* Sidebar / Dark Theme */
+  --color-sidebar: #0f172a;
+  /* slate-900 */
+  --color-sidebar-border: rgba(255, 255, 255, 0.05);
+
+  /* Background */
+  --color-background: #f8fafc;
+  /* slate-50 */
+  --color-background-alt: #f1f5f9;
+  /* slate-100 */
+
+  /* Role-based Accent Colors */
+  /* Guru: Indigo theme (matching login gradient) */
+  --color-guru-primary: #4f46e5;
+  /* indigo-600 */
+  --color-guru-light: #eef2ff;
+  /* indigo-50 */
+  --color-guru-dark: #3730a3;
+  /* indigo-800 */
+  --color-guru-accent: #6366f1;
+  /* indigo-500 */
+  --color-guru-shadow: rgba(79, 70, 229, 0.3);
+
+  /* Siswa: Emerald theme (fresh, student-friendly) */
+  --color-siswa-primary: #10b981;
+  /* emerald-500 */
+  --color-siswa-light: #ecfdf5;
+  /* emerald-50 */
+  --color-siswa-dark: #047857;
+  /* emerald-700 */
+  --color-siswa-accent: #34d399;
+  /* emerald-400 */
+  --color-siswa-shadow: rgba(16, 185, 129, 0.3);
+
+  /* Text Colors */
+  --color-text-primary: #0f172a;
+  /* slate-900 */
+  --color-text-secondary: #64748b;
+  /* slate-500 */
+  --color-text-muted: #94a3b8;
+  /* slate-400 */
+
+  /* Status Colors */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+}
+
+/* ===== Light Mode Variables ===== */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --input-bg: #f8fafc;
+  --input-border: #e2e8f0;
+}
+
+/* ===== Dark Mode Variables ===== */
+.dark {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-border: rgba(255, 255, 255, 0.1);
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+/* Glassmorphism - matching login style */
+.glass-card {
+  @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl;
+}
+
+.glass-card-dark {
+  @apply bg-black/20 backdrop-blur-xl border border-white/10 shadow-2xl;
+}
+
+/* Utility classes */
+.card-lg {
+  border-radius: var(--radius-card-lg);
+}
+
+.card-md {
+  border-radius: var(--radius-card-md);
+}
+
+.card-sm {
+  border-radius: var(--radius-card-sm);
+}
+
+/* Brand Gradient - matching login */
+.bg-brand-gradient {
+  @apply bg-gradient-to-br from-indigo-900 via-blue-900 to-black;
+}
+
+/* Role-specific active states */
+.guru-active {
+  @apply bg-indigo-600 text-white shadow-2xl shadow-indigo-600/30;
+}
+
+.siswa-active {
+  @apply bg-emerald-500 text-white shadow-2xl shadow-emerald-500/30;
+}
+
+/* ===== ACCESSIBILITY: Focus States ===== */
+*:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
+/* ===== Skip Link for Accessibility ===== */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #4f46e5;
+  color: white;
+  padding: 8px 16px;
+  z-index: 1000;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* ===== Scrollbar Styling ===== */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom scrollbar for visible areas */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== Improved Button States ===== */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ===== Screen Reader Only ===== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ===== iOS Safe Area Support ===== */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===== Entrance Animation ===== */
+@keyframes bounce-subtle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(3deg);
+  }
+
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+
+@keyframes ping-slow {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+
+  75%,
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+.animate-ping-slow {
+  animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
