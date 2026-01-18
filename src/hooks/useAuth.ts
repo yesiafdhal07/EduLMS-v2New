@@ -41,16 +41,18 @@ export function useAuth(requiredRole?: 'guru' | 'siswa'): UseAuthReturn {
                 .single();
 
             if (error || !dbUser) {
-                console.error('CRITICAL AUTH ERROR: User exists in Auth but MISSING in Public DB', {
-                    authId: authUser.id,
-                    email: authUser.email,
-                    dbError: error,
-                    dbUser: dbUser
-                });
+                // Log detailed error only in development
+                if (process.env.NODE_ENV === 'development') {
+                    console.error('CRITICAL AUTH ERROR: User exists in Auth but MISSING in Public DB', {
+                        authId: authUser.id,
+                        email: authUser.email,
+                        dbError: error,
+                        dbUser: dbUser
+                    });
+                }
                 
-                // Do NOT force sign out immediately to allow debug inspection
-                // But still block access
-                alert(`DEBUG ERROR (Foto/Copy ini):\n\nAuth ID: ${authUser.id}\nError: ${JSON.stringify(error, null, 2)}\nUser Data: ${JSON.stringify(dbUser)}`);
+                // User-friendly message (no sensitive data exposed)
+                console.error('[Auth] User sync error - signing out');
                 
                 await supabase.auth.signOut();
                 router.push('/login');

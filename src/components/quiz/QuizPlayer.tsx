@@ -196,6 +196,27 @@ export function QuizPlayer({ quizId, classId, onComplete, onExit }: QuizPlayerPr
                         )}
                     </div>
                 </div>
+                
+                {/* Progress Bar */}
+                <div className="max-w-4xl mx-auto px-4 pb-3">
+                    <div className="flex items-center gap-3">
+                        <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+                            <div 
+                                className="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 rounded-full transition-all duration-500 ease-out"
+                                style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
+                            />
+                        </div>
+                        <span className="text-xs font-bold text-slate-400 w-12 text-right">
+                            {Math.round((answeredCount / totalQuestions) * 100)}%
+                        </span>
+                    </div>
+                    <div className="flex items-center justify-between mt-2 text-xs text-slate-500">
+                        <span>Soal {currentIndex + 1} dari {totalQuestions}</span>
+                        {flagged.size > 0 && (
+                            <span className="text-amber-400">📌 {flagged.size} ditandai</span>
+                        )}
+                    </div>
+                </div>
             </header>
 
             {/* Main Content */}

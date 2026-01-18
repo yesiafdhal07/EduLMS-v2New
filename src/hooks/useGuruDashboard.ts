@@ -295,16 +295,32 @@ export function useGuruDashboard() {
             refetchAttendance();
         }, 100);
 
+        // Debounce realtime refetches to prevent storm (5 second delay)
+        let debounceTimeout: NodeJS.Timeout | null = null;
+        const debouncedMaterials = () => {
+            if (debounceTimeout) clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => fetchMaterials(), 5000);
+        };
+        const debouncedAssignments = () => {
+            if (debounceTimeout) clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => fetchAssignments(), 5000);
+        };
+        const debouncedAttendance = () => {
+            if (debounceTimeout) clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => refetchAttendance(), 5000);
+        };
+
         // Set up realtime subscription (only subscribe once per class)
         const classChannel = supabase
             .channel(`class_sync_${selectedClassId}`)
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'materials' }, () => fetchMaterials())
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'assignments' }, () => fetchAssignments())
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'attendance', filter: `class_id=eq.${selectedClassId}` }, () => refetchAttendance())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'materials' }, debouncedMaterials)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'assignments' }, debouncedAssignments)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'attendance', filter: `class_id=eq.${selectedClassId}` }, debouncedAttendance)
             .subscribe();
 
         return () => {
             clearTimeout(timeoutId);
+            if (debounceTimeout) clearTimeout(debounceTimeout);
             supabase.removeChannel(classChannel);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -164,9 +164,19 @@ export function useSiswaDashboard() {
     }, []); // Empty deps - run ONCE on mount. fetchInitialData is stable (useCallback with [router])
 
     // Real-time subscriptions (only after classId is known)
+    // Uses debouncing to prevent rapid refetches from multiple events
     useEffect(() => {
         // CRITICAL: Only subscribe AFTER we know the student's class
         if (!studentClassId) return;
+
+        // Debounce refetch to prevent storm (5 second delay)
+        let debounceTimeout: NodeJS.Timeout | null = null;
+        const debouncedRefetch = () => {
+            if (debounceTimeout) clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                fetchInitialData();
+            }, 5000); // 5 second debounce
+        };
 
         const channel = supabase
             .channel(`student_sync_${studentClassId}`)
@@ -176,42 +186,38 @@ export function useSiswaDashboard() {
                 schema: 'public',
                 table: 'attendance',
                 filter: `class_id=eq.${studentClassId}`
-            }, fetchInitialData)
+            }, debouncedRefetch)
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
                 table: 'attendance_records'
-                // Student will see their own attendance status updates
-            }, fetchInitialData)
+            }, debouncedRefetch)
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
                 table: 'submissions'
-                // Submissions don't have class_id directly, but we still want to know
-            }, fetchInitialData)
-            // NEW: Subscribe to materials changes
+            }, debouncedRefetch)
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
                 table: 'materials'
-                // Materials are linked via subjects, refetch will filter by class
-            }, fetchInitialData)
-            // NEW: Subscribe to assignments changes
+            }, debouncedRefetch)
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
                 table: 'assignments'
-                // Assignments are linked via subjects, refetch will filter by class
-            }, fetchInitialData)
-            // NEW: Subscribe to grades changes (for student grade updates)
+            }, debouncedRefetch)
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
                 table: 'grades'
-            }, fetchInitialData)
+            }, debouncedRefetch)
             .subscribe();
 
-        return () => { supabase.removeChannel(channel); };
+        return () => {
+            if (debounceTimeout) clearTimeout(debounceTimeout);
+            supabase.removeChannel(channel);
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [studentClassId]); // Only re-subscribe when classId changes. fetchInitialData is stable.
 
