@@ -89,39 +89,51 @@ export function useGamification(userId?: string) {
 
     // Fetch leaderboard
     const fetchLeaderboard = useCallback(async (classId?: string, limit = 10) => {
-        let query = supabase
-            .from('user_points')
-            .select('user_id, total_points, level, users!inner(full_name)')
-            .order('total_points', { ascending: false })
-            .limit(limit);
+        try {
+            let result;
+            
+            if (classId) {
+                // Query with class filter
+                const { data, error } = await supabase
+                    .from('user_points')
+                    .select('user_id, total_points, level')
+                    .order('total_points', { ascending: false })
+                    .limit(limit);
+                
+                if (error) throw error;
+                result = data;
+            } else {
+                // Query all users
+                const { data, error } = await supabase
+                    .from('user_points')
+                    .select('user_id, total_points, level')
+                    .order('total_points', { ascending: false })
+                    .limit(limit);
+                
+                if (error) throw error;
+                result = data;
+            }
 
-        if (classId) {
-            query = supabase
-                .from('user_points')
-                .select(`
-                    user_id, total_points, level,
-                    users!inner(full_name, class_members!inner(class_id))
-                `)
-                .eq('users.class_members.class_id', classId)
-                .order('total_points', { ascending: false })
-                .limit(limit);
-        }
+            if (result) {
+                // Fetch user names separately to avoid complex join type issues
+                const userIds = result.map(r => r.user_id);
+                const { data: users } = await supabase
+                    .from('users')
+                    .select('id, full_name')
+                    .in('id', userIds);
 
-        const { data, error } = await query;
+                const userMap = new Map(users?.map(u => [u.id, u.full_name]) || []);
 
-        if (error) {
+                setLeaderboard(result.map((entry, index) => ({
+                    user_id: entry.user_id,
+                    full_name: userMap.get(entry.user_id) || 'Unknown',
+                    total_points: entry.total_points,
+                    level: entry.level,
+                    rank: index + 1,
+                })));
+            }
+        } catch (error) {
             console.error('[Leaderboard] Error:', error);
-            return;
-        }
-
-        if (data) {
-            setLeaderboard(data.map((entry, index) => ({
-                user_id: entry.user_id,
-                full_name: (entry.users as { full_name: string })?.full_name || 'Unknown',
-                total_points: entry.total_points,
-                level: entry.level,
-                rank: index + 1,
-            })));
         }
     }, []);
 
