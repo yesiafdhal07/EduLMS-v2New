@@ -23,14 +23,14 @@ export function LandingNavbar() {
     const isActive = (path: string) => pathname === path;
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/10">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/40 backdrop-blur-xl border-b border-white/5">
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-3 group">
                     <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-all">
                         <GraduationCap size={24} className="text-white" />
                     </div>
-                    <span className="text-xl font-black tracking-tight text-white">Edu<span className="text-indigo-400">LMS</span></span>
+                    <span className="text-xl font-black tracking-tight text-white">Klola<span className="text-indigo-400">kelas</span></span>
                 </Link>
 
                 {/* Desktop Nav */}
@@ -74,7 +74,7 @@ export function LandingNavbar() {
 
             {/* Mobile Menu Overlay */}
             {isMobileMenuOpen && (
-                <div className="md:hidden absolute top-20 left-0 right-0 bg-slate-900 border-b border-white/10 p-6 flex flex-col gap-4 shadow-2xl animate-in slide-in-from-top-4">
+                <div className="md:hidden absolute top-20 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/10 p-6 flex flex-col gap-4 shadow-2xl animate-in slide-in-from-top-4">
                     {navLinks.map((link) => (
                         <Link
                             key={link.href}

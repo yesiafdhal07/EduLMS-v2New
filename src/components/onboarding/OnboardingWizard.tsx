@@ -148,7 +148,7 @@ function WelcomeStep({ userName }: { userName: string }) {
             </div>
             <h3 className="text-2xl font-black text-white">Halo, {userName}! 👋</h3>
             <p className="text-slate-300 max-w-sm mx-auto">
-                Selamat datang di <span className="text-indigo-400 font-bold">EduLMS</span>!
+                Selamat datang di <span className="text-indigo-400 font-bold">Klolakelas</span>!
                 Mari setup akun Anda agar siap mengajar.
             </p>
         </div>

@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { Spinner, ErrorBanner } from '@/components/ui';
 import { TeacherStatsPanel } from '@/components/dashboard/TeacherStatsPanel';
 import { KeaktifanGradeList } from '@/components/guru/KeaktifanGradeList';
+import { ClassMoodOverview } from '@/components/widgets/ClassMoodOverview';
+import { ClassXPOverview } from '@/components/widgets/ClassXPOverview';
 import { toast } from 'sonner';
 
 interface DashboardStudent {
@@ -41,9 +43,17 @@ export function DashboardTab({ stats, students, loading, error, onRetry, onKeakt
             )}
 
             {/* Teaching Stats Panel */}
-            <div className="mb-14">
-                <TeacherStatsPanel />
+            <div className="mb-8">
+                <TeacherStatsPanel classId={classId || undefined} />
             </div>
+
+            {/* Mood & XP Overview Widgets */}
+            {classId && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <ClassMoodOverview classId={classId} />
+                    <ClassXPOverview classId={classId} />
+                </div>
+            )}
 
             {/* Keaktifan Grades History (Dark theme version for guru) */}
             {classId && (
@@ -53,10 +63,10 @@ export function DashboardTab({ stats, students, loading, error, onRetry, onKeakt
             )}
 
             {/* Student Table */}
-            <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/40 overflow-hidden">
-                <div className="p-10 border-b border-slate-50 flex justify-between items-center bg-white/50 backdrop-blur-md">
+            <div className="glass-panel rounded-[2.5rem] overflow-hidden">
+                <div className="p-10 border-b border-white/10 flex justify-between items-center bg-white/5 backdrop-blur-md">
                     <div>
-                        <h3 className="text-2xl font-black text-slate-900 tracking-tight">Perkembangan Siswa</h3>
+                        <h3 className="text-2xl font-black text-white tracking-tight">Perkembangan Siswa</h3>
                         <p className="text-slate-400 text-sm font-medium mt-1">Daftar siswa berdasarkan performa akademik terbaru.</p>
                     </div>
                     <div className="flex gap-4">
@@ -76,7 +86,7 @@ export function DashboardTab({ stats, students, loading, error, onRetry, onKeakt
                                 type="text"
                                 placeholder="Cari siswa..."
                                 aria-label="Cari siswa berdasarkan nama"
-                                className="pl-12 pr-6 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all font-medium"
+                                className="pl-12 pr-6 py-3 bg-slate-900/50 border border-white/10 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium text-white placeholder-slate-500"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -84,46 +94,46 @@ export function DashboardTab({ stats, students, loading, error, onRetry, onKeakt
                     </div>
                 </div>
                 <div className="overflow-x-auto p-4">
-                    <table className="w-full text-left">
-                        <thead className="bg-[#F8FAFC]/80 text-slate-400 text-[11px] font-black uppercase tracking-[0.25em]">
+                    <table className="w-full text-left border-collapse">
+                        <thead className="bg-white/5 text-slate-400 text-[11px] font-black uppercase tracking-[0.25em]">
                             <tr>
-                                <th className="px-10 py-6">Informasi Siswa</th>
+                                <th className="px-10 py-6 first:rounded-l-2xl">Informasi Siswa</th>
                                 <th className="px-10 py-6 text-center">Rerata Nilai</th>
                                 <th className="px-10 py-6 text-center">Status</th>
-                                <th className="px-10 py-6 text-right">Tindakan</th>
+                                <th className="px-10 py-6 text-right last:rounded-r-2xl">Tindakan</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100/50">
+                        <tbody className="divide-y divide-white/5">
                             {loading ? (
                                 <tr><td colSpan={4} className="p-32 text-center"><Spinner text="Memuat Data Siswa..." /></td></tr>
                             ) : filteredStudents.length === 0 ? (
-                                <tr><td colSpan={4} className="p-32 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">Belum Ada Data Siswa</td></tr>
+                                <tr><td colSpan={4} className="p-32 text-center text-slate-500 font-bold uppercase tracking-widest text-xs">Belum Ada Data Siswa</td></tr>
                             ) : (
                                 filteredStudents.map((student) => (
-                                    <tr key={student.id} className="group hover:bg-slate-50/80 transition-all">
+                                    <tr key={student.id} className="group hover:bg-white/5 transition-all">
                                         <td className="px-10 py-7">
                                             <div className="flex items-center gap-5">
-                                                <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-black text-xl shadow-inner group-hover:scale-110 transition-transform">
+                                                <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-black text-xl shadow-inner group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
                                                     {student.name.charAt(0)}
                                                 </div>
                                                 <div>
-                                                    <p className="font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors">{student.name}</p>
-                                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Siswa Aktif</p>
+                                                    <p className="font-extrabold text-white group-hover:text-indigo-400 transition-colors">{student.name}</p>
+                                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1 group-hover:text-slate-400 transition-colors">Siswa Aktif</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-10 py-7">
                                             <div className="flex flex-col items-center">
-                                                <span className="text-2xl font-black text-slate-900 tracking-tighter">{student.avg}</span>
-                                                <div className="w-12 h-1 bg-slate-100 rounded-full mt-2 overflow-hidden">
+                                                <span className="text-2xl font-black text-slate-200 tracking-tighter">{student.avg}</span>
+                                                <div className="w-12 h-1 bg-slate-800 rounded-full mt-2 overflow-hidden">
                                                     <div className={`h-full ${parseFloat(student.avg) >= 75 ? 'bg-emerald-500' : 'bg-rose-500'}`} style={{ width: `${student.avg}%` }}></div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-10 py-7 text-center">
-                                            <span className={`px-5 py-2 rounded-full text-[10px] font-black tracking-[0.2em] uppercase border-2 ${student.status === 'TUNTAS'
-                                                ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
-                                                : 'bg-rose-50 text-rose-600 border-rose-100'
+                                            <span className={`px-5 py-2 rounded-full text-[10px] font-black tracking-[0.2em] uppercase border ${student.status === 'TUNTAS'
+                                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                                : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
                                                 }`}>
                                                 {student.status}
                                             </span>
@@ -132,7 +142,7 @@ export function DashboardTab({ stats, students, loading, error, onRetry, onKeakt
                                             <button
                                                 type="button"
                                                 onClick={() => toast.info(`Detail Siswa: ${student.name}\nRerata: ${student.avg}\nStatus: ${student.status}`)}
-                                                className="p-3 text-slate-300 hover:text-indigo-600 hover:bg-white rounded-2xl transition-all shadow-none hover:shadow-xl group-hover:text-indigo-600"
+                                                className="p-3 text-slate-500 hover:text-white hover:bg-indigo-500/20 rounded-2xl transition-all group-hover:text-indigo-400"
                                             >
                                                 <ChevronRight size={24} />
                                             </button>

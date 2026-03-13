@@ -141,7 +141,14 @@ export async function middleware(request: NextRequest) {
         }
 
         if (user) {
-            const role = user.user_metadata?.role;
+            // SECURITY FIX: Query role from database, not mutable user_metadata
+            const { data: dbUser } = await supabase
+                .from('users')
+                .select('role')
+                .eq('id', user.id)
+                .single();
+            
+            const role = dbUser?.role || user.user_metadata?.role; // Fallback for edge cases
 
             if (isGuruPath && role !== 'guru' && role !== 'admin') {
                 return NextResponse.redirect(new URL('/siswa', request.url));

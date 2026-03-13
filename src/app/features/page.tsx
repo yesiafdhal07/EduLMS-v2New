@@ -13,9 +13,9 @@ export default function FeaturesPage() {
             <main className="pt-32 pb-20">
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="text-center mb-16">
-                        <h1 className="text-5xl font-black mb-6">Fitur Lengkap EduLMS</h1>
+                        <h1 className="text-5xl font-black mb-6">Fitur Lengkap Klolakelas</h1>
                         <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-                            Pelajari lebih dalam bagaimana EduLMS me-revolusi kegiatan belajar mengajar di sekolah Anda.
+                            Pelajari lebih dalam bagaimana Klolakelas me-revolusi kegiatan belajar mengajar di sekolah Anda.
                         </p>
                     </div>
 

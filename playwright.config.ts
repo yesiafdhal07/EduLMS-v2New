@@ -50,6 +50,9 @@ export default defineConfig({
     },
     
     // Configure projects for major browsers
+    metadata: {
+      title: 'Klolakelas',
+    },
     projects: [
         {
             name: 'chromium',

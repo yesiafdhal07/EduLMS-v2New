@@ -5,6 +5,7 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import { TrendingUp, Loader2 } from 'lucide-react';
+import { SkeletonChart } from '@/components/ui/SkeletonLoading';
 import { supabase } from '@/lib/supabase';
 import { logError } from '@/lib/error-handler';
 
@@ -141,11 +142,7 @@ export function GradeTrendChart({ classId }: GradeTrendChartProps) {
     }, [fetchTrendData]);
 
     if (loading) {
-        return (
-            <div className="bg-white/5 backdrop-blur-lg rounded-[2rem] p-8 border border-white/10 h-80 flex items-center justify-center">
-                <Loader2 className="animate-spin text-indigo-400" size={32} />
-            </div>
-        );
+        return <SkeletonChart />;
     }
 
     if (data.length === 0) {

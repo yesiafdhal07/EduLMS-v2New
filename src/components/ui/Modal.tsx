@@ -29,7 +29,7 @@ export function Modal({
                 onClick={onClose}
                 aria-hidden="true"
             />
-            <div className={`bg-[#0F172A] border-t md:border border-white/10 w-full ${maxWidth} rounded-t-[2.5rem] md:rounded-[3rem] shadow-2xl shadow-black/50 relative z-10 overflow-hidden animate-in slide-in-from-bottom-10 md:zoom-in-95 duration-300 max-h-[90vh] md:max-h-none flex flex-col`}>
+            <div className={`bg-[#0F172A] border-t md:border border-white/10 w-full ${maxWidth} rounded-t-[2.5rem] md:rounded-[3rem] shadow-2xl shadow-black/50 relative z-10 overflow-hidden animate-flip-in origin-bottom md:origin-center max-h-[90vh] md:max-h-none flex flex-col`}>
                 <div className="p-10 border-b border-white/10 flex justify-between items-center bg-white/5">
                     <h3 className="text-2xl font-black text-white tracking-tight uppercase">
                         {title}

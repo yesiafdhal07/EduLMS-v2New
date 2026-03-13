@@ -58,6 +58,7 @@ interface GradePayload {
     type: GradeMode;
     student_id: string;
     assignment_id?: string;
+    class_id?: string;
 }
 
 // ============================================================
@@ -149,6 +150,9 @@ export function useManualGrade(
                 existingGrades = (data as ExistingGrade[]) || [];
             }
 
+            // Sort students alphabetically by name
+            studentList.sort((a, b) => a.name.localeCompare(b.name, 'id'));
+
             // Merge existing grades
             const studentsWithGrades = studentList.map(s => ({
                 ...s,
@@ -207,6 +211,11 @@ export function useManualGrade(
                 type: mode,
                 student_id: studentId
             };
+
+            if (classId) {
+                // @ts-ignore - class_id will be added via migration
+                gradePayload.class_id = classId;
+            }
 
             if (mode === 'manual' && assignment) {
                 gradePayload.assignment_id = assignment.id;

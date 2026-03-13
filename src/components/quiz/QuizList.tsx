@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Quiz } from '@/types/quiz';
+import { TiltCard } from '@/components/ui';
 
 // ========================================================
 // QUIZ LIST FOR STUDENTS
@@ -114,7 +115,11 @@ function QuizCard({
     const notStarted = quiz.start_date && new Date(quiz.start_date) > new Date();
 
     return (
-        <div className="bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-white/10 hover:border-white/20 transition-all">
+        <TiltCard 
+            className="bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-white/10 hover:border-white/20 transition-all"
+            maxTilt={5} 
+            scale={1.02}
+        >
             <div className="flex items-start gap-4">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${bestAttempt?.passed ? 'bg-emerald-500/20' : 'bg-indigo-500/20'
                     }`}>
@@ -189,7 +194,7 @@ function QuizCard({
                     {bestAttempt && (
                         <button
                             onClick={() => onViewResults(bestAttempt.id)}
-                            className="flex items-center gap-1 px-3 py-1.5 text-slate-400 text-sm hover:text-white transition-all"
+                            className="flex items-center gap-1 px-3 py-1.5 text-slate-400 text-sm hover:text-white transition-all relative z-10"
                         >
                             Lihat Hasil
                             <ChevronRight size={14} />
@@ -197,6 +202,6 @@ function QuizCard({
                     )}
                 </div>
             </div>
-        </div>
+        </TiltCard>
     );
 }

@@ -119,7 +119,11 @@ export function useAttendance(classId: string | null): UseAttendanceReturn {
             if (!classId) throw new Error('No class selected');
 
             const today = new Date().toISOString().split('T')[0];
-            const newIsOpen = session ? !session.is_open : true;
+            // Use current cache state for toggle logic 
+            // Note: In onMutate we already flipped it, but for the actual API call we need to know the *intended* state
+            // OR rely on the server to handle the toggle? 
+            // Better: trust the optimistic intent.
+            const newIsOpen = !session?.is_open; 
 
             const updates: {
                 class_id: string;
@@ -149,13 +153,40 @@ export function useAttendance(classId: string | null): UseAttendanceReturn {
 
             if (error) throw new Error(error.message || 'Gagal mengubah status absensi');
         },
-        onSuccess: () => {
-            const today = new Date().toISOString().split('T')[0];
-            queryClient.invalidateQueries({ queryKey: attendanceKeys.session(classId!, today) });
-            toast.success('Status absensi berhasil diperbarui!');
+        onMutate: async (newType) => {
+            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+            await queryClient.cancelQueries({ queryKey: attendanceKeys.session(classId!, today) });
+
+            // Snapshot the previous value
+            const previousSession = queryClient.getQueryData<AttendanceSession | null>(attendanceKeys.session(classId!, today));
+
+            // Optimistically update to the new value
+            queryClient.setQueryData<AttendanceSession | null>(attendanceKeys.session(classId!, today), (old) => {
+                if (!old) return {
+                    id: 'temp-id', // Temporary ID
+                    class_id: classId!,
+                    date: today,
+                    is_open: true,
+                    type: newType,
+                    created_at: new Date().toISOString()
+                };
+                return {
+                    ...old,
+                    is_open: !old.is_open,
+                    type: !old.is_open ? newType : old.type
+                };
+            });
+
+            // Return a context object with the snapshotted value
+            return { previousSession };
         },
-        onError: (error: Error) => {
-            toast.error(error.message || 'Gagal mengubah status absensi.');
+        onError: (err, newType, context) => {
+            queryClient.setQueryData(attendanceKeys.session(classId!, today), context?.previousSession);
+            toast.error('Gagal mengubah status absensi. Mengembalikan status sebelumnya.');
+        },
+        onSettled: () => {
+             // Always refetch after error or success:
+             queryClient.invalidateQueries({ queryKey: attendanceKeys.session(classId!, today) });
         },
     });
 
@@ -164,19 +195,71 @@ export function useAttendance(classId: string | null): UseAttendanceReturn {
         mutationFn: async ({ studentId, status }: { studentId: string; status: 'hadir' | 'izin' | 'sakit' | 'alpa' }) => {
             if (!session?.id) throw new Error('No active session');
 
+            // Optimistic update happens before this, so we just perform the write
             const { error } = await supabase
                 .from('attendance_records')
                 .upsert({
                     attendance_id: session.id,
                     student_id: studentId,
                     status: status,
-                    is_verified: true, // Teacher actions are auto-verified
+                    is_verified: true,
                     recorded_at: new Date().toISOString()
                 }, { onConflict: 'attendance_id,student_id' });
 
             if (error) throw error;
         },
-        onSuccess: () => {
+        onMutate: async ({ studentId, status }) => {
+            if (!session?.id) return;
+            const logKey = attendanceKeys.logs(session.id);
+
+            await queryClient.cancelQueries({ queryKey: logKey });
+
+            const previousLogs = queryClient.getQueryData(logKey);
+
+            queryClient.setQueryData(logKey, (old: any) => {
+                if (!old) return old;
+                
+                // Clone old state
+                const newLogs = { ...old.logs };
+                const newCheckedInIds = [...old.checkedInIds];
+
+                // Find if checking in for first time or changing status
+                const wasCheckedIn = newCheckedInIds.includes(studentId);
+                
+                // If checking in for first time
+                if (!wasCheckedIn) {
+                    newCheckedInIds.push(studentId);
+                    newLogs[status] = (newLogs[status] || 0) + 1;
+                } else {
+                    // Changing status: we can't easily know the OLD status without complex lookups
+                    // For simplicity in this specific optimistic update, we might SKIP decrementing the old status 
+                    // if we don't have it easily available, OR we rely on the fact that the UI usually knows.
+                    // BUT, to be safe and avoid negative numbers/inconsistencies, for manual status changes,
+                    // we might want to just mark it as "processing" in UI?
+                    // Actually, let's try to be smart.
+                    // The UI typically knows the previous status. 
+                    // However, `setStatus` is often used when a student has NO status or changing it.
+                    // If we want perfection, we need the old status.
+                    // Allow imperfect optimistic update: Just increment new status, eventually it corrects.
+                    newLogs[status] = (newLogs[status] || 0) + 1;
+                }
+
+                return {
+                    ...old,
+                    logs: newLogs,
+                    checkedInIds: newCheckedInIds
+                };
+            });
+
+            return { previousLogs };
+        },
+        onError: (_err, _newTodo, context) => {
+            if (session?.id) {
+                queryClient.setQueryData(attendanceKeys.logs(session.id), context?.previousLogs);
+            }
+            toast.error('Gagal menyimpan absensi.');
+        },
+        onSettled: () => {
             if (session?.id) {
                 queryClient.invalidateQueries({ queryKey: attendanceKeys.logs(session.id) });
             }

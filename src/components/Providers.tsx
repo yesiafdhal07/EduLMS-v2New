@@ -1,8 +1,10 @@
 'use client';
 
 import { ToastProvider } from '@/components/ui/Toast';
-import { ThemeProvider } from '@/components/ui/ThemeProvider';
+import { ThemeProvider, PageTransitionProvider } from '@/components/ui';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { FocusModeProvider } from '@/context/FocusModeContext';
+import { LowDataModeProvider } from '@/context/LowDataContext';
 import { ReactNode, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { NextIntlClientProvider } from 'next-intl';
@@ -30,9 +32,15 @@ export function Providers({ children, locale, messages }: ProvidersProps) {
             <NextIntlClientProvider locale={locale} messages={messages}>
                 <ThemeProvider defaultTheme="dark">
                     <ToastProvider>
-                        <ErrorBoundary>
-                            {children}
-                        </ErrorBoundary>
+                        <FocusModeProvider>
+                            <LowDataModeProvider>
+                                <ErrorBoundary>
+                                    <PageTransitionProvider>
+                                        {children}
+                                    </PageTransitionProvider>
+                                </ErrorBoundary>
+                            </LowDataModeProvider>
+                        </FocusModeProvider>
                     </ToastProvider>
                 </ThemeProvider>
             </NextIntlClientProvider>

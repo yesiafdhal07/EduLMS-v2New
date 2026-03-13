@@ -15,7 +15,7 @@ interface KeaktifanGrade {
     feedback?: string;
 }
 
-type Tab = 'dashboard' | 'pembelajaran' | 'kuis' | 'absensi' | 'profil' | 'analytics';
+type Tab = 'dashboard' | 'pembelajaran' | 'kuis' | 'absensi' | 'profil' | 'analytics' | 'diskusi' | 'prestasi';
 
 // ========================================================
 // HELPER

@@ -33,7 +33,7 @@ export default function HelpPage() {
         },
         {
             q: "Apakah aplikasi ini gratis?",
-            a: "EduLMS menyediakan versi gratis untuk sekolah kecil dan paket berbayar untuk fitur premium."
+            a: "Klolakelas menyediakan versi gratis untuk sekolah kecil dan paket berbayar untuk fitur premium."
         },
         {
             q: "Bagaimana cara absen menggunakan QR Code?",

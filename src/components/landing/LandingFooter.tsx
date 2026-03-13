@@ -3,7 +3,7 @@ import { GraduationCap, Github, Twitter, Facebook, Instagram, Mail, MapPin, Phon
 
 export function LandingFooter() {
     return (
-        <footer className="bg-slate-950 border-t border-white/5 pt-20 pb-10">
+        <footer className="bg-slate-950/30 backdrop-blur-xl border-t border-white/5 pt-20 pb-10">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     {/* Brand Column */}
@@ -12,7 +12,7 @@ export function LandingFooter() {
                             <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
                                 <GraduationCap size={24} className="text-white" />
                             </div>
-                            <span className="text-xl font-black tracking-tight text-white">Edu<span className="text-indigo-400">LMS</span></span>
+                            <span className="text-xl font-black tracking-tight text-white">Klola<span className="text-indigo-400">kelas</span></span>
                         </Link>
                         <p className="text-slate-400 text-sm leading-relaxed mb-6">
                             Platform pembelajaran digital modern yang memberdayakan sekolah, guru, dan siswa untuk mencapai potensi terbaik mereka melalui teknologi.
@@ -74,7 +74,7 @@ export function LandingFooter() {
                             </li>
                             <li className="flex items-center gap-3 text-slate-400 text-sm">
                                 <Mail size={18} className="text-indigo-500 shrink-0" />
-                                <a href="mailto:hello@edulms.com" className="hover:text-white transition-colors">hello@edulms.com</a>
+                                <a href="mailto:hello@klolakelas.com" className="hover:text-white transition-colors">hello@klolakelas.com</a>
                             </li>
                             <li className="flex items-center gap-3 text-slate-400 text-sm">
                                 <Phone size={18} className="text-indigo-500 shrink-0" />
@@ -86,7 +86,7 @@ export function LandingFooter() {
 
                 <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-slate-500 text-sm font-medium">
-                        © 2026 EduLMS. All rights reserved.
+                        © 2026 Klolakelas. All rights reserved.
                     </p>
                     <div className="flex gap-8 text-sm font-medium text-slate-500">
                         <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>

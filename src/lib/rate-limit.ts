@@ -46,7 +46,7 @@ function getRateLimiter(): Ratelimit | null {
             redis: client,
             limiter: Ratelimit.slidingWindow(100, '1 m'), // 100 requests per minute
             analytics: true, // Enable analytics in Upstash dashboard
-            prefix: 'edulms_ratelimit',
+            prefix: "@klolakelas/ratelimit",
         });
     }
     return ratelimit;

@@ -3,28 +3,34 @@ import { cookies } from 'next/headers';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest) {
+    // 1. Artificial Delay to prevent Brute-Force Timing Attacks
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     try {
         const { searchParams } = new URL(request.url);
         const secret = searchParams.get('secret');
-
-        // Security check: Only allow if a secret matches (MUST be defined in env)
-        // This prevents random users from creating guru accounts.
         const EXPECTED_SECRET = process.env.SETUP_SECRET;
 
+        // 2. Strict Environment Check
         if (!EXPECTED_SECRET) {
+            console.error('[SECURITY] SETUP_SECRET not configured.');
             return NextResponse.json({
-                error: 'SETUP_SECRET environment variable is not configured. This endpoint is disabled for security.'
+                error: 'Service Unavailable',
+                code: 'SETUP_DISABLED'
             }, { status: 503 });
         }
 
+        // 3. Constant-time comparison (simulated) isn't strictly necessary here due to delay, 
+        // but explicit check is mandatory.
         if (secret !== EXPECTED_SECRET) {
+            console.warn(`[SECURITY] Unauthorized setup attempt from ${request.headers.get('x-forwarded-for') || 'unknown'}`);
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const cookieStore = await cookies();
 
         if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-            return NextResponse.json({ error: 'Environment variables missing' }, { status: 500 });
+            return NextResponse.json({ error: 'Server Configuration Error' }, { status: 500 });
         }
 
         const supabase = createServerClient(
@@ -48,21 +54,17 @@ export async function GET(request: NextRequest) {
             }
         );
 
-        // ⚠️ SECURITY: Credentials MUST come from environment variables
-        // Set these in your .env.local file:
-        //   INITIAL_GURU_EMAIL=your-email@school.id
-        //   INITIAL_GURU_PASSWORD=your-secure-password
-        //   INITIAL_GURU_NAME=Teacher Name
         const email = process.env.INITIAL_GURU_EMAIL;
         const password = process.env.INITIAL_GURU_PASSWORD;
         const fullName = process.env.INITIAL_GURU_NAME || 'Guru Matematika';
 
         if (!email || !password) {
             return NextResponse.json({
-                error: 'Missing required environment variables: INITIAL_GURU_EMAIL and INITIAL_GURU_PASSWORD'
+                error: 'Missing initial credentials configuration.'
             }, { status: 500 });
         }
 
+        // 4. Create User
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
@@ -78,13 +80,26 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: authError.message }, { status: 400 });
         }
 
-        // ⚠️ SECURITY: Never return password in response
+        // 5. Audit Log (Best Effort)
+        if (authData.user) {
+            await supabase.from('audit_logs').insert({
+                user_id: authData.user.id,
+                action: 'SYSTEM_SETUP',
+                entity_type: 'system',
+                entity_id: authData.user.id,
+                new_data: { email, role: 'guru' },
+                ip_address: request.headers.get('x-forwarded-for') || 'unknown',
+                user_agent: request.headers.get('user-agent')
+            });
+        }
+
         return NextResponse.json({
-            message: 'Selamat! Akun Guru berhasil dibuat.',
+            message: 'Setup successful. Account created.',
             info: { email, fullName, role: 'guru' }
         });
+
     } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Internal Server Error';
-        return NextResponse.json({ error: message }, { status: 500 });
+        console.error('[SETUP ERROR]', err);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

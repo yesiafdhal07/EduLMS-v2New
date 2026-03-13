@@ -40,6 +40,16 @@ const config: Config = {
                 sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
                 outfit: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
             },
+            // Custom Animations
+            keyframes: {
+                'flip-in': {
+                    '0%': { transform: 'perspective(2000px) rotateX(-60deg) scale(0.95)', opacity: '0' },
+                    '100%': { transform: 'perspective(2000px) rotateX(0deg) scale(1)', opacity: '1' }
+                }
+            },
+            animation: {
+                'flip-in': 'flip-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+            }
         },
     },
     plugins: [],

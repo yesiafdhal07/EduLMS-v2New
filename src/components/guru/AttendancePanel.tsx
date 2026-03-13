@@ -135,7 +135,13 @@ export function AttendancePanel({
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {pendingRecords.map((record) => {
+                                {[...pendingRecords]
+                                    .sort((a, b) => {
+                                        const nameA = students.find(s => s.id === a.studentId)?.name || '';
+                                        const nameB = students.find(s => s.id === b.studentId)?.name || '';
+                                        return nameA.localeCompare(nameB, 'id');
+                                    })
+                                    .map((record) => {
                                     const student = students.find(s => s.id === record.studentId);
                                     if (!student) return null;
                                     return (
@@ -204,7 +210,10 @@ export function AttendancePanel({
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 gap-4">
-                                    {students.filter(s => !checkedInIds.includes(s.id)).map(student => (
+                                    {students
+                                        .filter(s => !checkedInIds.includes(s.id))
+                                        .sort((a, b) => a.name.localeCompare(b.name, 'id'))
+                                        .map(student => (
                                         <div key={student.id} className="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-indigo-200 transition-all">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-black text-slate-400 group-hover:text-indigo-600 shadow-sm transition-colors">

@@ -1,5 +1,6 @@
 import { FileText, Layers, ExternalLink } from 'lucide-react';
 import { Material } from '@/types';
+import { TiltCard } from '@/components/ui';
 
 interface StudentMaterialsPanelProps {
     materials: Material[];
@@ -9,7 +10,12 @@ export function StudentMaterialsPanel({ materials }: StudentMaterialsPanelProps)
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {materials.map(m => (
-                <div key={m.id} className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:-translate-y-2 transition-all group overflow-hidden relative">
+                <TiltCard 
+                    key={m.id} 
+                    maxTilt={5}
+                    scale={1.03}
+                    className="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl transition-all group overflow-hidden relative"
+                >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-[4rem] group-hover:scale-150 transition-transform opacity-50"></div>
                     <div className="relative z-10">
                         <div className="flex justify-between items-start mb-8">
@@ -32,7 +38,7 @@ export function StudentMaterialsPanel({ materials }: StudentMaterialsPanelProps)
                             <ExternalLink size={18} />
                         </a>
                     </div>
-                </div>
+                </TiltCard>
             ))}
 
             {materials.length === 0 && (

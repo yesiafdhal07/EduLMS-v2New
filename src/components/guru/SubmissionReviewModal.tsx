@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect } from 'react';
-import { XCircle, Download, FileText, Clock, User, CheckCircle, Star, Save, Loader2 } from 'lucide-react';
+import { XCircle, Download, FileText, Clock, User, CheckCircle, Star, Save, Loader2, Mic } from 'lucide-react';
 import { Assignment } from '@/types';
 import { useSubmissionGrading, type Submission, type GradeForm } from '@/hooks/useSubmissionGrading';
 import { supabase } from '@/lib/supabase';
+import { AudioRecorder } from '@/components/audio/AudioRecorder';
 
 interface SubmissionReviewModalProps {
     isOpen: boolean;
@@ -211,6 +212,21 @@ function SubmissionCard({ submission, gradeForm, savingGrade, onUpdateGradeForm,
                             placeholder="Kerja bagus!"
                         />
                     </div>
+                </div>
+
+                {/* Voice Feedback Section */}
+                <div className="mt-4 pt-4 border-t border-slate-200">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Mic size={16} className="text-violet-500" />
+                        <span className="text-xs font-bold text-slate-500 uppercase">Feedback Suara (Opsional)</span>
+                    </div>
+                    <AudioRecorder 
+                        onUploadComplete={(url: string) => {
+                            // Save audio feedback URL to grades table
+                            onUpdateGradeForm(submission.id, 'feedback', `[Voice] ${url}`);
+                        }}
+                        maxDurationSeconds={60}
+                    />
                 </div>
                 <div className="flex items-center justify-between mt-4">
                     {hasExistingGrade && (

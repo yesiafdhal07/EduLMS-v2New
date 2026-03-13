@@ -11,7 +11,7 @@ export default function AboutPage() {
             <main className="pt-32 pb-20">
                 <div className="max-w-4xl mx-auto px-6">
                     <div className="text-center mb-20">
-                        <h1 className="text-5xl font-black mb-6">Tentang EduLMS</h1>
+                        <h1 className="text-5xl font-black mb-6">Tentang Klolakelas</h1>
                         <p className="text-xl text-slate-400">
                             Misi kami adalah mendemokratisasi akses ke teknologi pendidikan berkualitas tinggi untuk semua sekolah di Indonesia.
                         </p>
@@ -22,7 +22,7 @@ export default function AboutPage() {
                         <section>
                             <h2 className="text-3xl font-bold mb-6 text-indigo-400">Cerita Kami</h2>
                             <p className="text-lg text-slate-300 leading-relaxed mb-6">
-                                EduLMS dimulai dengan satu tujuan sederhana: membantu guru matematika menghemat waktu administrasi sehingga mereka bisa fokus pada hal yang paling penting - mengajar.
+                                Klolakelas dimulai dengan satu tujuan sederhana: membantu guru matematika menghemat waktu administrasi sehingga mereka bisa fokus pada hal yang paling penting - mengajar.
                             </p>
                             <p className="text-lg text-slate-300 leading-relaxed">
                                 Kami percaya bahwa teknologi tidak seharusnya menggantikan peran guru, tetapi memberdayakan mereka. Platform kami dirancang dengan prinsip "Teacher-First", memastikan setiap fitur benar-benar menjawab kebutuhan di lapangan.

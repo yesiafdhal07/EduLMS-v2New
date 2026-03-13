@@ -11,3 +11,4 @@ export { ManualGradeModal } from './ManualGradeModal';
 export { AttendanceExport } from './AttendanceExport';
 export { DataArchiveModal } from './DataArchiveModal';
 export { WeightageSettings } from './WeightageSettings';
+export { StudentGoalsViewer } from './StudentGoalsViewer';

@@ -30,8 +30,8 @@ const themes = {
         bgBlob1: 'bg-indigo-500/10',
         bgBlob2: 'bg-purple-500/10',
         icon: BookOpen,
-        title: 'EDU',
-        titleAccent: 'Guru',
+        title: 'Klolakelas',
+        titleAccent: ' Guru',
         subtitle: 'Panel Pengajar',
     },
     siswa: {
@@ -44,8 +44,8 @@ const themes = {
         bgBlob1: 'bg-emerald-500/10',
         bgBlob2: 'bg-teal-500/10',
         icon: GraduationCap,
-        title: 'EDU',
-        titleAccent: 'Siswa',
+        title: 'Klolakelas',
+        titleAccent: ' Siswa',
         subtitle: 'Portal Pelajar',
     },
     default: {
@@ -58,8 +58,8 @@ const themes = {
         bgBlob1: 'bg-indigo-500/10',
         bgBlob2: 'bg-purple-500/10',
         icon: GraduationCap,
-        title: 'EDU',
-        titleAccent: 'LMS',
+        title: 'Klola',
+        titleAccent: 'kelas',
         subtitle: 'Learning Platform',
     },
 };

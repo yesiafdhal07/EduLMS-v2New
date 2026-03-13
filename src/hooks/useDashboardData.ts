@@ -104,6 +104,9 @@ export function useDashboardData(
                 };
             }) || [];
 
+            // Sort students alphabetically by name
+            processedStudents.sort((a, b) => a.name.localeCompare(b.name, 'id'));
+
             setStudents(processedStudents);
 
             // Calculate stats

@@ -272,7 +272,7 @@ export function RaporExportModal({
                 `).join('')}
 
                 <div class="footer">
-                    Digenerate oleh EduLMS pada ${new Date().toLocaleDateString('id-ID', { 
+                    Digenerate oleh Klolakelas pada ${new Date().toLocaleDateString('id-ID', { 
                         year: 'numeric', 
                         month: 'long', 
                         day: 'numeric' 

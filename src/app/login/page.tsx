@@ -61,7 +61,7 @@ export default function LoginPage() {
                 <div className="w-full max-w-md bg-white/5 backdrop-blur-md rounded-[2.5rem] p-8 border border-white/10 shadow-2xl shadow-black/50">
                     <div className="text-center mb-10">
                         <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 tracking-tight">
-                            EduLMS
+                            Klolakelas
                         </h1>
                         <p className="text-slate-400 mt-2 font-medium">Selamat datang di platform belajar digital</p>
                     </div>

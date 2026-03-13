@@ -1,16 +1,18 @@
 'use client';
 
 import {
-    Users, FileText, LogOut, LayoutDashboard, Calendar, XCircle, BookOpen, GraduationCap, Archive, FileQuestion, BarChart3,
+    Users, FileText, LogOut, LayoutDashboard, Calendar, XCircle, BookOpen, GraduationCap, Archive, FileQuestion, BarChart3, MessageSquare,
 } from 'lucide-react';
 
-import { NavItem, NotificationBell, ThemeToggle, SearchBar, Footer, OnboardingModal, HelpButton, EntranceAnimation } from '@/components/ui';
+import { NavItem, NotificationBell, ThemeToggle, SearchBar, Footer, OnboardingModal, HelpButton, EntranceAnimation, AnimatedTabContent } from '@/components/ui';
 import { AttendancePanel, SubmissionReviewModal, MaterialModal, AssignmentModal, ManualGradeModal, DataArchiveModal } from '@/components/guru';
 import { DashboardTab, PortfolioTab, PembelajaranTab, TrashTab } from './tabs';
 import { QuizBuilder } from '@/components/quiz';
 import { AnalyticsDashboard } from '@/components/analytics';
 import { useGuruDashboard } from '@/hooks/useGuruDashboard';
 import { useOnboarding } from '@/hooks/useOnboarding';
+import { DiscussionForum } from '@/components/discussion/DiscussionForum';
+import { DashboardSidebar, SidebarNavItem } from '@/components/layout';
 
 // ========================================================
 // GURU DASHBOARD - REFACTORED
@@ -48,40 +50,23 @@ export default function GuruDashboard() {
 
     return (
         <EntranceAnimation role="guru">
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex font-outfit text-white overflow-hidden">
+            <div className="h-[100dvh] bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex font-outfit text-white overflow-hidden relative">
                 {/* Sidebar */}
-                <aside className="w-72 bg-slate-900/50 backdrop-blur-xl text-white p-8 hidden md:flex flex-col border-r border-white/10 shadow-2xl z-50">
-                    <div className="flex items-center gap-4 mb-14">
-                        <div className="w-12 h-12 bg-indigo-500 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-500/20 rotate-3 group transform hover:rotate-0 transition-all">
-                            <BookOpen size={28} className="text-white" />
-                        </div>
-                        <div>
-                            <span className="text-2xl font-black tracking-tighter block leading-none">EDU</span>
-                            <span className="text-[10px] font-black tracking-[0.3em] text-indigo-400 uppercase">Academy</span>
-                        </div>
+                {/* Sidebar */}
+                <DashboardSidebar role="guru" onLogout={handleLogout}>
+                    <SidebarNavItem icon={<LayoutDashboard size={20} />} label="Beranda" description="Ringkasan kelas & statistik" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
+                    <SidebarNavItem icon={<BookOpen size={20} />} label="Pembelajaran" description="Materi, Tugas & Kuis" active={activeTab === 'pembelajaran'} onClick={() => setActiveTab('pembelajaran')} />
+                    <SidebarNavItem icon={<BarChart3 size={20} />} label="Analytics" description="Statistik & laporan" active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} />
+                    <SidebarNavItem icon={<Calendar size={20} />} label="Presensi" description="Absensi QR & manual" active={activeTab === 'absensi'} onClick={() => setActiveTab('absensi')} />
+                    <SidebarNavItem icon={<MessageSquare size={20} />} label="Diskusi" description="Forum Anonim Siswa" active={activeTab === 'diskusi'} onClick={() => setActiveTab('diskusi')} />
+                    <SidebarNavItem icon={<GraduationCap size={20} />} label="Profil" description="Profil & portofolio" active={activeTab === 'portofolio'} onClick={() => setActiveTab('portofolio')} />
+                    <div className="pt-4 mt-4 border-t border-white/10">
+                        <SidebarNavItem icon={<div className="text-rose-400"><Archive size={20} /></div>} label="Sampah" description="Pulihkan data terhapus" active={activeTab === 'trash'} onClick={() => setActiveTab('trash')} />
                     </div>
-
-                    <nav className="space-y-3 flex-1">
-                        <NavItem data-tour="nav-dashboard" icon={<LayoutDashboard size={20} />} label="Beranda" description="Ringkasan kelas & statistik" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
-                        <NavItem data-tour="nav-pembelajaran" icon={<BookOpen size={20} />} label="Pembelajaran" description="Materi, Tugas & Kuis" active={activeTab === 'pembelajaran'} onClick={() => setActiveTab('pembelajaran')} />
-                        <NavItem data-tour="nav-analytics" icon={<BarChart3 size={20} />} label="Analytics" description="Statistik & laporan" active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} />
-                        <NavItem data-tour="nav-presensi" icon={<Calendar size={20} />} label="Presensi" description="Absensi QR & manual" active={activeTab === 'absensi'} onClick={() => setActiveTab('absensi')} />
-                        <NavItem data-tour="nav-profil" icon={<GraduationCap size={20} />} label="Profil" description="Profil & portofolio" active={activeTab === 'portofolio'} onClick={() => setActiveTab('portofolio')} />
-                        <div className="pt-4 mt-4 border-t border-white/10">
-                            <NavItem data-tour="nav-trash" icon={<div className="text-rose-400"><Archive size={20} /></div>} label="Sampah" description="Pulihkan data terhapus" active={activeTab === 'trash'} onClick={() => setActiveTab('trash')} />
-                        </div>
-                    </nav>
-
-                    <div className="pt-8 border-t border-white/10 mt-6 box-border">
-                        <button type="button" onClick={handleLogout} className="flex items-center gap-4 p-4 w-full hover:bg-rose-500/10 text-rose-400 rounded-2xl transition-all duration-300 group">
-                            <div className="p-2 rounded-xl bg-transparent group-hover:bg-rose-500/20 transition-colors"><LogOut size={20} /></div>
-                            <span className="font-bold text-sm">Keluar Sistem</span>
-                        </button>
-                    </div>
-                </aside>
+                </DashboardSidebar>
 
                 {/* Main Content */}
-                <main className="flex-1 h-screen overflow-y-auto p-4 md:p-12 pb-32 md:pb-12 bg-transparent text-white scrollbar-hide">
+                <main className="flex-1 h-full overflow-y-auto p-4 md:p-12 pb-40 md:pb-12 bg-transparent text-white scrollbar-hide relative z-0">
                     {/* Header Section */}
                     <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 md:mb-14">
                         <div>
@@ -106,13 +91,13 @@ export default function GuruDashboard() {
                                 {activeTab === 'portofolio' && "Lihat dan edit profil serta pencapaian mengajar Anda."}
                             </p>
                         </div>
-                        <div className="flex items-center gap-6">
+                        <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-end gap-4 w-full md:w-auto">
                             {classes.length > 0 && (
-                                <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/10 shadow-sm animate-in fade-in zoom-in duration-500">
-                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pilih Kelas:</span>
+                                <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/10 shadow-sm animate-in fade-in zoom-in duration-500 w-full sm:w-auto">
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">Pilih Kelas:</span>
                                     <select
                                         aria-label="Pilih kelas untuk ditampilkan"
-                                        className="bg-transparent font-black text-indigo-400 focus:outline-none cursor-pointer text-sm [&>option]:text-slate-900"
+                                        className="bg-transparent font-black text-indigo-400 focus:outline-none cursor-pointer text-sm [&>option]:text-slate-900 w-full sm:w-auto"
                                         value={selectedClassId || ''}
                                         onChange={(e) => setSelectedClassId(e.target.value)}
                                     >
@@ -120,7 +105,7 @@ export default function GuruDashboard() {
                                     </select>
                                 </div>
                             )}
-                            <div className="flex items-center gap-3">
+                            <div className="flex flex-wrap flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto justify-start sm:justify-end">
                                 <SearchBar
                                     materials={materials}
                                     assignments={assignments}
@@ -131,16 +116,16 @@ export default function GuruDashboard() {
                                 <ThemeToggle />
                                 <button
                                     onClick={() => setShowArchiveModal(true)}
-                                    className="p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all relative group hidden sm:block"
+                                    className="p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all relative group hidden sm:block shrink-0"
                                     title="Arsip Data & Reset"
                                 >
                                     <Archive size={20} />
                                 </button>
-                                <HelpButton onClick={onboarding.startTutorial} />
-                                {user?.id && <NotificationBell userId={user.id} />}
-                                <div className="flex items-center gap-4 bg-white/5 backdrop-blur-md p-2.5 rounded-[2rem] shadow-sm border border-white/10">
+                                <div className="shrink-0"><HelpButton onClick={onboarding.startTutorial} /></div>
+                                {user?.id && <div className="shrink-0"><NotificationBell userId={user.id} /></div>}
+                                <div className="flex items-center gap-4 bg-white/5 backdrop-blur-md p-2.5 rounded-[2rem] shadow-sm border border-white/10 shrink-0 ml-auto sm:ml-0">
                                     <div className="flex items-center gap-3 px-4">
-                                        <div className="text-right hidden sm:block">
+                                        <div className="text-right hidden xl:block">
                                             <p className="text-xs font-black text-white leading-none mb-1">{teacherName}</p>
                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Guru Pengajar</p>
                                         </div>
@@ -151,7 +136,8 @@ export default function GuruDashboard() {
                         </div>
                     </header>
 
-                    {/* Tab Content */}
+                    {/* Tab Content - GSAP Animated */}
+                    <AnimatedTabContent tabKey={activeTab} className="min-h-0">
                     {activeTab === 'dashboard' && (
                         <DashboardTab
                             stats={stats}
@@ -219,6 +205,25 @@ export default function GuruDashboard() {
                     )}
                     {activeTab === 'portofolio' && <PortfolioTab teacherName={teacherName} initialProfile={teacherProfile} portfolioStats={portfolioStats} />}
                     {activeTab === 'trash' && <TrashTab userId={user?.id} />}
+                    {activeTab === 'diskusi' && (
+                        selectedClassId ? (
+                            <DiscussionForum 
+                                classId={selectedClassId}
+                                userId={user?.id || ''}
+                                isTeacher={true}
+                            />
+                        ) : (
+                            <div className="flex flex-col items-center justify-center min-h-[400px] bg-white/5 backdrop-blur-md rounded-3xl border border-white/10 p-12">
+                                <div className="w-20 h-20 bg-violet-500/20 rounded-full flex items-center justify-center mb-6">
+                                    <MessageSquare size={40} className="text-violet-400" />
+                                </div>
+                                <h3 className="text-2xl font-black text-white mb-3">Pilih Kelas Terlebih Dahulu</h3>
+                                <p className="text-slate-400 text-center max-w-md">Silakan pilih kelas dari dropdown di header untuk melihat diskusi anonim siswa.</p>
+                            </div>
+                        )
+                    )}
+
+                    </AnimatedTabContent>
 
                     <Footer />
                 </main>

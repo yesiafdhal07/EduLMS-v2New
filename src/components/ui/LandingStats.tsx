@@ -35,7 +35,7 @@ export default function LandingStats() {
     }, []);
 
     return (
-        <div className="max-w-4xl mx-auto bg-white/5 backdrop-blur-md rounded-[2.5rem] border border-white/10 p-12 shadow-2xl flex flex-col md:flex-row items-center justify-around gap-8 text-center">
+        <div className="max-w-4xl mx-auto bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 shadow-2xl flex flex-col md:flex-row items-center justify-around gap-8 text-center">
             <div>
                 <div className="text-4xl md:text-5xl font-black text-indigo-400 mb-2 flex items-center justify-center gap-2">
                     {loading ? <Loader2 className="animate-spin" /> : (stats.users > 0 ? stats.users + '+' : stats.users)}

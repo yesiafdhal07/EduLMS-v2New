@@ -1,6 +1,6 @@
 {
-    "name": "EduLMS | Platform Pembelajaran Digital",
-    "short_name": "EduLMS",
+    "name": "Klolakelas",
+    "short_name": "Klolakelas",
     "description": "Platform manajemen kelas, tugas, dan penilaian untuk guru dan siswa.",
     "start_url": "/",
     "display": "standalone",

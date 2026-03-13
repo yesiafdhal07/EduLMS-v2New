@@ -10,7 +10,7 @@ test.describe('Landing Page', () => {
         await page.goto('/');
         
         // Page should load without errors
-        await expect(page).toHaveTitle(/EduLMS/i);
+        await expect(page).toHaveTitle(/Klolakelas/i);
     });
 
     test('should have navigation elements', async ({ page }) => {

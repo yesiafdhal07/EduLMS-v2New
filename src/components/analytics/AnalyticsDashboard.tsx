@@ -12,6 +12,7 @@ import {
     Download, Filter, RefreshCcw
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { SkeletonDashboard } from '@/components/ui/SkeletonLoading';
 
 // ========================================================
 // ANALYTICS DASHBOARD
@@ -159,7 +160,8 @@ export function AnalyticsDashboard({ classId, className }: AnalyticsDashboardPro
                 user:users!grades_student_id_fkey(full_name)
             `)
             .eq('type', 'keaktifan')
-            .in('student_id', studentIds)
+            .eq('type', 'keaktifan')
+            .eq('class_id', classId) // Filter by class_id for accuracy
             .limit(200);
 
         // Process keaktifan data
@@ -201,13 +203,7 @@ export function AnalyticsDashboard({ classId, className }: AnalyticsDashboardPro
     if (loading) {
         return (
             <div className={`space-y-6 ${className}`}>
-                <div className="h-32 bg-white/5 rounded-2xl animate-pulse" />
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="h-24 bg-white/5 rounded-xl animate-pulse" />
-                    ))}
-                </div>
-                <div className="h-80 bg-white/5 rounded-2xl animate-pulse" />
+                <SkeletonDashboard />
             </div>
         );
     }
@@ -692,7 +688,13 @@ function processStudentData(
         const user = Array.isArray(s.user) ? s.user[0] : s.user;
         return {
             name: user?.name || 'Unknown',
-            score: Math.floor(Math.random() * 30) + 70, // Placeholder - would need real calculation
+
+            score: (() => {
+                const studentSubmissions = submissions.filter((sub: any) => sub.student_id === s.user.id && sub.grade !== null);
+                if (studentSubmissions.length === 0) return 0;
+                const total = studentSubmissions.reduce((sum: number, sub: any) => sum + (sub.grade || 0), 0);
+                return Math.round(total / studentSubmissions.length);
+            })(),
         };
     }).sort((a: any, b: any) => b.score - a.score);
 

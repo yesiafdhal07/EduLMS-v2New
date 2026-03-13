@@ -1,6 +1,6 @@
 -- =====================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES - SAFE VERSION
--- EduLMS - Supabase Security Configuration
+-- Klolakelas RLS Policiese Security Configuration
 -- =====================================================
 -- 
 -- ⚠️ KEAMANAN DATA:

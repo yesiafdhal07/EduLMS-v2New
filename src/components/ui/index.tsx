@@ -18,6 +18,13 @@ export { OnboardingModal, HelpButton } from './OnboardingModal';
 export { EntranceAnimation } from './EntranceAnimation';
 export { AnnouncementBoard } from './AnnouncementBoard';
 export { ReminderWidget } from './ReminderWidget';
+export { DeadlineCountdown } from './DeadlineCountdown';
+export { FocusModeToggle } from './FocusModeToggle';
+export { LowDataToggle } from './LowDataToggle';
+export { TiltCard } from './TiltCard';
+export { HoloCard } from './HoloCard';
+export { AnimatedTabContent } from './AnimatedTabContent';
+export { PageTransitionProvider } from './PageTransitionProvider';
 
 // Attendance stat component used in AttendancePanel
 export function AttendanceStat({ label, value, color, bg }: { label: string; value: number; color: string; bg: string }) {

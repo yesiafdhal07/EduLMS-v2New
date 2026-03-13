@@ -13,7 +13,7 @@ test.describe('Authentication', () => {
 
     test('should display login page correctly', async ({ page }) => {
         // Check page title
-        await expect(page).toHaveTitle(/EduLMS|Login/i);
+        await expect(page).toHaveTitle(/Klolakelas|Login/i);
         
         // Check form elements exist
         await expect(page.locator('input[type="email"], input[name="email"]')).toBeVisible();

@@ -13,8 +13,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "EduLMS | Platform Pembelajaran Digital",
-  description: "Platform manajemen kelas, tugas, dan penilaian untuk guru dan siswa. Gratis dan mudah digunakan untuk semua mata pelajaran.",
+  title: 'Klolakelas - Platform Manajemen Sekolah Modern',
+  description: 'Sistem manajemen pembelajaran modern untuk sekolah masa depan.',
   keywords: ["LMS", "sekolah", "pembelajaran", "guru", "siswa", "tugas", "penilaian", "online"],
   manifest: "/manifest.json",
   icons: {
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     apple: "/favicon.png",
   },
   openGraph: {
-    title: "EduLMS | Platform Pembelajaran Digital",
+    title: "Klolakelas | Platform Pembelajaran Digital",
     description: "Platform manajemen kelas dan pembelajaran modern.",
     type: "website",
   },
