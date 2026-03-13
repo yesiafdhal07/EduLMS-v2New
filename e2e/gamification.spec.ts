@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Gamification Elements', () => {
     // Shared login helper
-    async function loginAsStudent(page) {
+    async function loginAsStudent(page: any) {
         await page.goto('/login');
         await page.fill('input[type="email"]', 'siswa@example.com');
         await page.fill('input[type="password"]', 'password123');

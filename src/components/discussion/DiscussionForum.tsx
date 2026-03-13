@@ -70,7 +70,17 @@ export function DiscussionForum({ classId, userId, isTeacher = false, className 
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            setDiscussions(data || []);
+            
+            // Format replies: extract first author entry from array
+            const formattedDiscussions = (data as any[] || []).map(disc => ({
+                ...disc,
+                replies: disc.replies?.map((reply: any) => ({
+                    ...reply,
+                    author: Array.isArray(reply.author) ? reply.author[0] : reply.author
+                }))
+            }));
+            
+            setDiscussions(formattedDiscussions);
         } catch (err) {
             console.error('Failed to fetch discussions:', err);
         } finally {

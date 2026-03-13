@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Quiz Assessment Flow', () => {
     // Shared login helper
-    async function loginAsStudent(page) {
+    async function loginAsStudent(page: any) {
         await page.goto('/login');
         await page.fill('input[type="email"]', 'siswa@example.com');
         await page.fill('input[type="password"]', 'password123');
@@ -65,6 +65,6 @@ test.describe('Quiz Assessment Flow', () => {
     test('should prevent double submission', async ({ page }) => {
         // Navigate directly to a quiz if ID was known, otherwise skip
         // This test mocks the scenario or relies on specific setup
-        test.skip('Requires specific quiz ID setup');
+        test.skip(true, 'Requires specific quiz ID setup');
     });
 });

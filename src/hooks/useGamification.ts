@@ -4,23 +4,27 @@ import type { Badge } from '@/components/widgets/BadgeList';
 import { triggerXPEffect } from '@/components/widgets/XPFlowParticles';
 export type { Badge };
 
+export interface UserStreak {
+    current: number;
+    longest: number;
+}
+
+export interface LeaderboardEntry {
+    user_id: string;
+    full_name: string;
+    total_points: number;
+    level: number;
+    rank: number;
+    avatar?: string;
+}
+
 export interface GamificationStats {
     totalXP: number;
     level: number;
     nextLevelXP: number;
-    streak: {
-        current: number;
-        longest: number;
-    };
+    streak: UserStreak;
     badges: Badge[];
-    leaderboard: {
-        id: string;
-        name: string;
-        xp: number;
-        level: number;
-        rank: number;
-        avatar?: string;
-    }[];
+    leaderboard: LeaderboardEntry[];
 }
 
 export function useGamification() {
@@ -81,11 +85,11 @@ export function useGamification() {
                 .order('total_points', { ascending: false })
                 .limit(10);
 
-            const leaderboard = leaderboardData?.map((entry: any, index: number) => ({
-                id: entry.user_id,
-                name: entry.users?.full_name || 'Anonymous',
+            const leaderboard: LeaderboardEntry[] = leaderboardData?.map((entry: any, index: number) => ({
+                user_id: entry.user_id,
+                full_name: entry.users?.full_name || 'Anonymous',
                 avatar: entry.users?.avatar_url,
-                xp: entry.total_points,
+                total_points: entry.total_points,
                 level: entry.level,
                 rank: index + 1
             })) || [];

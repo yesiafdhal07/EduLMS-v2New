@@ -7,8 +7,7 @@
  */
 
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Flip } from 'gsap/Flip';
+import { ScrollTrigger, Flip } from 'gsap/all';
 
 // Register plugins globally (safe to call multiple times)
 if (typeof window !== 'undefined') {

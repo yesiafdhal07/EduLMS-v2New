@@ -6,8 +6,13 @@
 
 import { createBrowserClient } from '@supabase/ssr';
 
+export const createClient = () => createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
 /**
- * Supabase Client Instance
+ * Supabase Client Instance (Singleton)
  * 
  * Ini adalah singleton client yang digunakan di sisi browser.
  * Credentials diambil dari environment variables:

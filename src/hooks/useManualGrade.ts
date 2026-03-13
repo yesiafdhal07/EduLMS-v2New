@@ -151,7 +151,7 @@ export function useManualGrade(
             }
 
             // Sort students alphabetically by name
-            studentList.sort((a, b) => a.name.localeCompare(b.name, 'id'));
+            studentList.sort((a, b) => a.full_name.localeCompare(b.full_name, 'id'));
 
             // Merge existing grades
             const studentsWithGrades = studentList.map(s => ({

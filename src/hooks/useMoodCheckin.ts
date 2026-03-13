@@ -10,6 +10,10 @@ interface MoodLog {
     user_id: string;
     mood: number;
     created_at: string;
+    user?: {
+        id: string;
+        full_name: string;
+    };
 }
 
 interface UseMoodCheckinOptions {
@@ -86,8 +90,12 @@ export function useMoodCheckin({ userId, enabled = true }: UseMoodCheckinOptions
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            setRecentMoods(data || []);
-            return data;
+            const formattedData = (data as any[] || []).map(item => ({
+                ...item,
+                user_id: item.user_id || (Array.isArray(item.user) ? item.user[0]?.id : item.user?.id)
+            }));
+            setRecentMoods(formattedData);
+            return formattedData;
         } catch (err) {
             console.error('Failed to fetch moods:', err);
             return [];

@@ -11,8 +11,8 @@ interface StreakCounterProps {
  * Displays the user's current streak with fire animation
  */
 export function StreakCounter({ streak, compact = false }: StreakCounterProps) {
-    const currentStreak = streak?.current_streak || 0;
-    const longestStreak = streak?.longest_streak || 0;
+    const currentStreak = streak?.current || 0;
+    const longestStreak = streak?.longest || 0;
 
     // Get motivational message based on streak
     const getMessage = (days: number): string => {
