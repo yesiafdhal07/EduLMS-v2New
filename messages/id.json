@@ -83,13 +83,18 @@
         "attendanceRate": "Tingkat Kehadiran"
     },
     "landing": {
-        "heroTitle": "Transformasi Pendidikan dengan Teknologi Cerdas",
-        "heroSubtitle": "Kelola kelas, tugaskan materi, dan pantau perkembangan siswa dalam satu platform terintegrasi.",
-        "getStarted": "Mulai Sekarang Gratis",
-        "learnMore": "Pelajari Fitur",
+        "heroTitle": "Satu Platform.",
+        "heroTitleAccent": "Nol Ribet.",
+        "heroSubtitle": "Tim 1 guru terasa seperti 10. Absensi, nilai, tugas, rapor — semuanya otomatis.",
+        "getStarted": "Coba Gratis",
+        "learnMore": "Lihat Demo",
         "features": "Fitur",
         "pricing": "Harga",
         "about": "Tentang",
-        "contact": "Kontak"
+        "contact": "Kontak",
+        "heroBadge": "Dipakai 500+ sekolah di seluruh Indonesia",
+        "trustedBy": "Dipercaya oleh",
+        "teachers": "Guru",
+        "noCreditCard": "Gratis selamanya — tanpa kartu kredit"
     }
 }

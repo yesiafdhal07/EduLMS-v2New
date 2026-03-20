@@ -83,13 +83,18 @@
         "attendanceRate": "Attendance Rate"
     },
     "landing": {
-        "heroTitle": "Transform Education with Smart Technology",
-        "heroSubtitle": "Manage classes, assign materials, and track student progress in one integrated platform.",
-        "getStarted": "Get Started Free",
-        "learnMore": "Learn More",
+        "heroTitle": "One Platform.",
+        "heroTitleAccent": "Zero Hassle.",
+        "heroSubtitle": "A team of 1 feels like 10. Attendance, grades, assignments, and reports — all automatic.",
+        "getStarted": "Try Free",
+        "learnMore": "Watch Demo",
         "features": "Features",
         "pricing": "Pricing",
         "about": "About",
-        "contact": "Contact"
+        "contact": "Contact",
+        "heroBadge": "Used by 500+ schools across Indonesia",
+        "trustedBy": "Trusted by",
+        "teachers": "Teachers",
+        "noCreditCard": "Free forever — no credit card required"
     }
 }

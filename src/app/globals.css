@@ -44,23 +44,23 @@
   /* Input & Form */
   --input-bg: #f8fafc;
   --input-border: #cbd5e1;
-  --input-focus: #4f46e5;
+  --input-focus: #00b8d4;
 
-  /* Primary Brand Colors (Indigo) */
-  --primary: #4f46e5;
+  /* Primary Brand Colors (Cyan) */
+  --primary: #00b8d4;
   --primary-foreground: #ffffff;
-  --primary-light: #e0e7ff;
-  --primary-dark: #3730a3;
+  --primary-light: #e0f7fa;
+  --primary-dark: #006064;
 
-  /* Secondary/Accent (Purple) */
-  --secondary: #9333ea;
+  /* Secondary/Accent (Violet) */
+  --secondary: #8b5cf6;
   --secondary-foreground: #ffffff;
-  --secondary-light: #f3e8ff;
+  --secondary-light: #ede9fe;
 
-  /* Role: Guru (Indigo/Violet) */
-  --guru-primary: #4f46e5;
-  --guru-bg: #eef2ff;
-  --guru-accent: #6366f1;
+  /* Role: Guru (Cyan) */
+  --guru-primary: #00b8d4;
+  --guru-bg: #e0f7fa;
+  --guru-accent: #00e5ff;
 
   /* Role: Siswa (Emerald/Teal) */
   --siswa-primary: #10b981;
@@ -68,8 +68,8 @@
   --siswa-accent: #34d399;
 
   /* Gradients */
-  --gradient-brand: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
-  --gradient-guru: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+  --gradient-brand: linear-gradient(135deg, #00e5ff 0%, #a78bfa 100%);
+  --gradient-guru: linear-gradient(135deg, #006064 0%, #00b8d4 100%);
   --gradient-siswa: linear-gradient(135deg, #059669 0%, #10b981 100%);
   --gradient-surface: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 100%);
 }
@@ -77,44 +77,44 @@
 /* ===== Dark Mode Variables ===== */
 .dark {
   /* Base Colors */
-  --background: #020617; /* Slate-950 */
-  --foreground: #f8fafc;
+  --background: #0A0A0F;
+  --foreground: #f0f0f5;
   
   /* Surface Colors [Glassmorphism Base] */
-  --card-bg: rgba(30, 41, 59, 0.4); /* Slate-800/40 */
-  --card-border: rgba(255, 255, 255, 0.08);
-  --card-hover-bg: rgba(30, 41, 59, 0.6);
+  --card-bg: rgba(18, 18, 26, 0.6);
+  --card-border: rgba(255, 255, 255, 0.06);
+  --card-hover-bg: rgba(255, 255, 255, 0.06);
   
   /* Input & Form */
-  --input-bg: rgba(15, 23, 42, 0.6);
-  --input-border: rgba(255, 255, 255, 0.1);
-  --input-focus: #6366f1;
+  --input-bg: rgba(10, 10, 15, 0.6);
+  --input-border: rgba(255, 255, 255, 0.08);
+  --input-focus: #00e5ff;
 
   /* Primary Brand Colors */
-  --primary: #6366f1;
-  --primary-foreground: #ffffff;
-  --primary-light: rgba(99, 102, 241, 0.1);
-  --primary-dark: #312e81;
+  --primary: #00e5ff;
+  --primary-foreground: #0A0A0F;
+  --primary-light: rgba(0, 229, 255, 0.1);
+  --primary-dark: #004d5e;
 
   /* Secondary */
-  --secondary: #a855f7;
+  --secondary: #a78bfa;
   --secondary-foreground: #ffffff;
-  --secondary-light: rgba(168, 85, 247, 0.1);
+  --secondary-light: rgba(167, 139, 250, 0.1);
 
   /* Roles */
-  --guru-primary: #6366f1;
-  --guru-bg: rgba(99, 102, 241, 0.1);
-  --guru-accent: #818cf8;
+  --guru-primary: #00e5ff;
+  --guru-bg: rgba(0, 229, 255, 0.1);
+  --guru-accent: #67e8f9;
 
   --siswa-primary: #34d399;
   --siswa-bg: rgba(52, 211, 153, 0.1);
   --siswa-accent: #6ee7b7;
 
   /* Gradients */
-  --gradient-brand: linear-gradient(135deg, #312e81 0%, #4c1d95 100%);
-  --gradient-guru: linear-gradient(135deg, #312e81 0%, #3730a3 100%);
+  --gradient-brand: linear-gradient(135deg, #004d5e 0%, #2e1065 100%);
+  --gradient-guru: linear-gradient(135deg, #004d5e 0%, #006064 100%);
   --gradient-siswa: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
-  --gradient-surface: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(30, 41, 59, 0.3) 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(18, 18, 26, 0.7) 0%, rgba(18, 18, 26, 0.3) 100%);
 }
 
 body {
@@ -148,19 +148,64 @@ h1, h2, h3, h4, h5, h6 {
   @apply bg-white/10 border-white/20 shadow-2xl skew-y-0 scale-[1.01];
 }
 
+/* ===== NEW OBSIDIAN DESIGN SYSTEM ===== */
+
+/* Obsidian Card */
+.card-obsidian {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-obsidian:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(0, 229, 255, 0.15);
+  box-shadow: 0 0 40px -10px rgba(0, 229, 255, 0.1);
+}
+
+/* Cyan Glow Effect */
+.glow-cyan {
+  box-shadow: 0 0 60px -15px rgba(0, 229, 255, 0.3);
+}
+
+.glow-cyan-sm {
+  box-shadow: 0 0 30px -8px rgba(0, 229, 255, 0.2);
+}
+
 /* Text Gradients */
 .text-gradient {
-  background: linear-gradient(to right, #818cf8, #c4b5fd, #2dd4bf);
+  background: linear-gradient(135deg, #00e5ff, #a78bfa, #34d399);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .text-gradient-brand {
-  background: linear-gradient(to right, #6366f1, #a855f7);
+  background: linear-gradient(135deg, #00e5ff, #a78bfa);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.text-gradient-hero {
+  background: linear-gradient(135deg, #00e5ff 0%, #67e8f9 40%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #00e5ff, #22d3ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Accent border */
+.border-accent-left {
+  border-left: 3px solid #00e5ff;
 }
 
 /* Layout Utilities */
@@ -206,6 +251,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 .animate-marquee-reverse {
   animation: marquee-reverse 40s linear infinite;
+}
+.animate-aurora {
+  animation: aurora 8s ease-in-out infinite;
+}
+.animate-aurora-delayed {
+  animation: aurora 8s ease-in-out 4s infinite;
+}
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
 }
 
 /* Keyframes */
@@ -255,6 +309,28 @@ h1, h2, h3, h4, h5, h6 {
   animation: shine 1.5s ease-in-out;
 }
 
+/* Aurora background glow animation */
+@keyframes aurora {
+  0%, 100% { 
+    transform: translate(0, 0) scale(1); 
+    opacity: 0.4;
+  }
+  33% { 
+    transform: translate(30px, -20px) scale(1.1); 
+    opacity: 0.6;
+  }
+  66% { 
+    transform: translate(-20px, 15px) scale(0.9); 
+    opacity: 0.3;
+  }
+}
+
+/* Glow pulse for buttons/accents */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px -5px rgba(0, 229, 255, 0.3); }
+  50% { box-shadow: 0 0 40px -5px rgba(0, 229, 255, 0.5); }
+}
+
 /* Gradient animation for XP bar */
 @keyframes gradient-x {
   0%, 100% { background-position: 0% 50%; }
@@ -270,4 +346,46 @@ h1, h2, h3, h4, h5, h6 {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* --- V2+ PREMIUM EFFECTS --- */
+
+/* Border Shimmer Particle Laser */
+@keyframes border-glow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-border-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: conic-gradient(from 0deg, transparent 40%, #00E5FF, transparent 60%);
+  animation: border-glow 4s linear infinite;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+/* Metallic Text Sheen / Shimmer */
+@keyframes text-shimmer {
+  0% { background-position: -150% 0; }
+  100% { background-position: 150% 0; }
+}
+
+.text-shimmer {
+  background: linear-gradient(90deg, #888 0%, #fff 25%, #00E5FF 50%, #fff 75%, #888 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: text-shimmer 6s linear infinite;
+}
+
+/* Fluid mesh gradient canvas helper */
+.mesh-fluid-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
 

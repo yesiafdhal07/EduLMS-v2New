@@ -1,30 +1,34 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, Plus, Minus } from 'lucide-react';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 const faqs = [
     {
-        q: 'Apakah Klolakelas gratis?',
-        a: 'Ya, kami menyediakan paket dasar yang gratis selamanya untuk guru individual. Untuk sekolah, kami menawarkan paket premium dengan fitur administrasi lengkap.'
+        q: 'Apakah Klolakelas benar-benar gratis?',
+        a: 'Ya! Paket dasar gratis selamanya untuk guru individual — termasuk manajemen kelas, absensi QR, dan penugasan. Untuk sekolah yang butuh fitur admin, analitik lanjutan, dan multi-guru, kami punya paket premium yang terjangkau.'
     },
     {
-        q: 'Apakah bisa diakses lewat HP?',
-        a: 'Tentu saja! Klolakelas didesain responsif dan bisa diakses lancar melalui browser di HP, Tablet, maupun Laptop.'
+        q: 'Apakah bisa diakses dari HP?',
+        a: 'Tentu! Klolakelas didesain mobile-first — tampilnya optimal di HP, tablet, maupun laptop. Cukup buka browser, tidak perlu instal aplikasi tambahan.'
     },
     {
-        q: 'Bagaimana keamanan data siswa?',
-        a: 'Kami menggunakan enkripsi SSL bank-grade di seluruh platform. Data Anda tersimpan aman dan tidak akan dibagikan ke pihak ketiga.'
+        q: 'Bagaimana keamanan data siswa dan sekolah?',
+        a: 'Kami menggunakan enkripsi SSL bank-grade dan server terenkripsi. Data sekolah tidak pernah dibagikan ke pihak ketiga. Backup otomatis setiap hari memastikan data aman dari kehilangan.'
     },
     {
-        q: 'Apakah ada batasan jumlah siswa?',
-        a: 'Untuk paket gratis, Anda bisa mengelola hingga 5 kelas dengan maksimal 40 siswa per kelas. Paket sekolah tidak memiliki batasan.'
+        q: 'Apakah ada batasan jumlah siswa atau kelas?',
+        a: 'Paket gratis mendukung hingga 5 kelas dengan masing-masing 40 siswa. Paket sekolah tidak memiliki batasan — cocok untuk sekolah dengan ratusan siswa.'
     },
     {
-        q: 'Apakah support Bahasa Indonesia?',
-        a: '100% iya. Platform dikembangkan oleh tim lokal dan mendukung penuh Bahasa Indonesia.'
+        q: 'Apakah guru perlu pelatihan khusus?',
+        a: 'Tidak perlu! Klolakelas dirancang agar guru bisa langsung pakai tanpa training. Interface-nya intuitif, dan kami sediakan panduan lengkap dalam Bahasa Indonesia.'
+    },
+    {
+        q: 'Bisa export data ke Excel atau rapor?',
+        a: 'Bisa banget. Semua data — nilai, absensi, progress siswa — bisa di-export ke Excel (XLSX) dan PDF. Rapor juga bisa digenerate otomatis sesuai format sekolah.'
     }
 ];
 
@@ -37,8 +41,7 @@ export function FAQSection() {
     useGSAP(() => {
         if (!sectionRef.current) return;
 
-        // Heading reveal
-        gsap.fromTo(headingRef.current, 
+        gsap.fromTo(headingRef.current,
             { opacity: 0, y: 30 },
             {
                 opacity: 1,
@@ -55,7 +58,7 @@ export function FAQSection() {
 
         const items = listRef.current?.children;
         if (items && items.length > 0) {
-            gsap.fromTo(items, 
+            gsap.fromTo(items,
                 { opacity: 0, y: 20 },
                 {
                     opacity: 1,
@@ -76,47 +79,52 @@ export function FAQSection() {
     }, { scope: sectionRef });
 
     return (
-        <section ref={sectionRef} className="py-24 relative bg-transparent">
+        <section ref={sectionRef} className="py-28 relative bg-transparent">
             <div className="max-w-3xl mx-auto px-6">
                 <div ref={headingRef} className="text-center mb-16">
-                    <h2 className="text-3xl md:text-5xl font-black mb-6 text-white">
-                        Sering <span className="text-gradient-brand">Ditanyakan</span>
+                    <p className="text-cyan-400 text-sm font-bold uppercase tracking-[0.2em] mb-4">FAQ</p>
+                    <h2 className="text-4xl md:text-6xl font-black mb-6 text-white tracking-tight">
+                        Pertanyaan <span className="text-gradient-brand">Populer</span>
                     </h2>
                 </div>
 
-                <div ref={listRef} className="space-y-4">
+                <div ref={listRef} className="space-y-3">
                     {faqs.map((faq, idx) => (
-                        <div 
+                        <div
                             key={idx}
                             className={`
-                                rounded-2xl border transition-colors duration-300 overflow-hidden
-                                ${openIndex === idx 
-                                    ? 'bg-indigo-900/20 border-indigo-500/30 shadow-lg shadow-indigo-500/10' 
-                                    : 'bg-white/5 border-white/5 hover:border-white/10'
+                                rounded-2xl border transition-all duration-400 overflow-hidden
+                                ${openIndex === idx
+                                    ? 'bg-white/[0.04] border-cyan-500/20 shadow-lg shadow-cyan-500/5 border-l-cyan-400 border-l-[3px]'
+                                    : 'bg-white/[0.02] border-white/[0.06] hover:border-white/[0.1] hover:bg-white/[0.03]'
                                 }
                             `}
                         >
                             <button
                                 onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
-                                className="w-full px-8 py-6 flex items-center justify-between text-left group"
+                                className="w-full px-7 py-5 flex items-center justify-between text-left group"
                             >
-                                <span className={`text-lg font-bold transition-colors ${openIndex === idx ? 'text-white' : 'text-slate-300 group-hover:text-white'}`}>
+                                <span className={`text-base font-semibold transition-colors pr-4 ${
+                                    openIndex === idx ? 'text-white' : 'text-gray-400 group-hover:text-white'
+                                }`}>
                                     {faq.q}
                                 </span>
-                                {openIndex === idx ? (
-                                    <ChevronUp className="text-indigo-400" />
-                                ) : (
-                                    <ChevronDown className="text-slate-500 group-hover:text-white transition-colors" />
-                                )}
+                                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all ${
+                                    openIndex === idx 
+                                        ? 'bg-cyan-500/10 text-cyan-400 rotate-0' 
+                                        : 'bg-white/[0.04] text-gray-500 group-hover:text-white'
+                                }`}>
+                                    {openIndex === idx ? <Minus size={14} /> : <Plus size={14} />}
+                                </div>
                             </button>
-                            
-                            <div 
+
+                            <div
                                 className={`
-                                    transition-all duration-300 ease-in-out px-8 
-                                    ${openIndex === idx ? 'max-h-48 pb-6 opacity-100' : 'max-h-0 opacity-0'}
+                                    transition-all duration-400 ease-out px-7
+                                    ${openIndex === idx ? 'max-h-60 pb-6 opacity-100' : 'max-h-0 opacity-0'}
                                 `}
                             >
-                                <p className="text-slate-400 leading-relaxed">
+                                <p className="text-gray-500 leading-relaxed text-sm">
                                     {faq.a}
                                 </p>
                             </div>

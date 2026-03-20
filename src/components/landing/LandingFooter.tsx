@@ -3,23 +3,35 @@ import { GraduationCap, Github, Twitter, Facebook, Instagram, Mail, MapPin, Phon
 
 export function LandingFooter() {
     return (
-        <footer className="bg-slate-950/30 backdrop-blur-xl border-t border-white/5 pt-20 pb-10">
+        <footer className="bg-[#08080D] border-t border-white/[0.04] pt-20 pb-10">
             <div className="max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     {/* Brand Column */}
                     <div>
                         <Link href="/" className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                                <GraduationCap size={24} className="text-white" />
+                            <div className="w-9 h-9 bg-gradient-to-br from-cyan-400 to-violet-500 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/10">
+                                <GraduationCap size={20} className="text-white" />
                             </div>
-                            <span className="text-xl font-black tracking-tight text-white">Klola<span className="text-indigo-400">kelas</span></span>
+                            <span className="text-xl font-black tracking-tight text-white">
+                                Klola<span className="text-cyan-400">kelas</span>
+                            </span>
                         </Link>
-                        <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                            Platform pembelajaran digital modern yang memberdayakan sekolah, guru, dan siswa untuk mencapai potensi terbaik mereka melalui teknologi.
+                        <p className="text-gray-500 text-sm leading-relaxed mb-6">
+                            Platform manajemen kelas dan pembelajaran digital yang dibuat khusus untuk guru dan sekolah di Indonesia.
                         </p>
-                        <div className="flex gap-4">
-                            {[Twitter, Facebook, Instagram, Github].map((Icon, i) => (
-                                <a key={i} href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-indigo-500 hover:text-white transition-all">
+                        <div className="flex gap-3">
+                            {[
+                                { Icon: Twitter, label: 'Twitter' },
+                                { Icon: Facebook, label: 'Facebook' },
+                                { Icon: Instagram, label: 'Instagram' },
+                                { Icon: Github, label: 'Github' },
+                            ].map(({ Icon, label }) => (
+                                <a
+                                    key={label}
+                                    href="#"
+                                    aria-label={label}
+                                    className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-gray-500 hover:bg-cyan-500/10 hover:border-cyan-500/20 hover:text-cyan-400 transition-all duration-300"
+                                >
                                     <Icon size={16} />
                                 </a>
                             ))}
@@ -28,8 +40,8 @@ export function LandingFooter() {
 
                     {/* Quick Links */}
                     <div>
-                        <h4 className="text-white font-bold mb-6">Menu Utama</h4>
-                        <ul className="space-y-4">
+                        <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">Menu Utama</h4>
+                        <ul className="space-y-3">
                             {[
                                 { name: 'Beranda', href: '/' },
                                 { name: 'Fitur Unggulan', href: '/features' },
@@ -37,7 +49,7 @@ export function LandingFooter() {
                                 { name: 'Tentang Kami', href: '/about' },
                             ].map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="text-slate-400 hover:text-indigo-400 text-sm font-medium transition-colors">
+                                    <Link href={link.href} className="text-gray-500 hover:text-cyan-400 text-sm font-medium transition-colors duration-300">
                                         {link.name}
                                     </Link>
                                 </li>
@@ -47,8 +59,8 @@ export function LandingFooter() {
 
                     {/* Resources */}
                     <div>
-                        <h4 className="text-white font-bold mb-6">Bantuan</h4>
-                        <ul className="space-y-4">
+                        <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">Bantuan</h4>
+                        <ul className="space-y-3">
                             {[
                                 { name: 'Pusat Bantuan', href: '/help' },
                                 { name: 'Panduan Guru', href: '/help' },
@@ -56,7 +68,7 @@ export function LandingFooter() {
                                 { name: 'Status Sistem', href: '/help' },
                             ].map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="text-slate-400 hover:text-indigo-400 text-sm font-medium transition-colors">
+                                    <Link href={link.href} className="text-gray-500 hover:text-cyan-400 text-sm font-medium transition-colors duration-300">
                                         {link.name}
                                     </Link>
                                 </li>
@@ -66,31 +78,31 @@ export function LandingFooter() {
 
                     {/* Contact */}
                     <div>
-                        <h4 className="text-white font-bold mb-6">Hubungi Kami</h4>
+                        <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">Hubungi Kami</h4>
                         <ul className="space-y-4">
-                            <li className="flex items-start gap-3 text-slate-400 text-sm">
-                                <MapPin size={18} className="text-indigo-500 shrink-0 mt-0.5" />
+                            <li className="flex items-start gap-3 text-gray-500 text-sm">
+                                <MapPin size={16} className="text-cyan-500/60 shrink-0 mt-0.5" />
                                 <span>Jl. Pendidikan No. 123, Jakarta Selatan, Indonesia 12000</span>
                             </li>
-                            <li className="flex items-center gap-3 text-slate-400 text-sm">
-                                <Mail size={18} className="text-indigo-500 shrink-0" />
-                                <a href="mailto:hello@klolakelas.com" className="hover:text-white transition-colors">hello@klolakelas.com</a>
+                            <li className="flex items-center gap-3 text-gray-500 text-sm">
+                                <Mail size={16} className="text-cyan-500/60 shrink-0" />
+                                <a href="mailto:hello@klolakelas.com" className="hover:text-cyan-400 transition-colors">hello@klolakelas.com</a>
                             </li>
-                            <li className="flex items-center gap-3 text-slate-400 text-sm">
-                                <Phone size={18} className="text-indigo-500 shrink-0" />
-                                <a href="tel:+62215551234" className="hover:text-white transition-colors">+62 21 555 1234</a>
+                            <li className="flex items-center gap-3 text-gray-500 text-sm">
+                                <Phone size={16} className="text-cyan-500/60 shrink-0" />
+                                <a href="tel:+62215551234" className="hover:text-cyan-400 transition-colors">+62 21 555 1234</a>
                             </li>
                         </ul>
                     </div>
                 </div>
 
-                <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p className="text-slate-500 text-sm font-medium">
+                <div className="pt-8 border-t border-white/[0.06] flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p className="text-gray-600 text-sm font-medium">
                         © 2026 Klolakelas. All rights reserved.
                     </p>
-                    <div className="flex gap-8 text-sm font-medium text-slate-500">
-                        <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-                        <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+                    <div className="flex gap-8 text-sm font-medium text-gray-600">
+                        <a href="#" className="hover:text-cyan-400 transition-colors">Privacy Policy</a>
+                        <a href="#" className="hover:text-cyan-400 transition-colors">Terms of Service</a>
                     </div>
                 </div>
             </div>

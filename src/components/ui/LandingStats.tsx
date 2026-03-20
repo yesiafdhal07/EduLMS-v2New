@@ -25,7 +25,7 @@ export default function LandingStats() {
                     });
                 }
             } catch (err) {
-                console.warn('Realtime stats not available (using defaults). Ensure get_landing_stats() RPC function is created in Supabase.', err);
+                console.warn('Realtime stats not available (using defaults).', err);
             } finally {
                 setLoading(false);
             }
@@ -34,28 +34,43 @@ export default function LandingStats() {
         fetchStats();
     }, []);
 
+    const statItems = [
+        {
+            value: stats.users,
+            label: 'Pengguna Aktif',
+            icon: Users,
+        },
+        {
+            value: stats.schools,
+            label: 'Sekolah',
+            icon: School,
+        },
+        {
+            value: stats.submissions,
+            label: 'Tugas Dinilai',
+            icon: GraduationCap,
+        }
+    ];
+
     return (
-        <div className="max-w-4xl mx-auto bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 shadow-2xl flex flex-col md:flex-row items-center justify-around gap-8 text-center">
-            <div>
-                <div className="text-4xl md:text-5xl font-black text-indigo-400 mb-2 flex items-center justify-center gap-2">
-                    {loading ? <Loader2 className="animate-spin" /> : (stats.users > 0 ? stats.users + '+' : stats.users)}
+        <div className="max-w-4xl mx-auto rounded-3xl border border-white/[0.06] bg-white/[0.03] backdrop-blur-xl p-10 flex flex-col md:flex-row items-center justify-around gap-8 text-center shadow-2xl shadow-black/20">
+            {statItems.map((item, idx) => (
+                <div key={idx} className="flex items-center gap-4">
+                    {idx > 0 && (
+                        <div className="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-cyan-500/20 to-transparent -ml-4 mr-4"></div>
+                    )}
+                    <div>
+                        <div className="text-4xl md:text-5xl font-black text-gradient-cyan mb-1 flex items-center justify-center gap-2">
+                            {loading ? (
+                                <Loader2 className="animate-spin text-cyan-400" size={32} />
+                            ) : (
+                                item.value > 0 ? `${item.value}+` : item.value
+                            )}
+                        </div>
+                        <div className="text-gray-500 font-bold uppercase tracking-[0.15em] text-xs">{item.label}</div>
+                    </div>
                 </div>
-                <div className="text-slate-400 font-bold uppercase tracking-widest text-sm">Pengguna Aktif</div>
-            </div>
-            <div className="w-full h-px md:w-px md:h-16 bg-white/10"></div>
-            <div>
-                <div className="text-4xl md:text-5xl font-black text-purple-400 mb-2 flex items-center justify-center gap-2">
-                    {loading ? <Loader2 className="animate-spin" /> : (stats.schools > 0 ? stats.schools + '+' : stats.schools)}
-                </div>
-                <div className="text-slate-400 font-bold uppercase tracking-widest text-sm">Sekolah</div>
-            </div>
-            <div className="w-full h-px md:w-px md:h-16 bg-white/10"></div>
-            <div>
-                <div className="text-4xl md:text-5xl font-black text-pink-400 mb-2 flex items-center justify-center gap-2">
-                    {loading ? <Loader2 className="animate-spin" /> : (stats.submissions > 0 ? stats.submissions + '+' : stats.submissions)}
-                </div>
-                <div className="text-slate-400 font-bold uppercase tracking-widest text-sm">Tugas Dinilai</div>
-            </div>
+            ))}
         </div>
     );
 }

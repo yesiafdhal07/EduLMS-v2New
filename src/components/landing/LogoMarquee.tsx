@@ -14,11 +14,11 @@ const logos = [
 ];
 
 const LogoTicker = ({ items }: { items: typeof logos }) => (
-    <div className="flex animate-marquee hover:pause-animation items-center">
+    <div className="flex animate-marquee items-center">
         {items.map((logo, idx) => (
-            <div key={idx} className="mx-8 flex items-center gap-3 opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0 cursor-default">
-                <logo.icon size={32} className="text-white" />
-                <span className="text-xl font-bold text-white whitespace-nowrap">{logo.name}</span>
+            <div key={idx} className="mx-10 flex items-center gap-3 opacity-30 hover:opacity-70 transition-all duration-500 cursor-default group">
+                <logo.icon size={28} className="text-gray-400 group-hover:text-cyan-400 transition-colors" />
+                <span className="text-lg font-semibold text-gray-400 whitespace-nowrap group-hover:text-white transition-colors">{logo.name}</span>
             </div>
         ))}
     </div>
@@ -26,19 +26,21 @@ const LogoTicker = ({ items }: { items: typeof logos }) => (
 
 export function LogoMarquee() {
     return (
-        <section className="py-12 border-y border-white/5 bg-white/5 backdrop-blur-sm relative overflow-hidden">
-             <div className="absolute inset-0 bg-indigo-500/5 mix-blend-overlay pointer-events-none"></div>
-             
+        <section className="py-14 border-y border-white/[0.04] bg-white/[0.015] relative overflow-hidden">
              <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <p className="text-center text-slate-500 text-sm font-semibold uppercase tracking-widest mb-8">
-                    Dipercaya oleh 500+ Sekolah Unggulan
+                <p className="text-center text-gray-600 text-xs font-semibold uppercase tracking-[0.25em] mb-8">
+                    Dipercaya oleh sekolah-sekolah terbaik di Indonesia
                 </p>
                 
-                <div className="flex overflow-hidden mask-linear-fade">
+                <div className="flex overflow-hidden">
                     <LogoTicker items={[...logos, ...logos]} />
                     <LogoTicker items={[...logos, ...logos]} />
                 </div>
             </div>
+
+            {/* Fade edges */}
+            <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-[#0A0A0F] to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-[#0A0A0F] to-transparent z-10 pointer-events-none"></div>
         </section>
     );
 }
