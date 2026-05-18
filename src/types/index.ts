@@ -1,11 +1,40 @@
 // Types for Math-LMS Application
 
+export type AppRole = 'admin' | 'kepala_sekolah' | 'guru' | 'siswa' | 'orang_tua';
+
 export interface User {
     id: string;
     email: string;
     full_name: string;
-    role: 'guru' | 'siswa' | 'admin';
+    role: AppRole;
+    school_id?: string;
     created_at?: string;
+    metadata?: {
+        avatar?: string;
+        accentColor?: string;
+        [key: string]: any;
+    };
+}
+
+export interface School {
+    id: string;
+    name: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+    logo_url?: string;
+    is_active: boolean;
+    created_at?: string;
+}
+
+export interface SchoolCode {
+    id: string;
+    school_id: string;
+    code: string;
+    role: 'guru' | 'siswa';
+    is_active: boolean;
+    created_at?: string;
+    school?: School;
 }
 
 export interface Student {
@@ -18,6 +47,7 @@ export interface ClassData {
     id: string;
     name: string;
     teacher_id: string;
+    school_id?: string;
     created_at?: string;
 }
 
@@ -139,7 +169,8 @@ export interface StudentUser {
     id: string;
     email: string;
     full_name?: string;
-    role: 'siswa' | 'guru' | 'admin';
+    role: AppRole;
+    school_id?: string;
     className?: string;
 }
 

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 // Helper to extract error message safely
 function getErrorMessage(error: unknown): string {
     if (error instanceof Error) return error.message;
+    if (typeof error === 'object' && error !== null) return JSON.stringify(error);
     return String(error);
 }
 
@@ -123,6 +124,8 @@ export function useSubmissionGrading(): UseSubmissionGradingReturn {
                     .from('grades')
                     .insert({
                         submission_id: submissionId,
+                        student_id: submission?.student_id,
+                        assignment_id: assignmentId,
                         score: score,
                         type: form.type,
                         feedback: form.feedback || null

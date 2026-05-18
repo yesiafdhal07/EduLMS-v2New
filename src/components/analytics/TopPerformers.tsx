@@ -25,46 +25,41 @@ export function TopPerformers({ classId, limit = 5 }: TopPerformersProps) {
     const fetchTopPerformers = useCallback(async () => {
         setLoading(true);
         try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-
-            // Single query: Fetch all grades with student info (NO N+1!)
-            const { data: allGrades } = await supabase
-                .from('grades')
+            // 1. Fetch Students & their Grades (following success pattern)
+            const { data: memberData } = await supabase
+                .from('class_members')
                 .select(`
-                    score,
-                    submissions!inner(
-                        student_id,
-                        users!inner(id, full_name)
+                    user_id,
+                    users!inner (
+                        id,
+                        full_name,
+                        grades (score)
                     )
-                `);
+                `)
+                .eq('class_id', classId);
 
-            if (!allGrades || allGrades.length === 0) {
+            if (!memberData || memberData.length === 0) {
                 setPerformers([]);
                 setLoading(false);
                 return;
             }
 
-            // Aggregate grades by student in memory (efficient)
+            // Aggregate grades by student in memory
             const studentGrades: Record<string, { name: string; scores: number[] }> = {};
 
-            allGrades.forEach((grade) => {
-                // Cast to unknown first to handle Supabase join type quirks (array vs object)
-                const submission = grade.submissions as unknown as {
-                    student_id: string;
-                    users: { id: string; full_name: string } | { id: string; full_name: string }[]
-                };
+            memberData.forEach((m: any) => {
+                const user = Array.isArray(m.users) ? m.users[0] : m.users;
+                if (!user) return;
 
-                // Handle potential array wrapping for users
-                const user = Array.isArray(submission.users) ? submission.users[0] : submission.users;
+                const studentId = user.id;
+                const studentName = user.full_name || 'Unknown';
+                const scores = (user.grades || [])
+                    .map((g: any) => g.score)
+                    .filter((s: any) => s !== null && s !== undefined);
 
-                const studentId = submission.student_id;
-                const studentName = user?.full_name || 'Unknown';
-
-                if (!studentGrades[studentId]) {
-                    studentGrades[studentId] = { name: studentName, scores: [] };
+                if (scores.length > 0) {
+                    studentGrades[studentId] = { name: studentName, scores };
                 }
-                studentGrades[studentId].scores.push(grade.score);
             });
 
             // Calculate averages and create performer list
@@ -89,7 +84,7 @@ export function TopPerformers({ classId, limit = 5 }: TopPerformersProps) {
         } finally {
             setLoading(false);
         }
-    }, [limit]);
+    }, [classId, limit]);
 
     useEffect(() => {
         fetchTopPerformers();

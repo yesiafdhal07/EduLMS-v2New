@@ -1,100 +1,21 @@
 {
-    "common": {
-        "dashboard": "Dashboard",
-        "students": "Students",
-        "assignments": "Assignments",
-        "materials": "Materials",
-        "attendance": "Attendance",
-        "grades": "Grades",
-        "portfolio": "Portfolio",
-        "analytics": "Analytics",
-        "settings": "Settings",
-        "logout": "Logout",
-        "save": "Save",
-        "cancel": "Cancel",
-        "delete": "Delete",
-        "edit": "Edit",
-        "add": "Add",
-        "search": "Search",
-        "loading": "Loading...",
-        "error": "An error occurred",
-        "success": "Success",
-        "confirm": "Confirm",
-        "noData": "No data available"
-    },
-    "auth": {
-        "login": "Login",
-        "register": "Register",
-        "email": "Email",
-        "password": "Password",
-        "confirmPassword": "Confirm Password",
-        "fullName": "Full Name",
-        "forgotPassword": "Forgot password?",
-        "noAccount": "Don't have an account?",
-        "hasAccount": "Already have an account?",
-        "loginSuccess": "Login successful!",
-        "loginFailed": "Login failed",
-        "registerSuccess": "Registration successful!",
-        "registerFailed": "Registration failed"
-    },
-    "teacher": {
-        "manageClass": "Manage Class",
-        "createClass": "Create New Class",
-        "addClass": "Add Class",
-        "classCode": "Class Code",
-        "totalStudents": "Total Students",
-        "uploadMaterial": "Upload Material",
-        "createAssignment": "Create Assignment",
-        "gradeSubmission": "Grade Submission",
-        "startAttendance": "Start Attendance",
-        "stopAttendance": "Stop Attendance",
-        "exportData": "Export Data",
-        "archiveData": "Archive Data"
-    },
-    "student": {
-        "myGrades": "My Grades",
-        "myAttendance": "My Attendance",
-        "submitAssignment": "Submit Assignment",
-        "viewMaterials": "View Materials",
-        "downloadMaterial": "Download Material",
-        "attendanceHistory": "Attendance History",
-        "gradeHistory": "Grade History",
-        "exportMyData": "Export My Data"
-    },
-    "grades": {
-        "average": "Average",
-        "passed": "PASSED",
-        "failed": "FAILED",
-        "assignment": "Assignment",
-        "participation": "Participation",
-        "exam": "Exam",
-        "finalGrade": "Final Grade",
-        "gradeTrend": "Grade Trend",
-        "distribution": "Distribution",
-        "topPerformers": "Top Performers"
-    },
-    "attendance": {
-        "present": "Present",
-        "absent": "Absent",
-        "sick": "Sick",
-        "permitted": "Permitted",
-        "scanQR": "Scan QR",
-        "manualEntry": "Manual Entry",
-        "attendanceRate": "Attendance Rate"
-    },
-    "landing": {
-        "heroTitle": "One Platform.",
-        "heroTitleAccent": "Zero Hassle.",
-        "heroSubtitle": "A team of 1 feels like 10. Attendance, grades, assignments, and reports — all automatic.",
-        "getStarted": "Try Free",
-        "learnMore": "Watch Demo",
-        "features": "Features",
-        "pricing": "Pricing",
-        "about": "About",
-        "contact": "Contact",
-        "heroBadge": "Used by 500+ schools across Indonesia",
-        "trustedBy": "Trusted by",
-        "teachers": "Teachers",
-        "noCreditCard": "Free forever — no credit card required"
-    }
+  "Navigation": {
+    "dashboard": "Dashboard",
+    "classes": "Class List",
+    "students": "Student List",
+    "assignments": "Assignments",
+    "analytics": "Data Analytics",
+    "settings": "Settings"
+  },
+  "Auth": {
+    "login": "Sign In",
+    "logout": "Sign Out",
+    "register": "Sign Up"
+  },
+  "Common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel"
+  }
 }

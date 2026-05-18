@@ -1,17 +1,29 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse, type NextRequest } from 'next/server';
+import { timingSafeEqual } from 'crypto';
 
-export async function GET(request: NextRequest) {
+/**
+ * POST /api/setup
+ * 
+ * System provisioning endpoint — creates the initial guru account.
+ * Protected by SETUP_SECRET (passed via X-Setup-Secret header, NOT query string).
+ * 
+ * Usage:
+ *   curl -X POST https://your-domain/api/setup \
+ *     -H "X-Setup-Secret: YOUR_SECRET" \
+ *     -H "Content-Type: application/json"
+ */
+export async function POST(request: NextRequest) {
     // 1. Artificial Delay to prevent Brute-Force Timing Attacks
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     try {
-        const { searchParams } = new URL(request.url);
-        const secret = searchParams.get('secret');
+        // 2. Read secret from header (NOT query string — prevents log/referrer leaks)
+        const secret = request.headers.get('X-Setup-Secret');
         const EXPECTED_SECRET = process.env.SETUP_SECRET;
 
-        // 2. Strict Environment Check
+        // 3. Strict Environment Check
         if (!EXPECTED_SECRET) {
             console.error('[SECURITY] SETUP_SECRET not configured.');
             return NextResponse.json({
@@ -20,9 +32,8 @@ export async function GET(request: NextRequest) {
             }, { status: 503 });
         }
 
-        // 3. Constant-time comparison (simulated) isn't strictly necessary here due to delay, 
-        // but explicit check is mandatory.
-        if (secret !== EXPECTED_SECRET) {
+        // 4. Constant-time comparison to prevent timing attacks
+        if (!secret || !safeCompare(secret, EXPECTED_SECRET)) {
             console.warn(`[SECURITY] Unauthorized setup attempt from ${request.headers.get('x-forwarded-for') || 'unknown'}`);
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -64,7 +75,7 @@ export async function GET(request: NextRequest) {
             }, { status: 500 });
         }
 
-        // 4. Create User
+        // 5. Create User — role is hardcoded server-side, never from client input
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
@@ -80,26 +91,42 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: authError.message }, { status: 400 });
         }
 
-        // 5. Audit Log (Best Effort)
+        // 6. Audit Log (Best Effort)
         if (authData.user) {
             await supabase.from('audit_logs').insert({
                 user_id: authData.user.id,
                 action: 'SYSTEM_SETUP',
                 entity_type: 'system',
                 entity_id: authData.user.id,
-                new_data: { email, role: 'guru' },
+                new_data: { role: 'guru' },
                 ip_address: request.headers.get('x-forwarded-for') || 'unknown',
                 user_agent: request.headers.get('user-agent')
             });
         }
 
-        return NextResponse.json({
-            message: 'Setup successful. Account created.',
-            info: { email, fullName, role: 'guru' }
-        });
+        // 7. Minimal response — do NOT leak email/name/role info
+        return NextResponse.json({ message: 'Setup successful.' });
 
     } catch (err: unknown) {
         console.error('[SETUP ERROR]', err);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
+
+/**
+ * Constant-time string comparison to prevent timing attacks.
+ */
+function safeCompare(a: string, b: string): boolean {
+    try {
+        const bufA = Buffer.from(a, 'utf8');
+        const bufB = Buffer.from(b, 'utf8');
+        if (bufA.length !== bufB.length) {
+            // Compare against self to keep constant time, then return false
+            timingSafeEqual(bufA, bufA);
+            return false;
+        }
+        return timingSafeEqual(bufA, bufB);
+    } catch {
+        return false;
     }
 }

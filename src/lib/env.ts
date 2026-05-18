@@ -24,6 +24,10 @@ const envSchema = z.object({
     INITIAL_GURU_EMAIL: z.string().email().optional(),
     INITIAL_GURU_PASSWORD: z.string().min(8).optional(),
     INITIAL_GURU_NAME: z.string().optional(),
+
+    // Redis Rate Limiting (Optional — rate-limit.ts has in-memory fallback)
+    UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+    UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 });
 
 /**
@@ -45,6 +49,8 @@ export function validateEnv() {
         INITIAL_GURU_EMAIL: process.env.INITIAL_GURU_EMAIL,
         INITIAL_GURU_PASSWORD: process.env.INITIAL_GURU_PASSWORD,
         INITIAL_GURU_NAME: process.env.INITIAL_GURU_NAME,
+        UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+        UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     });
 
     if (!result.success) {

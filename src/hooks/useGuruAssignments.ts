@@ -39,6 +39,8 @@ export function useGuruAssignments({ classId, page = 1, pageSize = 50, enabled =
             };
         },
         enabled: !!classId && enabled,
+        staleTime: 2 * 60 * 1000, // 2 minutes
+        gcTime: 15 * 60 * 1000,   // 15 minutes
     });
 
     return {

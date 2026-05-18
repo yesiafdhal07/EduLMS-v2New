@@ -37,26 +37,43 @@ CREATE INDEX IF NOT EXISTS idx_time_capsules_academic_year ON time_capsules(acad
 -- Enable Row Level Security
 ALTER TABLE time_capsules ENABLE ROW LEVEL SECURITY;
 -- RLS Policies
+-- Drop existing policies if they already exist to prevent errors on re-run
+DROP POLICY IF EXISTS "Users can view own capsules" ON time_capsules;
+DROP POLICY IF EXISTS "Teachers can view student goals" ON time_capsules;
+DROP POLICY IF EXISTS "Users can create own capsules" ON time_capsules;
+DROP POLICY IF EXISTS "Users can update own capsules" ON time_capsules;
+
+-- Helper function to avoid Infinite Recursion if class_members has RLS rules
+CREATE OR REPLACE FUNCTION public.is_student_teacher(p_student_id UUID, p_teacher_id UUID) RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1
+        FROM public.class_members cm
+            JOIN public.classes c ON c.id = cm.class_id
+        WHERE cm.user_id = p_student_id
+            AND c.teacher_id = p_teacher_id
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Users can only view their own capsules
 CREATE POLICY "Users can view own capsules" ON time_capsules FOR
 SELECT USING (auth.uid() = user_id);
+
 -- Teachers can view goals (not messages) of students in their classes
 CREATE POLICY "Teachers can view student goals" ON time_capsules FOR
 SELECT USING (
-        EXISTS (
-            SELECT 1
-            FROM class_members cm
-                JOIN classes c ON c.id = cm.class_id
-            WHERE cm.user_id = time_capsules.user_id
-                AND c.teacher_id = auth.uid()
-        )
+        public.is_student_teacher(user_id, auth.uid())
     );
+
 -- Users can create their own capsules
 CREATE POLICY "Users can create own capsules" ON time_capsules FOR
 INSERT WITH CHECK (auth.uid() = user_id);
+
 -- Users can update their own capsules (for reflection after unlock)
 CREATE POLICY "Users can update own capsules" ON time_capsules FOR
 UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
 -- Function to check and unlock capsules
 CREATE OR REPLACE FUNCTION check_and_unlock_capsules() RETURNS INTEGER AS $$
 DECLARE unlocked_count INTEGER;

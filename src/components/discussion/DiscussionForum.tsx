@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Send, MessageSquare, CheckCircle, User, Shield, Loader2 } from 'lucide-react';
+import { Send, MessageSquare, CheckCircle, User, Shield, Loader2, Flame, HelpCircle, Activity } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 interface Discussion {
@@ -190,11 +190,17 @@ export function DiscussionForum({ classId, userId, isTeacher = false, className 
                 </div>
                 <div>
                     <h2 className="text-xl font-black text-white">Safe-Zone Discussion</h2>
-                    <p className="text-sm text-slate-400">
-                        {isTeacher 
-                            ? 'Jawab pertanyaan anonim dari siswa' 
-                            : 'Bertanya tanpa takut diketahui teman sekelas'}
-                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-sm text-slate-400">
+                            {isTeacher 
+                                ? 'Jawab pertanyaan anonim dari siswa' 
+                                : 'Bertanya tanpa takut diketahui teman sekelas'}
+                        </p>
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Active Hub</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -261,16 +267,35 @@ export function DiscussionForum({ classId, userId, isTeacher = false, className 
                                                 ? 'Anda' 
                                                 : 'Siswa Anonim'}
                                         </span>
+                                        
+                                        {/* Heuristic: Topic Badge */}
+                                        {discussion.content.includes('?') ? (
+                                            <span className="text-[9px] font-black text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded-lg border border-violet-500/20 flex items-center gap-1">
+                                                <HelpCircle size={10} /> PERTANYAAN
+                                            </span>
+                                        ) : (
+                                            <span className="text-[9px] font-black text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-lg border border-blue-500/20 flex items-center gap-1">
+                                                <MessageSquare size={10} /> DISKUSI
+                                            </span>
+                                        )}
+
+                                        {/* Heuristic: Trending Detection */}
+                                        {(discussion.replies?.length || 0) >= 3 && (
+                                            <span className="text-[9px] font-black text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-lg border border-orange-500/20 animate-pulse flex items-center gap-1">
+                                                <Flame size={10} /> TRENDING
+                                            </span>
+                                        )}
+
                                         {discussion.is_resolved && (
-                                            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full">
-                                                TERJAWAB
+                                            <span className="text-[9px] font-black text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-lg border border-emerald-500/20 flex items-center gap-1">
+                                                <CheckCircle size={10} /> TERJAWAB
                                             </span>
                                         )}
                                         <span className="text-xs text-slate-500 ml-auto">
                                             {formatDate(discussion.created_at)}
                                         </span>
                                     </div>
-                                    <p className="text-slate-300 text-sm leading-relaxed">
+                                    <p className="text-slate-200 text-sm leading-relaxed font-medium">
                                         {discussion.content}
                                     </p>
 

@@ -8,47 +8,70 @@ interface MaterialPanelProps {
 
 export function MaterialPanel({ materials, onAddMaterial }: MaterialPanelProps) {
     return (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {/* Action Card: Upload */}
-            <button
-                type="button"
-                onClick={onAddMaterial}
-                className="bg-white p-12 rounded-[3.5rem] border-4 border-dashed border-slate-200 flex flex-col items-center justify-center text-center hover:border-indigo-400 hover:bg-slate-50 transition-all group cursor-pointer shadow-xl shadow-transparent hover:shadow-indigo-100 w-full"
-            >
-                <div className="w-20 h-20 bg-indigo-50 rounded-[2.5rem] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-inner">
-                    <Plus size={40} className="text-indigo-600" />
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 pb-8">
+            <div className="flex flex-col xl:flex-row justify-between xl:items-center gap-6 mb-8 px-1">
+                <div>
+                    <h3 className="gs-title text-2xl">Bahan Ajar</h3>
+                    <p className="gs-body text-xs mt-1">Distribusikan modul pembelajaran dan sumber belajar</p>
                 </div>
-                <h4 className="font-black text-slate-900 text-xl tracking-tight">Kirim Materi Baru</h4>
-                <p className="text-slate-400 text-sm mt-3 font-bold uppercase tracking-widest leading-relaxed">PDF • WORD • LINK</p>
-            </button>
+            </div>
 
-            {
-                materials.map(m => (
-                    <div key={m.id} className="bg-white p-10 rounded-[3.5rem] border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:-translate-y-2 transition-all group overflow-hidden relative">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-[4rem] group-hover:scale-150 transition-transform opacity-30"></div>
-                        <div className="relative z-10">
-                            <div className="flex justify-between items-start mb-8">
-                                <div className="w-16 h-16 bg-emerald-50 rounded-[1.5rem] flex items-center justify-center text-emerald-600 shadow-inner group-hover:rotate-12 transition-transform">
-                                    {m.type === 'link' ? <LinkIcon size={28} /> : <FileText size={28} />}
-                                </div>
-                                <div className="px-4 py-1.5 bg-slate-900 text-white rounded-full text-[9px] font-black uppercase tracking-[0.2em]">
-                                    {m.type}
-                                </div>
-                            </div>
-                            <h4 className="font-black text-slate-900 text-xl mb-3 tracking-tight group-hover:text-indigo-600 transition-colors uppercase">{m.title}</h4>
-                            <p className="text-slate-500 text-sm mb-10 font-medium line-clamp-2 leading-relaxed">{m.content || 'Akses modul pembelajaran terbaru di sini.'}</p>
-                            <a
-                                href={m.content_url}
-                                target="_blank"
-                                className="w-full py-5 bg-slate-50 group-hover:bg-indigo-600 group-hover:text-white group-hover:shadow-xl group-hover:shadow-indigo-600/30 text-slate-900 rounded-[2rem] font-black transition-all flex items-center justify-center gap-3"
-                            >
-                                <span className="uppercase text-xs tracking-widest">Buka Akses</span>
-                                <ExternalLink size={18} />
-                            </a>
-                        </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {/* Action Card: Upload */}
+                <button
+                    type="button"
+                    onClick={onAddMaterial}
+                    className="gs-card border-dashed p-8 flex flex-col items-center justify-center text-center hover:border-[var(--guru-accent)]/50 hover:bg-white/[0.05] transition-all group cursor-pointer min-h-[280px] w-full"
+                >
+                    <div className="w-16 h-16 bg-[var(--guru-accent-soft)] rounded-2xl flex items-center justify-center mb-6 border border-[var(--guru-border-accent)] group-hover:scale-110 transition-transform duration-500">
+                        <Plus size={32} className="text-[var(--guru-accent-text)]" />
                     </div>
-                ))
-            }
-        </div >
+                    <h4 className="gs-title text-lg">Tambah Materi</h4>
+                    <p className="gs-body text-[10px] mt-2 uppercase tracking-widest font-bold">PDF • CLOUD • WEBLINK</p>
+                </button>
+
+                {
+                    materials.length === 0 ? (
+                        <div className="gs-card p-8 flex flex-col items-center justify-center text-center border-dashed min-h-[280px] col-span-1 md:col-span-2">
+                            <FileText size={36} className="text-[var(--guru-text-ghost)] mb-4" />
+                            <h4 className="gs-title text-lg mb-2">Belum Ada Materi</h4>
+                            <p className="gs-body text-xs max-w-xs">Upload materi pertama Anda menggunakan tombol di samping. Mendukung file PDF, link cloud, dan weblink.</p>
+                        </div>
+                    ) : (
+                    materials.map(m => (
+                        <div key={m.id} className="gs-card p-8 group overflow-hidden relative flex flex-col justify-between hover:border-[var(--guru-accent)]/30 transition-all duration-500 hover:-translate-y-1">
+                            {/* Decorative background glow */}
+                            <div className="absolute -top-20 -right-20 w-40 h-40 bg-[var(--guru-accent)]/5 blur-[60px] rounded-full group-hover:bg-[var(--guru-accent)]/10 transition-all duration-700"></div>
+
+                            <div className="relative z-10 h-full flex flex-col">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="w-12 h-12 bg-white/[0.03] rounded-xl flex items-center justify-center text-[var(--guru-accent-text)] border border-white/5 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                                        {m.type === 'link' ? <LinkIcon size={22} /> : <FileText size={22} />}
+                                    </div>
+                                    <div className="gs-badge gs-badge-accent">
+                                        {m.type}
+                                    </div>
+                                </div>
+                                
+                                <div className="flex-1 mb-6">
+                                    <h4 className="gs-title text-lg mb-2 group-hover:text-[var(--guru-accent-text)] transition-colors line-clamp-1">{m.title}</h4>
+                                    <p className="gs-body text-xs leading-relaxed line-clamp-3 group-hover:text-slate-300 transition-colors">{m.content || 'Modul pembelajaran standar yang didistribusikan ke kelas untuk akses langsung siswa.'}</p>
+                                </div>
+
+                                <a
+                                    href={m.content_url}
+                                    target="_blank"
+                                    className="w-full py-3.5 bg-white/[0.03] hover:bg-[var(--guru-accent)] text-white rounded-xl font-black transition-all flex items-center justify-center gap-3 border border-white/10 group-hover:border-transparent text-[10px] uppercase tracking-widest active:scale-95"
+                                >
+                                    <span>Buka Materi</span>
+                                    <ExternalLink size={14} />
+                                </a>
+                            </div>
+                        </div>
+                    ))
+                    )
+                }
+            </div>
+        </div>
     );
 }

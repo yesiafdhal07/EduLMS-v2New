@@ -25,6 +25,19 @@ export { TiltCard } from './TiltCard';
 export { HoloCard } from './HoloCard';
 export { AnimatedTabContent } from './AnimatedTabContent';
 export { PageTransitionProvider } from './PageTransitionProvider';
+export { CommandPalette } from './CommandPalette';
+export type { CommandItem } from './CommandPalette';
+export { KPICard } from './KPICard';
+export { AlertCard } from './AlertCard';
+export { ProgressRing } from './ProgressRing';
+export { DetailDrawer } from './DetailDrawer';
+export { DataTable } from './DataTable';
+export type { Column } from './DataTable';
+export { TrendChart } from './TrendChart';
+export { UniverseSkeleton } from './UniverseSkeleton';
+export { ProfileSettingsModal } from './ProfileSettingsModal';
+export { ErrorBoundary } from './ErrorBoundary';
+export { QuickAddModal } from './QuickAddModal';
 
 // Attendance stat component used in AttendancePanel
 export function AttendanceStat({ label, value, color, bg }: { label: string; value: number; color: string; bg: string }) {

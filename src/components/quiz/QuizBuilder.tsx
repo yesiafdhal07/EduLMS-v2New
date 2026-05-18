@@ -578,7 +578,7 @@ function AddQuestionModal({
 
         setLoading(true);
 
-        let formData: any = {
+        const formData: any = {
             type,
             content: content.trim(),
             points,

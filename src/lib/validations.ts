@@ -37,7 +37,7 @@ export const registerSchema = z.object({
         .regex(/[A-Z]/, 'Password harus mengandung huruf besar')
         .regex(/[0-9]/, 'Password harus mengandung angka'),
     confirmPassword: z.string().min(1, 'Konfirmasi password wajib diisi'),
-    role: z.enum(['siswa', 'guru'], { message: 'Pilih role yang valid' }),
+    schoolCode: z.string().min(1, 'Kode sekolah wajib diisi').max(12, 'Kode sekolah maksimal 12 karakter'),
 }).refine((data) => data.password === data.confirmPassword, {
     message: 'Password tidak cocok',
     path: ['confirmPassword'],

@@ -85,6 +85,8 @@ export function useClasses(teacherId?: string): UseClassesReturn {
         queryKey: classKeys.list(teacherId || ''),
         queryFn: () => fetchClasses(teacherId!),
         enabled: !!teacherId,
+        staleTime: 10 * 60 * 1000, // 10 min — classes are stable during session
+        gcTime: 30 * 60 * 1000,
         // DO NOT use select() for side effects like setState - causes infinite loops!
     });
 
@@ -100,6 +102,8 @@ export function useClasses(teacherId?: string): UseClassesReturn {
         queryKey: classKeys.students(selectedClassId || ''),
         queryFn: () => fetchClassStudents(selectedClassId!),
         enabled: !!selectedClassId,
+        staleTime: 5 * 60 * 1000,
+        gcTime: 15 * 60 * 1000,
     });
 
     // Query: Fetch subject for selected class
@@ -107,6 +111,8 @@ export function useClasses(teacherId?: string): UseClassesReturn {
         queryKey: classKeys.subject(selectedClassId || ''),
         queryFn: () => fetchClassSubject(selectedClassId!),
         enabled: !!selectedClassId,
+        staleTime: 10 * 60 * 1000,
+        gcTime: 30 * 60 * 1000,
     });
 
     // Mutation: Create class

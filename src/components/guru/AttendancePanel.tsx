@@ -37,75 +37,80 @@ export function AttendancePanel({
     const isQR = attendanceSession?.type === 'qr_code';
 
     return (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-6xl mx-auto space-y-8">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-6xl mx-auto space-y-10 pb-20">
             {/* Export Section */}
             {selectedClassId && selectedClass && (
-                <AttendanceExport classId={selectedClassId} className={selectedClass.name} />
+                <div className="flex justify-end">
+                    <AttendanceExport classId={selectedClassId} className={selectedClass.name} />
+                </div>
             )}
-            <div className={`p-6 md:p-16 rounded-[2.5rem] md:rounded-[4rem] border-2 transition-all duration-700 relative overflow-hidden ${attendanceSession?.is_open
-                ? (isQR ? 'bg-indigo-50/40 border-indigo-200 shadow-2xl shadow-indigo-200/30' : 'bg-emerald-50/40 border-emerald-200 shadow-2xl shadow-emerald-200/30')
-                : 'bg-white border-slate-100 shadow-2xl shadow-slate-200/50'}`}>
 
-                {attendanceSession?.is_open && <div className={`absolute -top-10 -right-10 w-40 h-40 blur-[80px] animate-pulse ${isQR ? 'bg-indigo-500/10' : 'bg-emerald-500/10'}`}></div>}
+            <div className={`gs-card p-8 md:p-16 border-2 transition-all duration-700 relative overflow-hidden ${attendanceSession?.is_open
+                ? (isQR ? 'border-indigo-500/50 shadow-2xl shadow-indigo-500/20' : 'border-emerald-500/50 shadow-2xl shadow-emerald-500/20')
+                : 'border-white/5 shadow-2xl shadow-black/40'}`}>
 
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-14 text-center lg:text-left relative z-10">
-                    <div className="flex-1">
-                        <div className={`inline-flex items-center gap-3 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-8 border-2 ${attendanceSession?.is_open
-                            ? (isQR ? 'bg-indigo-500 text-white border-white/50' : 'bg-emerald-500 text-white border-white/50')
-                            : 'bg-slate-100 text-slate-400 border-slate-200'}`}>
-                            <span className={`w-2 h-2 rounded-full ${attendanceSession?.is_open ? 'bg-white animate-ping' : 'bg-slate-400'}`}></span>
-                            {attendanceSession?.is_open ? (isQR ? 'Live QR Session' : 'Live Manual Session') : 'Offline State'}
+                {attendanceSession?.is_open && (
+                    <div className={`absolute -top-20 -right-20 w-64 h-64 blur-[120px] animate-pulse opacity-20 ${isQR ? 'bg-indigo-500' : 'bg-emerald-500'}`}></div>
+                )}
+
+                <div className="flex flex-col lg:flex-row justify-between items-center gap-12 relative z-10">
+                    <div className="flex-1 text-center lg:text-left">
+                        <div className={`inline-flex items-center gap-3 px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-8 border ${attendanceSession?.is_open
+                            ? (isQR ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30')
+                            : 'bg-white/5 text-slate-500 border-white/10'}`}>
+                            <span className={`w-2 h-2 rounded-full ${attendanceSession?.is_open ? (isQR ? 'bg-indigo-400 animate-ping' : 'bg-emerald-400 animate-ping') : 'bg-slate-700'}`}></span>
+                            {attendanceSession?.is_open ? (isQR ? 'Sesi QR Aktif' : 'Sesi Manual Aktif') : 'Belum Aktif'}
                         </div>
-                        <h3 className="text-5xl font-black text-slate-900 mb-6 tracking-tighter leading-tight">
+                        <h3 className="text-4xl md:text-5xl font-black text-white mb-6 tracking-tighter leading-tight">
                             {attendanceSession?.is_open
-                                ? (isQR ? 'Scan QR Code' : 'Sesi Presensi Manual')
-                                : 'Presensi Sedang Tidak Dibuka'}
+                                ? (isQR ? 'Sesi QR Code' : 'Presensi Manual')
+                                : 'Portal Presensi'}
                         </h3>
-                        <p className="text-slate-500 font-bold text-lg leading-relaxed max-w-2xl opacity-70">
+                        <p className="text-slate-400 font-bold text-base leading-relaxed max-w-xl">
                             {selectedClassId
                                 ? (attendanceSession?.is_open
                                     ? (isQR
-                                        ? `Tampilkan QR Code ini di layar depan kelas. Siswa wajib scan untuk hadir.`
-                                        : `Siswa dapat melakukan check-in mandiri melalui dashboard mereka. Check-in manual memerlukan verifikasi Guru.`)
-                                    : `Pilih metode presensi untuk memulai sesi hari ini.`)
-                                : 'Anda belum memilih kelas. Silakan buat kelas di menu Manajemen Kelas atau pilih kelas dari dropdown di header.'
+                                        ? `Tampilkan QR code di layar utama. Siswa harus scan untuk mencatat kehadiran.`
+                                        : `Presensi manual aktif. Siswa dapat check-in dari dashboard mereka.`)
+                                    : `Mulai sesi baru untuk catatan hari ini. Pilih metode verifikasi di bawah.`)
+                                : 'Pilih kelas dari header untuk mengelola presensi.'
                             }
                         </p>
                     </div>
 
-                    <div className="flex flex-col gap-4 w-full lg:w-auto">
+                    <div className="flex flex-col gap-4 w-full lg:w-72">
                         {attendanceSession?.is_open ? (
                             <button
                                 onClick={() => onToggleSession()}
                                 disabled={processing}
-                                className="group relative px-14 py-8 rounded-[2.5rem] text-xl font-black shadow-2xl transition-all duration-500 hover:scale-105 active:scale-95 flex flex-col items-center gap-3 bg-rose-600 text-white shadow-rose-600/40 hover:bg-rose-700 w-full"
+                                className="group relative p-8 rounded-[2.5rem] text-xl font-black shadow-2xl transition-all duration-500 hover:scale-105 active:scale-95 flex flex-col items-center gap-2 bg-rose-600 text-white shadow-rose-600/40 hover:bg-rose-700 w-full"
                             >
                                 {processing ? (
                                     <Loader2 className="animate-spin" size={32} />
                                 ) : (
                                     <>
-                                        <span className="leading-none uppercase tracking-widest">HENTIKAN SESI</span>
-                                        <span className="text-[10px] opacity-60 font-medium">Tutup Absensi</span>
+                                        <span className="leading-none uppercase tracking-widest text-base">AKHIRI</span>
+                                        <span className="text-[10px] opacity-70 font-bold uppercase">Tutup Sesi</span>
                                     </>
                                 )}
                             </button>
                         ) : (
-                            <div className="flex gap-4 w-full">
+                            <div className="flex flex-col gap-4">
                                 <button
                                     onClick={() => onToggleSession('qr_code')}
-                                    disabled={processing}
-                                    className="flex-1 px-8 py-6 rounded-[2rem] font-bold shadow-xl transition-all hover:scale-105 active:scale-95 flex flex-col items-center gap-2 bg-indigo-600 text-white shadow-indigo-600/30 hover:bg-indigo-700"
+                                    disabled={processing || !selectedClassId}
+                                    className="px-8 py-5 rounded-[2rem] font-black text-sm uppercase tracking-widest shadow-xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 bg-indigo-600 text-white shadow-indigo-600/20 hover:bg-indigo-500 disabled:opacity-30 disabled:grayscale"
                                 >
-                                    <QrCode size={24} />
-                                    <span>Mulai QR Code</span>
+                                    <QrCode size={20} />
+                                    <span>Mulai QR</span>
                                 </button>
                                 <button
                                     onClick={() => onToggleSession('manual')}
-                                    disabled={processing}
-                                    className="flex-1 px-8 py-6 rounded-[2rem] font-bold shadow-xl transition-all hover:scale-105 active:scale-95 flex flex-col items-center gap-2 bg-emerald-500 text-white shadow-emerald-500/30 hover:bg-emerald-600"
+                                    disabled={processing || !selectedClassId}
+                                    className="px-8 py-5 rounded-[2rem] font-black text-sm uppercase tracking-widest shadow-xl transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 bg-white/[0.05] text-white border border-white/10 hover:bg-white/[0.08] disabled:opacity-30 disabled:grayscale"
                                 >
-                                    <MousePointerClick size={24} />
-                                    <span>Mulai Manual</span>
+                                    <MousePointerClick size={20} />
+                                    <span>Mode Manual</span>
                                 </button>
                             </div>
                         )}
@@ -127,11 +132,14 @@ export function AttendancePanel({
                     {/* Pending Approvals Section */}
                     {pendingRecords.length > 0 && (
                         <div className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 bg-white shadow-sm border border-slate-100 rounded-2xl">
+                            <div className="flex items-center gap-4 px-2">
+                                <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl">
                                     <AlertCircle size={24} className="text-amber-500" />
                                 </div>
-                                <h4 className="text-2xl font-black text-slate-900 tracking-tight">Menunggu Verifikasi ({pendingRecords.length})</h4>
+                                <div>
+                                    <h4 className="text-2xl font-black text-white tracking-tight leading-none">Perlu Verifikasi</h4>
+                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2">{pendingRecords.length} Students Awaiting Approval</p>
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -145,28 +153,30 @@ export function AttendancePanel({
                                     const student = students.find(s => s.id === record.studentId);
                                     if (!student) return null;
                                     return (
-                                        <div key={record.studentId} className="flex items-center justify-between p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                                        <div key={record.studentId} className="flex items-center justify-between p-4 bg-white/[0.02] rounded-3xl border border-white/5 hover:bg-white/[0.04] transition-all group">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-bold text-amber-500 shadow-sm">
+                                                <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center font-black text-amber-500 border border-amber-500/20">
                                                     {student.name.charAt(0)}
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-slate-800 text-sm">{student.name}</p>
-                                                    <p className="text-xs text-slate-500 capitalize">{record.status} • {new Date(record.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</p>
+                                                    <p className="font-bold text-white text-sm group-hover:text-amber-400 transition-colors">{student.name}</p>
+                                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">
+                                                        {new Date(record.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                                                    </p>
                                                 </div>
                                             </div>
                                             <div className="flex gap-2">
                                                 <button
                                                     onClick={() => onApprove?.(record.studentId)}
-                                                    className="p-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
-                                                    title="Terima"
+                                                    className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500 hover:text-white transition-all border border-emerald-500/20"
+                                                    title="Approve"
                                                 >
                                                     <CheckCircle2 size={16} />
                                                 </button>
                                                 <button
                                                     onClick={() => onReject?.(record.studentId)}
-                                                    className="p-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 transition-colors"
-                                                    title="Tolak"
+                                                    className="p-2.5 bg-rose-500/10 text-rose-400 rounded-xl hover:bg-rose-500 hover:text-white transition-all border border-rose-500/20"
+                                                    title="Reject"
                                                 >
                                                     <AlertCircle size={16} />
                                                 </button>
@@ -178,78 +188,100 @@ export function AttendancePanel({
                         </div>
                     )}
 
+                    {/* Stats Bento */}
                     <div className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-white shadow-sm border border-slate-100 rounded-2xl">
-                                <BarChart3 size={24} className="text-indigo-600" />
+                        <div className="flex items-center gap-4 px-2">
+                            <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl">
+                                <BarChart3 size={24} className="text-indigo-400" />
                             </div>
-                            <h4 className="text-2xl font-black text-slate-900 tracking-tight">Statistik Kehadiran Real-time</h4>
+                            <div>
+                                <h4 className="text-2xl font-black text-white tracking-tight leading-none">Live Analytics</h4>
+                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2">Real-time Class Composition</p>
+                            </div>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                            <AttendanceStat label="Hadir" value={logs.hadir} color="text-indigo-600" bg="bg-indigo-50" />
-                            <AttendanceStat label="Izin" value={logs.izin} color="text-amber-500" bg="bg-amber-50" />
-                            <AttendanceStat label="Sakit" value={logs.sakit} color="text-blue-500" bg="bg-blue-50" />
-                            <AttendanceStat label="Alpa" value={logs.alpa} color="text-rose-500" bg="bg-rose-50" />
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                            <div className="universe-card p-6 border-emerald-500/10 hover:border-emerald-500/30 transition-all group">
+                                <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest mb-1">Hadir</p>
+                                <p className="text-3xl font-black text-emerald-400 tracking-tighter group-hover:scale-105 transition-transform origin-left">{logs.hadir}</p>
+                            </div>
+                            <div className="universe-card p-6 border-amber-500/10 hover:border-amber-500/30 transition-all group">
+                                <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest mb-1">Izin</p>
+                                <p className="text-3xl font-black text-amber-400 tracking-tighter group-hover:scale-105 transition-transform origin-left">{logs.izin}</p>
+                            </div>
+                            <div className="universe-card p-6 border-blue-500/10 hover:border-blue-500/30 transition-all group">
+                                <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest mb-1">Sakit</p>
+                                <p className="text-3xl font-black text-blue-400 tracking-tighter group-hover:scale-105 transition-transform origin-left">{logs.sakit}</p>
+                            </div>
+                            <div className="universe-card p-6 border-rose-500/10 hover:border-rose-500/30 transition-all group">
+                                <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest mb-1">Alpa</p>
+                                <p className="text-3xl font-black text-rose-400 tracking-tighter group-hover:scale-105 transition-transform origin-left">{logs.alpa}</p>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Missing Students Section */}
+                    {/* Registry List */}
                     <div className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-white shadow-sm border border-slate-100 rounded-2xl">
+                        <div className="flex items-center gap-4 px-2">
+                            <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl">
                                 <AlertCircle size={24} className="text-rose-500" />
                             </div>
-                            <h4 className="text-2xl font-black text-slate-900 tracking-tight">Siswa Belum Presensi ({students.length - checkedInIds.length})</h4>
+                            <div>
+                                <h4 className="text-2xl font-black text-white tracking-tight leading-none">Unregistered Students</h4>
+                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2">{students.length - checkedInIds.length} Missing from Registry</p>
+                            </div>
                         </div>
 
-                        <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8">
+                        <div className="universe-card overflow-hidden">
                             {students.filter(s => !checkedInIds.includes(s.id)).length === 0 ? (
-                                <div className="py-10 text-center">
-                                    <CheckCircle2 size={48} className="text-emerald-500 mx-auto mb-4" />
-                                    <p className="font-black text-slate-400 uppercase tracking-widest text-xs">Semua siswa sudah presensi!</p>
+                                <div className="py-20 text-center">
+                                    <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
+                                        <CheckCircle2 size={40} className="text-emerald-500 animate-bounce" />
+                                    </div>
+                                    <h5 className="text-xl font-black text-white mb-2 tracking-tight">Full Attendance Reached</h5>
+                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Every student has checked in!</p>
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 gap-4">
+                                <div className="divide-y divide-white/5">
                                     {students
                                         .filter(s => !checkedInIds.includes(s.id))
                                         .sort((a, b) => a.name.localeCompare(b.name, 'id'))
                                         .map(student => (
-                                        <div key={student.id} className="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-indigo-200 transition-all">
+                                        <div key={student.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 hover:bg-white/[0.02] transition-colors group">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-black text-slate-400 group-hover:text-indigo-600 shadow-sm transition-colors">
+                                                <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center font-black text-slate-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
                                                     {student.name.charAt(0)}
                                                 </div>
-                                                <span className="font-bold text-slate-700 text-sm">{student.name}</span>
+                                                <span className="font-bold text-slate-200 text-sm group-hover:text-indigo-400 transition-colors">{student.name}</span>
                                             </div>
                                             {onSetStatus && (
-                                                <div className="flex gap-2">
+                                                <div className="grid grid-cols-2 sm:flex gap-2">
                                                     <button
                                                         type="button"
                                                         onClick={() => onSetStatus(student.id, 'hadir')}
-                                                        className="px-3 py-1.5 bg-indigo-500 text-white text-xs font-bold rounded-lg hover:bg-indigo-600 transition-colors"
+                                                        className="px-4 py-2 bg-indigo-500/10 hover:bg-indigo-500 text-indigo-400 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-xl border border-indigo-500/20 transition-all"
                                                     >
                                                         Hadir
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => onSetStatus(student.id, 'izin')}
-                                                        className="px-3 py-1.5 bg-amber-500 text-white text-xs font-bold rounded-lg hover:bg-amber-600 transition-colors"
+                                                        className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-xl border border-amber-500/20 transition-all"
                                                     >
                                                         Izin
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => onSetStatus(student.id, 'sakit')}
-                                                        className="px-3 py-1.5 bg-blue-500 text-white text-xs font-bold rounded-lg hover:bg-blue-600 transition-colors"
+                                                        className="px-4 py-2 bg-blue-500/10 hover:bg-blue-500 text-blue-400 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-xl border border-blue-500/20 transition-all"
                                                     >
                                                         Sakit
                                                     </button>
                                                     <button
                                                         type="button"
                                                         onClick={() => onSetStatus(student.id, 'alpa')}
-                                                        className="px-3 py-1.5 bg-rose-500 text-white text-xs font-bold rounded-lg hover:bg-rose-600 transition-colors"
+                                                        className="px-4 py-2 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-xl border border-rose-500/20 transition-all"
                                                     >
-                                                        Alpha
+                                                        Alpa
                                                     </button>
                                                 </div>
                                             )}

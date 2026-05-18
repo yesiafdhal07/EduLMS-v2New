@@ -2,27 +2,45 @@
 
 import { useState, useEffect } from 'react';
 import {
-    LayoutDashboard, BookOpen, Clock, LogOut, GraduationCap, User, Archive, Star, BarChart3 as BarChart, MessageSquare, Trophy
+    LayoutDashboard, BookOpen, Clock, User, Archive, Star, BarChart3 as BarChart, MessageSquare, Trophy
 } from 'lucide-react';
-
-import { StudentDashboardStats, StudentAttendancePanel, StudentProgressChart, DeadlineAlert, AttendanceHistory, GradeHistory, StudentExportModal, StudentProfilePanel, PembelajaranSiswaTab, StudentAnalytics } from '@/components/siswa';
-import { NavItem, NotificationBell, ThemeToggle, SearchBar, Footer, OnboardingModal, HelpButton, EntranceAnimation, FocusModeToggle, DeadlineCountdown, LowDataToggle, AnimatedTabContent } from '@/components/ui';
+import dynamic from 'next/dynamic';
+import { StudentDashboardStats, StudentAttendancePanel, DeadlineAlert, AttendanceHistory, GradeHistory, StudentExportModal, StudentProfilePanel, PembelajaranSiswaTab, StudentPortfolio } from '@/components/siswa';
+import { NextActionEngine } from '@/components/siswa/NextActionEngine';
+import { NavItem, NotificationBell, ThemeToggle, SearchBar, Footer, OnboardingModal, HelpButton, EntranceAnimation, FocusModeToggle, DeadlineCountdown, LowDataToggle, AnimatedTabContent, UniverseSkeleton, ProfileSettingsModal } from '@/components/ui';
 import { useFocusMode } from '@/context/FocusModeContext';
-import { PomodoroTimer } from '@/components/widgets/PomodoroTimer';
 import { XPProgressBar } from '@/components/widgets/XPProgressBar';
-import { XPFlowParticles } from '@/components/widgets/XPFlowParticles';
-import { BadgeList } from '@/components/widgets/BadgeList';
-import { LeaderboardWidget } from '@/components/widgets/LeaderboardWidget';
+
+// Dynamic heavy components
+const StudentAnalytics = dynamic(() => import('@/components/siswa').then(mod => mod.StudentAnalytics), {
+    loading: () => <UniverseSkeleton type="chart" role="siswa" />
+});
+const SkillMap = dynamic(() => import('@/components/siswa/SkillMap').then(mod => mod.SkillMap), {
+    loading: () => <UniverseSkeleton type="chart" role="siswa" />
+});
+const StudentProgressChart = dynamic(() => import('@/components/siswa').then(mod => mod.StudentProgressChart), {
+    loading: () => <UniverseSkeleton type="chart" role="siswa" />
+});
+const PomodoroTimer = dynamic(() => import('@/components/widgets/PomodoroTimer').then(mod => mod.PomodoroTimer));
+const XPFlowParticles = dynamic(() => import('@/components/widgets/XPFlowParticles').then(mod => mod.XPFlowParticles), { ssr: false });
+const BadgeList = dynamic(() => import('@/components/widgets/BadgeList').then(mod => mod.BadgeList));
+const LeaderboardWidget = dynamic(() => import('@/components/widgets/LeaderboardWidget').then(mod => mod.LeaderboardWidget));
+const RewardsSection = dynamic(() => import('@/components/widgets/RewardsSection').then(mod => mod.RewardsSection));
+const DailyChallengeWidget = dynamic(() => import('@/components/widgets/DailyChallengeWidget').then(mod => mod.DailyChallengeWidget), { ssr: false });
+const ClassWarsWidget = dynamic(() => import('@/components/widgets/ClassWarsWidget').then(mod => mod.ClassWarsWidget), { ssr: false });
+const AvatarSelector = dynamic(() => import('@/components/widgets/AvatarSelector').then(mod => mod.AvatarSelector), { ssr: false });
 import { useGamification } from '@/hooks/useGamification';
 import { MoodCheckinModal } from '@/components/modals/MoodCheckinModal';
 import { useMoodCheckin } from '@/hooks/useMoodCheckin';
 import { DiscussionForum } from '@/components/discussion/DiscussionForum';
-import { DashboardSidebar, SidebarNavItem } from '@/components/layout';
+import { DashboardSidebar, SidebarNavItem, RoleShell, RoleTopbar, MobileNavigation } from '@/components/layout';
 // Removed direct import of Quiz components here, as they are now used in PembelajaranSiswaTab
 import { useSiswaDashboard } from '@/hooks/useSiswaDashboard';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useTimeCapsule } from '@/hooks/useTimeCapsule';
 import { TimeCapsuleModal, TimeCapsuleCard, TimeCapsuleReveal } from '@/components/timecapsule';
+import { getRoleTheme } from '@/lib/theme/roleTheme';
+import { AIChatbot } from '@/components/shared/AIChatbot';
 
 // ========================================================
 // SISWA DASHBOARD - REFACTORED
@@ -32,6 +50,7 @@ export default function StudentDashboard() {
     const {
         // State
         activeTab, setActiveTab, user, loading, uploading,
+        currentXP, level, nextLevelXP,
         // Data
         assignments, materials, attendanceSession, attendanceRecord, keaktifanGrades, progressData, studentClassId,
         // Modal
@@ -45,8 +64,8 @@ export default function StudentDashboard() {
     const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null);
     const [selectedAttemptId, setSelectedAttemptId] = useState<string | null>(null);
 
-    // Onboarding Tutorial
     const onboarding = useOnboarding(user?.id);
+    const [showProfileModal, setShowProfileModal] = useState(false);
 
     // Focus Mode
     const { isFocusMode } = useFocusMode();
@@ -56,6 +75,7 @@ export default function StudentDashboard() {
 
     // Gamification Data
     const gamification = useGamification();
+    const theme = getRoleTheme('siswa');
 
     // Time Capsule
     const timeCapsule = useTimeCapsule();
@@ -66,25 +86,26 @@ export default function StudentDashboard() {
     useEffect(() => {
         if (timeCapsule.newlyUnlocked.length > 0 && !selectedCapsule) {
             // Auto-open the first newly unlocked capsule
-            setSelectedCapsule(timeCapsule.newlyUnlocked[0]);
+            const t = setTimeout(() => setSelectedCapsule(timeCapsule.newlyUnlocked[0]), 0);
+            return () => clearTimeout(t);
         }
     }, [timeCapsule.newlyUnlocked, selectedCapsule]);
 
     return (
         <EntranceAnimation role="siswa">
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex font-outfit text-white overflow-hidden">
+            <RoleShell role="siswa" className="h-screen flex font-space-grotesk text-white overflow-hidden">
                 {/* Sidebar - Hidden in Focus Mode */}
                 {/* Sidebar - Hidden in Focus Mode */}
                 <DashboardSidebar 
                     role="siswa" 
                     onLogout={handleLogout} 
-                    className={`${isFocusMode ? 'w-0 p-0 overflow-hidden opacity-0 border-none' : 'w-72 p-8'} transition-all duration-500 ease-in-out`}
+                    className={`${isFocusMode ? 'w-0 p-0 overflow-hidden opacity-0 border-none' : ''} transition-all duration-500 ease-in-out`}
                     extraContent={
                         user?.id && (
                             <XPProgressBar 
-                                currentXP={gamification.stats.totalXP} 
-                                level={gamification.stats.level} 
-                                nextLevelXP={gamification.stats.nextLevelXP} 
+                                currentXP={currentXP} 
+                                level={level} 
+                                nextLevelXP={nextLevelXP} 
                                 variant="compact" 
                                 className="mb-4" 
                             />
@@ -101,71 +122,94 @@ export default function StudentDashboard() {
                 </DashboardSidebar>
 
                 {/* Main Content */}
-                <main className="flex-1 h-screen overflow-y-auto p-4 md:p-12 pb-32 md:pb-12 bg-transparent text-white scrollbar-hide">
-                    {/* Header */}
-                    <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 md:mb-14">
-                        <div>
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{activeTab} / siswa</span>
-                            </div>
-                            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-1">
-                                {activeTab === 'dashboard' && `Halo, ${user?.full_name || 'Pelajar'}! 👋`}
-                                {activeTab === 'pembelajaran' && "Pembelajaran"}
-                                {activeTab === 'analytics' && "Analitik Belajar"}
-                                {activeTab === 'absensi' && "Presensi"}
-                                {activeTab === 'diskusi' && "Forum Diskusi"}
-                                {activeTab === 'prestasi' && "Pencapaian Saya"}
-                                {activeTab === 'profil' && "Profil Saya"}
-                            </h2>
-                            <p className="text-sm text-slate-400 font-medium">
-                                {activeTab === 'dashboard' && "Lihat ringkasan tugas, nilai, dan perkembangan belajarmu."}
-                                {activeTab === 'pembelajaran' && "Akses materi, tugas, dan kuis dalam satu tempat."}
-                                {activeTab === 'analytics' && "Pantau nilai, kehadiran, dan keaktifanmu."}
-                                {activeTab === 'absensi' && "Lakukan presensi dan lihat riwayat kehadiran."}
-                                {activeTab === 'diskusi' && "Tanya jawab anonim dengan guru."}
-                                {activeTab === 'prestasi' && "Lihat pencapaian, koleksi lencana, dan peringkat kelasmu."}
-                                {activeTab === 'profil' && "Lihat informasi akun dan statistik pembelajaran Anda."}
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <SearchBar
-                                materials={materials.map(m => ({ id: m.id, title: m.title, content_url: m.content_url }))}
-                                assignments={assignments.map(a => ({ id: a.id, title: a.title, deadline: a.deadline }))}
-                                onSelect={() => {
-                                    setActiveTab('pembelajaran');
-                                }}
-                            />
-                            <LowDataToggle />
-                            <FocusModeToggle />
-                            <ThemeToggle />
-                            <button
-                                onClick={() => setShowExportModal(true)}
-                                className="p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all relative group hidden sm:block"
-                                title="Arsip Data Saya"
-                            >
-                                <Archive size={20} />
-                            </button>
-                            <HelpButton onClick={onboarding.startTutorial} />
-                            {user?.id && <NotificationBell userId={user.id} />}
-                            <div className="flex items-center gap-4 bg-white/5 backdrop-blur-md p-2.5 rounded-[2rem] shadow-sm border border-white/10">
-                                <div className="flex items-center gap-3 px-4">
-                                    <div className="text-right hidden sm:block">
-                                        <p className="text-xs font-black text-white leading-none mb-1">{user?.full_name || 'Siswa'}</p>
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">{user?.className || 'Kelas'}</p>
-                                    </div>
-                                    <div className="w-12 h-12 bg-emerald-500 rounded-[1.5rem] flex items-center justify-center font-bold text-white border border-emerald-200">
-                                        {(user?.full_name || user?.email || 'S').charAt(0).toUpperCase()}
+                <main className="flex-1 h-full overflow-y-auto p-4 md:p-10 pb-32 md:pb-12 bg-transparent text-white scrollbar-hide">
+                    <RoleTopbar
+                        role="siswa"
+                        kicker={`${activeTab} / siswa`}
+                        title={
+                            activeTab === 'dashboard' ? `Halo, ${user?.full_name || 'Pelajar'}!` :
+                                activeTab === 'pembelajaran' ? 'Pembelajaran' :
+                                    activeTab === 'analytics' ? 'Analitik Belajar' :
+                                        activeTab === 'absensi' ? 'Presensi' :
+                                            activeTab === 'diskusi' ? 'Forum Diskusi' :
+                                                activeTab === 'prestasi' ? 'Pencapaian Saya' :
+                                                    activeTab === 'profil' ? 'Profil Saya' :
+                                                        'Dashboard'
+                        }
+                        subtitle={
+                            activeTab === 'dashboard' ? 'Lihat ringkasan tugas, nilai, dan perkembangan belajarmu.' :
+                                activeTab === 'pembelajaran' ? 'Akses materi, tugas, dan kuis dalam satu tempat.' :
+                                    activeTab === 'analytics' ? 'Pantau nilai, kehadiran, dan keaktifanmu.' :
+                                        activeTab === 'absensi' ? 'Lakukan presensi dan lihat riwayat kehadiran.' :
+                                            activeTab === 'diskusi' ? 'Tanya jawab anonim dengan guru.' :
+                                                activeTab === 'prestasi' ? 'Lihat pencapaian, koleksi lencana, dan peringkat kelasmu.' :
+                                                    activeTab === 'profil' ? 'Lihat informasi akun dan statistik pembelajaran Anda.' :
+                                                        undefined
+                        }
+                        right={
+                            <div className="flex items-center gap-3">
+                                <SearchBar
+                                    materials={materials.map(m => ({ id: m.id, title: m.title, content_url: m.content_url }))}
+                                    assignments={assignments.map(a => ({ id: a.id, title: a.title, deadline: a.deadline }))}
+                                    onSelect={() => setActiveTab('pembelajaran')}
+                                />
+                                <LowDataToggle />
+                                <FocusModeToggle />
+                                <ThemeToggle />
+                                <button
+                                    onClick={() => setShowExportModal(true)}
+                                    className="p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all relative group hidden sm:block"
+                                    title="Arsip Data Saya"
+                                >
+                                    <Archive size={20} />
+                                </button>
+                                <HelpButton onClick={onboarding.startTutorial} />
+                                {user?.id && <NotificationBell userId={user.id} />}
+                                <div 
+                                    onClick={() => setShowProfileModal(true)}
+                                    className="flex items-center gap-4 bg-white/5 backdrop-blur-md p-2.5 rounded-[2rem] shadow-sm border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
+                                >
+                                    <div className="flex items-center gap-3 px-4">
+                                        <div className="text-right hidden sm:block">
+                                            <p className="text-xs font-black text-white leading-none mb-1">{user?.full_name || 'Siswa'}</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">{user?.className || 'Kelas'}</p>
+                                        </div>
+                                        <div className={`w-12 h-12 rounded-[1.5rem] flex items-center justify-center font-bold text-white border border-emerald-200 ${theme.accentBgStrong}`}>
+                                            {(user?.full_name || user?.email || 'S').charAt(0).toUpperCase()}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </header>
+                        }
+                    />
 
                     {/* Tab Content - GSAP Animated */}
                     <AnimatedTabContent tabKey={activeTab} className="min-h-0">
-                    {activeTab === 'dashboard' && (
+                    {loading ? (
+                        <div className="space-y-8">
+                            <UniverseSkeleton type="stats" role="siswa" count={4} />
+                            <UniverseSkeleton type="chart" role="siswa" />
+                            <UniverseSkeleton type="list" role="siswa" count={5} />
+                        </div>
+                    ) : activeTab === 'dashboard' && (
                         <div className="space-y-6">
+                            {user?.id && studentClassId && (
+                                <NextActionEngine
+                                    studentId={user.id}
+                                    classId={studentClassId}
+                                    onNavigate={(tab) =>
+                                        setActiveTab(tab as 'dashboard' | 'pembelajaran' | 'analytics' | 'absensi' | 'diskusi' | 'prestasi' | 'profil')
+                                    }
+                                />
+                            )}
+                            {/* Daily Challenge — USP #9 */}
+                            {user?.id && (
+                                <DailyChallengeWidget
+                                    studentId={user.id}
+                                    classId={studentClassId || undefined}
+                                />
+                            )}
+
                             <DeadlineAlert assignments={assignments} />
                             {progressData.length > 0 && <StudentProgressChart data={progressData} />}
                             <StudentDashboardStats user={user} assignments={assignments} uploading={uploading} onUpload={handleUpload} />
@@ -212,10 +256,15 @@ export default function StudentDashboard() {
 
                     )}
                     {activeTab === 'analytics' && (
-                        <StudentAnalytics
-                            studentId={user?.id || ''}
-                            classId={studentClassId || ''}
-                        />
+                        <div className="space-y-6">
+                            {user?.id && studentClassId && (
+                                <SkillMap studentId={user.id} classId={studentClassId} />
+                            )}
+                            <StudentAnalytics
+                                studentId={user?.id || ''}
+                                classId={studentClassId || ''}
+                            />
+                        </div>
                     )}
                     {activeTab === 'absensi' && (
                         <div className="space-y-8">
@@ -223,7 +272,18 @@ export default function StudentDashboard() {
                             {user?.id && <AttendanceHistory studentId={user.id} />}
                         </div>
                     )}
-                    {activeTab === 'profil' && <StudentProfilePanel user={user} />}
+                    {activeTab === 'profil' && (
+                        <div className="space-y-8">
+                            <StudentProfilePanel user={user} />
+                            {user?.id && (
+                                <StudentPortfolio
+                                    studentId={user.id}
+                                    studentName={user.full_name || 'Siswa'}
+                                    classId={studentClassId || undefined}
+                                />
+                            )}
+                        </div>
+                    )}
                     {activeTab === 'diskusi' && (
                         <DiscussionForum 
                             classId={studentClassId || ''}
@@ -233,37 +293,59 @@ export default function StudentDashboard() {
                     )}
                     {activeTab === 'prestasi' && (
                         <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
-                             {/* XP Overview */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <XPProgressBar 
-                                    currentXP={gamification.stats.totalXP} 
-                                    level={gamification.stats.level} 
-                                    nextLevelXP={gamification.stats.nextLevelXP} 
-                                />
-                                <div className="glass-panel p-6 rounded-[2rem] flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-xl font-black text-white">Streak Belajar</h3>
-                                        <p className="text-slate-400 text-sm">Konsistensi adalah kunci!</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-4xl font-black text-orange-500 flex items-center justify-end gap-2">
-                                            {gamification.stats.streak.current} <span className="text-lg">🔥</span>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {/* Avatar Selector — USP #11 */}
+                                <div className="md:col-span-1">
+                                    <AvatarSelector
+                                        userId={user?.id || ''}
+                                        currentAvatar={undefined}
+                                        currentColor={undefined}
+                                        userName={user?.full_name || 'Siswa'}
+                                    />
+                                </div>
+                                <div className="md:col-span-2 space-y-4">
+                                    <XPProgressBar
+                                        currentXP={gamification.stats.totalXP}
+                                        level={gamification.stats.level}
+                                        nextLevelXP={gamification.stats.nextLevelXP}
+                                    />
+                                    <div className="glass-panel p-6 rounded-[2rem] flex items-center justify-between">
+                                        <div>
+                                            <h3 className="text-xl font-black text-white">Streak Belajar</h3>
+                                            <p className="text-slate-400 text-sm">Konsistensi adalah kunci!</p>
                                         </div>
-                                        <p className="text-xs text-orange-400/80 font-bold uppercase tracking-wider">Hari Berturut-turut</p>
+                                        <div className="text-right">
+                                            <div className="text-4xl font-black text-orange-500 flex items-center justify-end gap-2">
+                                                {gamification.stats.streak.current} <span className="text-lg">🔥</span>
+                                            </div>
+                                            <p className="text-xs text-orange-400/80 font-bold uppercase tracking-wider">Hari Berturut-turut</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Badges & Leaderboard Grid */}
+                            {/* Class Wars — USP #10 */}
+                            {studentClassId && user?.school_id && (
+                                <ClassWarsWidget
+                                    schoolId={user.school_id}
+                                    currentClassId={studentClassId}
+                                />
+                            )}
+
+                             {/* Badges & Leaderboard Grid */}
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                <div className="lg:col-span-2 space-y-6">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="text-2xl font-black text-white">Koleksi Lencana</h3>
-                                        <span className="bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full text-xs font-bold border border-indigo-500/30">
-                                            {gamification.stats.badges.filter(b => b.unlockedAt).length} / {gamification.stats.badges.length} Diraih
-                                        </span>
+                                <div className="lg:col-span-2 space-y-12">
+                                    <div className="space-y-6">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-2xl font-black text-white">Koleksi Lencana</h3>
+                                            <span className="bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full text-xs font-bold border border-indigo-500/30">
+                                                {gamification.stats.badges.filter(b => b.unlockedAt).length} / {gamification.stats.badges.length} Diraih
+                                            </span>
+                                        </div>
+                                        <BadgeList badges={gamification.stats.badges} />
                                     </div>
-                                    <BadgeList badges={gamification.stats.badges} />
+                                    
+                                    <RewardsSection />
                                 </div>
                                 <div>
                                     <LeaderboardWidget entries={gamification.stats.leaderboard} currentUserId={user?.id} />
@@ -326,14 +408,19 @@ export default function StudentDashboard() {
                     />
                 </main>
 
-                {/* Bottom Nav - Mobile */}
-                <nav className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-2xl border-t border-white/10 px-6 py-4 flex justify-between items-center z-50 md:hidden safe-area-bottom">
-                    <NavItem icon={<LayoutDashboard size={24} />} label="Home" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} variant="mobile" role="siswa" />
-                    <NavItem icon={<BookOpen size={24} />} label="Belajar" active={activeTab === 'pembelajaran'} onClick={() => setActiveTab('pembelajaran')} variant="mobile" role="siswa" />
-                    <NavItem icon={<BarChart size={24} />} label="Analitik" active={activeTab === 'analytics'} onClick={() => setActiveTab('analytics')} variant="mobile" role="siswa" />
-                    <NavItem icon={<Clock size={24} />} label="Absensi" active={activeTab === 'absensi'} onClick={() => setActiveTab('absensi')} variant="mobile" role="siswa" />
-                    <NavItem icon={<User size={24} />} label="Profil" active={activeTab === 'profil'} onClick={() => setActiveTab('profil')} variant="mobile" role="siswa" />
-                </nav>
+                {/* Mobile Navigation (Phase 4: Mobile Hardening) */}
+                <MobileNavigation
+                    role="siswa"
+                    onLogout={handleLogout}
+                    items={[
+                        { label: 'Beranda', icon: LayoutDashboard, active: activeTab === 'dashboard', onClick: () => setActiveTab('dashboard') },
+                        { label: 'Belajar', icon: BookOpen, active: activeTab === 'pembelajaran', onClick: () => setActiveTab('pembelajaran') },
+                        { label: 'Analitik', icon: BarChart, active: activeTab === 'analytics', onClick: () => setActiveTab('analytics') },
+                        { label: 'Absensi', icon: Clock, active: activeTab === 'absensi', onClick: () => setActiveTab('absensi') },
+                        { label: 'Prestasi', icon: Trophy, active: activeTab === 'prestasi', onClick: () => setActiveTab('prestasi') },
+                        { label: 'Profil', icon: User, active: activeTab === 'profil', onClick: () => setActiveTab('profil') },
+                    ]}
+                />
 
                 {/* Pomodoro Timer Widget */}
                 <PomodoroTimer />
@@ -379,9 +466,17 @@ export default function StudentDashboard() {
                     />
                 )}
                 
+                <ProfileSettingsModal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} role="siswa" user={user} />
+                
                 {/* XP Particle Host */}
                 <XPFlowParticles />
-            </div>
+
+                {/* AI Chatbot — Tutor Pintar */}
+                <AIChatbot
+                    userRole="siswa"
+                    userName={user?.full_name || 'Siswa'}
+                />
+            </RoleShell>
         </EntranceAnimation>
     );
 }

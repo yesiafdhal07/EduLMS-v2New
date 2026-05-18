@@ -11,6 +11,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, Legend
 } from 'recharts';
+import { ErrorBoundary } from '@/components/ui';
 
 // ========================================================
 // STUDENT ANALYTICS DASHBOARD
@@ -80,7 +81,7 @@ export function StudentAnalytics({ studentId, classId }: StudentAnalyticsProps) 
             // 2. Fetch Grades (Assignments & Keaktifan)
             const { data: grades } = await supabase
                 .from('grades')
-                .select('score, type, assignment:assignments(title)')
+                .select('score, type, created_at, assignment:assignments(title)')
                 .eq('student_id', studentId);
 
             const assignmentGrades = grades?.filter(g => g.type === 'assignment').map(g => g.score) || [];
@@ -89,7 +90,7 @@ export function StudentAnalytics({ studentId, classId }: StudentAnalyticsProps) 
             // 3. Fetch Quiz Attempts
             const { data: quizAttempts } = await supabase
                 .from('quiz_attempts')
-                .select('percentage, quiz:quizzes!inner(title, class_id)')
+                .select('percentage, created_at, quiz:quizzes!inner(title, class_id)')
                 .eq('student_id', studentId)
                 .eq('quiz.class_id', classId)
                 .eq('status', 'graded');
@@ -114,26 +115,33 @@ export function StudentAnalytics({ studentId, classId }: StudentAnalyticsProps) 
             // Here assuming previously fetched counts or roughly estimating.
 
             // Build history
-            const history = [
+            const rawHistory = [
                 ...(grades?.filter(g => g.type === 'assignment').map(g => ({
-                    date: '', // Created_at not selected above, simplified
+                    rawDate: g.created_at,
                     type: 'assignment' as const,
-                    title: (g.assignment as any)?.title || 'Tugas',
+                    title: (g.assignment as unknown as { title: string })?.title || 'Tugas',
                     score: g.score
                 })) || []),
                 ...(quizAttempts?.map(q => ({
-                    date: '',
+                    rawDate: q.created_at,
                     type: 'quiz' as const,
-                    title: (q.quiz as any)?.title || 'Kuis',
+                    title: (q.quiz as unknown as { title: string })?.title || 'Kuis',
                     score: Number(q.percentage)
                 })) || []),
                 ...(grades?.filter(g => g.type === 'keaktifan').map(g => ({
-                    date: '',
+                    rawDate: g.created_at,
                     type: 'keaktifan' as const,
                     title: 'Nilai Keaktifan',
                     score: g.score
                 })) || [])
-            ];
+            ].sort((a, b) => new Date(b.rawDate || 0).getTime() - new Date(a.rawDate || 0).getTime());
+
+            const history = rawHistory.map(h => ({
+                date: new Date(h.rawDate || new Date()).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }),
+                type: h.type,
+                title: h.title,
+                score: h.score
+            }));
 
             setData({
                 grades: {
@@ -205,25 +213,27 @@ export function StudentAnalytics({ studentId, classId }: StudentAnalyticsProps) 
                 <div className="bg-white/5 backdrop-blur-md rounded-[2rem] p-6 border border-white/10">
                     <h3 className="text-lg font-bold text-white mb-4">Statistik Kehadiran</h3>
                     <div className="h-64">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={pieData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {pieData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                                <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px' }} />
-                                <Legend />
-                            </PieChart>
-                        </ResponsiveContainer>
+                        <ErrorBoundary>
+                            <ResponsiveContainer width="100%" height="100%" minWidth={120} minHeight={120}>
+                                <PieChart>
+                                    <Pie
+                                        data={pieData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                    >
+                                        {pieData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px' }} />
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </ErrorBoundary>
                     </div>
                 </div>
 
@@ -247,7 +257,11 @@ export function StudentAnalytics({ studentId, classId }: StudentAnalyticsProps) 
                                         </div>
                                         <div>
                                             <p className="text-sm font-bold text-white">{item.title}</p>
-                                            <p className="text-xs text-slate-400 capitalize">{item.type}</p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-xs text-slate-400 capitalize">{item.type}</p>
+                                                <span className="text-slate-600 text-[10px]">•</span>
+                                                <p className="text-[10px] text-slate-500 font-medium tracking-wider">{item.date}</p>
+                                            </div>
                                         </div>
                                     </div>
                                     <span className={`font-bold ${item.score >= 80 ? 'text-emerald-400' :
@@ -263,7 +277,7 @@ export function StudentAnalytics({ studentId, classId }: StudentAnalyticsProps) 
     );
 }
 
-function StatCard({ icon, label, value, color }: { icon: any, label: string, value: string, color: string }) {
+function StatCard({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: string, color: string }) {
     const colors: Record<string, string> = {
         indigo: 'bg-indigo-500/20 text-indigo-400',
         emerald: 'bg-emerald-500/20 text-emerald-400',
@@ -272,14 +286,14 @@ function StatCard({ icon, label, value, color }: { icon: any, label: string, val
     };
 
     return (
-        <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10">
-            <div className="flex items-center gap-3 mb-2">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colors[color]}`}>
-                    {icon}
-                </div>
-                <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">{label}</span>
+        <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-md rounded-2xl p-4 border border-white/10 flex items-center gap-4 group">
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${colors[color]}`}>
+                {icon}
             </div>
-            <p className="text-3xl font-black text-white">{value}</p>
+            <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider truncate mb-0.5">{label}</p>
+                <p className="text-2xl font-black text-white leading-none">{value}</p>
+            </div>
         </div>
     );
 }

@@ -1,0 +1,986 @@
+﻿
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\analytics\GradeDistributionChart.tsx
+  53:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\analytics\GradeTrendChart.tsx
+  55:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\analytics\TopPerformers.tsx
+  50:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  57:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  58:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\dashboard\DeadlineBanner.tsx
+  19:55  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\dashboard\DeadlineBanner.tsx:19:55
+  17 |     // Only show for tasks deadline < 24 hours
+  18 |     const urgentTasks = tasks.filter(t => {
+> 19 |         const diff = new Date(t.deadline).getTime() - Date.now();
+     |                                                       ^^^^^^^^^^ Cannot call impure function
+  20 |         return diff > 0 && diff < 24 * 60 * 60 * 1000;
+  21 |     });
+  22 |  react-hooks/purity
+  35:55  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react/no-unescaped-entities
+  35:68  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react/no-unescaped-entities
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\dashboard\TeacherStatsPanel.tsx
+   81:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   82:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  141:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  156:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\discussion\DiscussionForum.tsx
+  75:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  77:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\gamification\BadgeDisplay.tsx
+   56:38  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\gamification\BadgeDisplay.tsx:56:38
+  54 |                         className="absolute w-3 h-3 animate-confetti"
+  55 |                         style={{
+> 56 |                             left: `${Math.random() * 100}%`,
+     |                                      ^^^^^^^^^^^^^ Cannot call impure function
+  57 |                             animationDelay: `${Math.random() * 2}s`,
+  58 |                             backgroundColor: ['#FFD700', '#FF6B6B', '#4ECDC4', '#9B59B6', '#3498DB'][i % 5],
+  59 |                             transform: `rotate(${Math.random() * 360}deg)`,  react-hooks/purity
+   57:48  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\gamification\BadgeDisplay.tsx:57:48
+  55 |                         style={{
+  56 |                             left: `${Math.random() * 100}%`,
+> 57 |                             animationDelay: `${Math.random() * 2}s`,
+     |                                                ^^^^^^^^^^^^^ Cannot call impure function
+  58 |                             backgroundColor: ['#FFD700', '#FF6B6B', '#4ECDC4', '#9B59B6', '#3498DB'][i % 5],
+  59 |                             transform: `rotate(${Math.random() * 360}deg)`,
+  60 |                         }}                                   react-hooks/purity
+   59:50  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\gamification\BadgeDisplay.tsx:59:50
+  57 |                             animationDelay: `${Math.random() * 2}s`,
+  58 |                             backgroundColor: ['#FFD700', '#FF6B6B', '#4ECDC4', '#9B59B6', '#3498DB'][i % 5],
+> 59 |                             transform: `rotate(${Math.random() * 360}deg)`,
+     |                                                  ^^^^^^^^^^^^^ Cannot call impure function
+  60 |                         }}
+  61 |                     />
+  62 |                 ))}                                                                                    react-hooks/purity
+  126:33  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\AssignmentPanel.tsx
+  23:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\AutoFeedback.tsx
+  103:77  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  103:86  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\FeedbackBank.tsx
+  46:23  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\FeedbackBank.tsx:46:23
+  44 |     }, [teacherId]);
+  45 |
+> 46 |     useEffect(() => { fetchTemplates(); }, [fetchTemplates]);
+     |                       ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  47 |
+  48 |     const handleCreate = async () => {
+  49 |         if (!newText.trim()) return;  react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\PeerReviewButton.tsx
+  136:13   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\PeerReviewButton.tsx:136:13
+  134 |     useEffect(() => {
+  135 |         if (isOpen) {
+> 136 |             fetchData();
+      |             ^^^^^^^^^ Avoid calling setState() directly within an effect
+  137 |         }
+  138 |     }, [isOpen, fetchData]);
+  139 |  react-hooks/set-state-in-effect
+  275:114  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react/no-unescaped-entities
+  275:156  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react/no-unescaped-entities
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\PipelineView.tsx
+  18:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\QRGenerator.tsx
+  46:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\QRGenerator.tsx:46:9
+  44 |
+  45 |     useEffect(() => {
+> 46 |         generateCode();
+     |         ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  47 |
+  48 |         // Auto-refresh every 30 seconds
+  49 |         const refreshInterval = setInterval(() => {  react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\RaporExportModal.tsx
+   64:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  131:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  144:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\StudentGoalsViewer.tsx
+  52:62  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\SubmissionReviewModal.tsx
+  33:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\SubmissionReviewModal.tsx:33:13
+  31 |         if (isOpen && assignment) {
+  32 |             fetchSubmissions(assignment.id);
+> 33 |             setBatchIndex(0);
+     |             ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  34 |             setBatchMode(false);
+  35 |         }
+  36 |     }, [isOpen, assignment, fetchSubmissions]);  react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\WorkQueue.tsx
+  50:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\attendance\QRGenerator.tsx
+  22:21  error  Error: Cannot access variable before it is declared
+
+`generateNewToken` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\attendance\QRGenerator.tsx:22:21
+  20 |     // Initial random token if none provided
+  21 |     useEffect(() => {
+> 22 |         if (!token) generateNewToken();
+     |                     ^^^^^^^^^^^^^^^^ `generateNewToken` accessed before it is declared
+  23 |     }, []);
+  24 |
+  25 |     // Token regeneration loop
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\guru\attendance\QRGenerator.tsx:66:5
+  64 |     }, [sessionId]);
+  65 |
+> 66 |     const generateNewToken = async () => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 67 |         const newToken = Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 68 |         setToken(newToken);
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 80 |         }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 81 |     };
+     | ^^^^^^^ `generateNewToken` is declared here
+  82 |
+  83 |     return (
+  84 |         <div className="flex flex-col items-center justify-center p-8 bg-white rounded-3xl shadow-xl max-w-md mx-auto border border-slate-100">  react-hooks/immutability
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\kepala-sekolah\AttendanceHeatmap.tsx
+  54:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\landing-new\WallOfLove.tsx
+  14:127  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  14:288  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  25:125  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  25:289  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\landing-new\ZPatternFeatures.tsx
+  102:113  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  102:199  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  107:113  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  107:190  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizBuilder.tsx
+  391:9   error  Error: Cannot access variable before it is declared
+
+`loadQuiz` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizBuilder.tsx:391:9
+  389 |
+  390 |     useEffect(() => {
+> 391 |         loadQuiz();
+      |         ^^^^^^^^ `loadQuiz` accessed before it is declared
+  392 |     }, [quizId]);
+  393 |
+  394 |     const loadQuiz = async () => {
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizBuilder.tsx:394:5
+  392 |     }, [quizId]);
+  393 |
+> 394 |     const loadQuiz = async () => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 395 |         const data = await fetchQuizWithQuestions(quizId);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 396 |         setQuiz(data);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 397 |         setLoading(false);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 398 |     };
+      | ^^^^^^^ `loadQuiz` is declared here
+  399 |
+  400 |     if (loading) {
+  401 |         return (  react-hooks/immutability
+  561:41  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  581:13  error  'formData' is never reassigned. Use 'const' instead                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           prefer-const
+  581:23  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizList.tsx
+  38:9  error  Error: Cannot access variable before it is declared
+
+`fetchQuizzes` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizList.tsx:38:9
+  36 |
+  37 |     useEffect(() => {
+> 38 |         fetchQuizzes();
+     |         ^^^^^^^^^^^^ `fetchQuizzes` accessed before it is declared
+  39 |     }, [classId, userId]);
+  40 |
+  41 |     const fetchQuizzes = async () => {
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizList.tsx:41:5
+  39 |     }, [classId, userId]);
+  40 |
+> 41 |     const fetchQuizzes = async () => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 42 |         const { data, error } = await supabase
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 43 |             .from('quizzes')
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 61 |     };
+     | ^^^^^^^ `fetchQuizzes` is declared here
+  62 |
+  63 |     if (loading) {
+  64 |         return (  react-hooks/immutability
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizPlayer.tsx
+   32:56  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizPlayer.tsx:32:56
+  30 |     const [flagged, setFlagged] = useState<Set<string>>(new Set());
+  31 |     const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+> 32 |     const [startTime, setStartTime] = useState<number>(Date.now());
+     |                                                        ^^^^^^^^^^ Cannot call impure function
+  33 |     const [loading, setLoading] = useState(true);
+  34 |     const [submitting, setSubmitting] = useState(false);
+  35 |     const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);                                                                                                                                                                                                                                                  react-hooks/purity
+   42:9   error  Error: Cannot access variable before it is declared
+
+`loadQuiz` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizPlayer.tsx:42:9
+  40 |     // Load quiz and start attempt
+  41 |     useEffect(() => {
+> 42 |         loadQuiz();
+     |         ^^^^^^^^ `loadQuiz` accessed before it is declared
+  43 |     }, [quizId]);
+  44 |
+  45 |     const loadQuiz = async () => {
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizPlayer.tsx:45:5
+  43 |     }, [quizId]);
+  44 |
+> 45 |     const loadQuiz = async () => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |         const quizData = await fetchQuizWithQuestions(quizId);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 47 |         if (quizData) {
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 69 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 70 |     };
+     | ^^^^^^^ `loadQuiz` is declared here
+  71 |
+  72 |     // Timer countdown
+  73 |     useEffect(() => {  react-hooks/immutability
+  408:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizPlayer.tsx:408:13
+  406 |     useEffect(() => {
+  407 |         if (shuffleOptions && question.options) {
+> 408 |             setOptions(shuffleArray([...question.options]));
+      |             ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  409 |         } else {
+  410 |             setOptions(question.options || []);
+  411 |         }                                                                 react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizResults.tsx
+  30:9  error  Error: Cannot access variable before it is declared
+
+`loadResults` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizResults.tsx:30:9
+  28 |
+  29 |     useEffect(() => {
+> 30 |         loadResults();
+     |         ^^^^^^^^^^^ `loadResults` accessed before it is declared
+  31 |     }, [attemptId]);
+  32 |
+  33 |     const loadResults = async () => {
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\quiz\QuizResults.tsx:33:5
+  31 |     }, [attemptId]);
+  32 |
+> 33 |     const loadResults = async () => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |         const data = await getResults(attemptId);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |         setResult(data);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |     };
+     | ^^^^^^^ `loadResults` is declared here
+  38 |
+  39 |     if (loading) {
+  40 |         return (  react-hooks/immutability
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\siswa\NextActionEngine.tsx
+  56:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  90:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\siswa\PeerReviewTab.tsx
+  47:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\siswa\SkillMap.tsx
+  65:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\siswa\StudentAssignmentsPanel.tsx
+  20:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\siswa\StudentAttendancePanel.tsx
+  61:111  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\siswa\StudentAttendancePanel.tsx:61:111
+  59 |                 <p className="text-slate-500 text-sm max-w-sm mx-auto leading-relaxed mb-10">
+  60 |                     {attendanceRecord
+> 61 |                         ? `Kehadiran Anda telah dicatat pada pukul ${new Date(attendanceRecord.recorded_at || Date.now()).toLocaleTimeString('id-ID')}`
+     |                                                                                                               ^^^^^^^^^^ Cannot call impure function
+  62 |                         : (attendanceSession?.is_open
+  63 |                             ? (attendanceSession.type === 'qr_code'
+  64 |                                 ? 'Guru menggunakan sistem QR Code. Silakan scan QR yang ditampilkan di depan kelas.'  react-hooks/purity
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\siswa\StudentExportModal.tsx
+  105:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  108:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  121:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\siswa\StudentPortfolio.tsx
+  43:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  45:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  47:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\siswa\SubmittedAssignments.tsx
+  59:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\siswa\attendance\QRScanner.tsx
+  21:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  71:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\timecapsule\TimeCapsuleReveal.tsx
+  64:38  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\timecapsule\TimeCapsuleReveal.tsx:64:38
+  62 |                         className="absolute animate-float"
+  63 |                         style={{
+> 64 |                             left: `${Math.random() * 100}%`,
+     |                                      ^^^^^^^^^^^^^ Cannot call impure function
+  65 |                             top: `${Math.random() * 100}%`,
+  66 |                             animationDelay: `${Math.random() * 2}s`,
+  67 |                             animationDuration: `${3 + Math.random() * 2}s`            react-hooks/purity
+  65:37  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\timecapsule\TimeCapsuleReveal.tsx:65:37
+  63 |                         style={{
+  64 |                             left: `${Math.random() * 100}%`,
+> 65 |                             top: `${Math.random() * 100}%`,
+     |                                     ^^^^^^^^^^^^^ Cannot call impure function
+  66 |                             animationDelay: `${Math.random() * 2}s`,
+  67 |                             animationDuration: `${3 + Math.random() * 2}s`
+  68 |                         }}                                             react-hooks/purity
+  66:48  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\timecapsule\TimeCapsuleReveal.tsx:66:48
+  64 |                             left: `${Math.random() * 100}%`,
+  65 |                             top: `${Math.random() * 100}%`,
+> 66 |                             animationDelay: `${Math.random() * 2}s`,
+     |                                                ^^^^^^^^^^^^^ Cannot call impure function
+  67 |                             animationDuration: `${3 + Math.random() * 2}s`
+  68 |                         }}
+  69 |                     >                                             react-hooks/purity
+  67:55  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\timecapsule\TimeCapsuleReveal.tsx:67:55
+  65 |                             top: `${Math.random() * 100}%`,
+  66 |                             animationDelay: `${Math.random() * 2}s`,
+> 67 |                             animationDuration: `${3 + Math.random() * 2}s`
+     |                                                       ^^^^^^^^^^^^^ Cannot call impure function
+  68 |                         }}
+  69 |                     >
+  70 |                         <Sparkles size={Math.random() * 12 + 8} className="text-amber-500/30" />  react-hooks/purity
+  70:41  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\timecapsule\TimeCapsuleReveal.tsx:70:41
+  68 |                         }}
+  69 |                     >
+> 70 |                         <Sparkles size={Math.random() * 12 + 8} className="text-amber-500/30" />
+     |                                         ^^^^^^^^^^^^^ Cannot call impure function
+  71 |                     </div>
+  72 |                 ))}
+  73 |             </div>                                                                                                                                                          react-hooks/purity
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\AnnouncementBoard.tsx
+  51:9  error  Error: Cannot access variable before it is declared
+
+`fetchAnnouncements` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\AnnouncementBoard.tsx:51:9
+  49 |     // Fetch announcements
+  50 |     useEffect(() => {
+> 51 |         fetchAnnouncements();
+     |         ^^^^^^^^^^^^^^^^^^ `fetchAnnouncements` accessed before it is declared
+  52 |
+  53 |         // Subscribe to realtime updates
+  54 |         const channel = supabase
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\AnnouncementBoard.tsx:65:5
+  63 |     }, [classId]);
+  64 |
+> 65 |     const fetchAnnouncements = async () => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |         const { data, error } = await supabase
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 67 |             .from('announcements')
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 76 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 77 |     };
+     | ^^^^^^^ `fetchAnnouncements` is declared here
+  78 |
+  79 |     const deleteAnnouncement = async (id: string) => {
+  80 |         const { error } = await supabase  react-hooks/immutability
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\DataTable.tsx
+  24:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\DeadlineCountdown.tsx
+  37:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\DeadlineCountdown.tsx:37:9
+  35 |
+  36 |     useEffect(() => {
+> 37 |         setMounted(true);
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  38 |         
+  39 |         const calculateTimeLeft = (): TimeLeft => {
+  40 |             const now = new Date().getTime();  react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\LocaleSwitcher.tsx
+  34:9  error  Error: This value cannot be modified
+
+Modifying a variable defined outside a component or hook is not allowed. Consider using an effect.
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\LocaleSwitcher.tsx:34:9
+  32 |     const switchLocale = (newLocale: string) => {
+  33 |         // Set cookie for next-intl (expires in 1 year)
+> 34 |         document.cookie = `${LOCALE_COOKIE}=${newLocale};path=/;max-age=31536000`;
+     |         ^^^^^^^^ value cannot be modified
+  35 |
+  36 |         // Reload page to apply new locale
+  37 |         window.location.reload();  react-hooks/immutability
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\NotificationBell.tsx
+  59:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\NotificationBell.tsx:59:9
+  57 |
+  58 |     useEffect(() => {
+> 59 |         fetchNotifications();
+     |         ^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  60 |
+  61 |         // Subscribe to real-time notifications
+  62 |         const channel = supabase  react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\OnboardingModal.tsx
+  47:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\OnboardingModal.tsx:47:13
+  45 |     useEffect(() => {
+  46 |         if (!isOpen || !step?.targetSelector) {
+> 47 |             setSpotlightStyle({});
+     |             ^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  48 |             return;
+  49 |         }
+  50 |                                                                      react-hooks/set-state-in-effect
+  66:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\OnboardingModal.tsx:66:13
+  64 |     useEffect(() => {
+  65 |         if (isOpen) {
+> 66 |             setIsAnimating(true);
+     |             ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  67 |             const timer = setTimeout(() => setIsAnimating(false), 300);
+  68 |             return () => clearTimeout(timer);
+  69 |         }  react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\ReminderWidget.tsx
+  42:9  error  Error: Cannot access variable before it is declared
+
+`fetchReminders` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\ReminderWidget.tsx:42:9
+  40 |
+  41 |     useEffect(() => {
+> 42 |         fetchReminders();
+     |         ^^^^^^^^^^^^^^ `fetchReminders` accessed before it is declared
+  43 |     }, [userId]);
+  44 |
+  45 |     const fetchReminders = async () => {
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\ReminderWidget.tsx:45:5
+  43 |     }, [userId]);
+  44 |
+> 45 |     const fetchReminders = async () => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |         const { data, error } = await supabase
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 47 |             .from('reminders')
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 57 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 58 |     };
+     | ^^^^^^^ `fetchReminders` is declared here
+  59 |
+  60 |     const completeReminder = async (id: string) => {
+  61 |         await supabase  react-hooks/immutability
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\SearchBar.tsx
+   98:13   error  Error: Cannot access variable before it is declared
+
+`handleSelect` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\SearchBar.tsx:98:13
+   96 |             setSelectedIndex(i => Math.max(i - 1, 0));
+   97 |         } else if (e.key === 'Enter' && results[selectedIndex]) {
+>  98 |             handleSelect(results[selectedIndex]);
+      |             ^^^^^^^^^^^^ `handleSelect` accessed before it is declared
+   99 |         }
+  100 |     }, [results, selectedIndex]);
+  101 |
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\SearchBar.tsx:102:5
+  100 |     }, [results, selectedIndex]);
+  101 |
+> 102 |     const handleSelect = (result: SearchResult) => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 103 |         onSelect?.(result);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 104 |         setIsOpen(false);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 105 |         setQuery('');
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 106 |     };
+      | ^^^^^^^ `handleSelect` is declared here
+  107 |
+  108 |     // Click outside to close
+  109 |     useEffect(() => {  react-hooks/immutability
+  221:107  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         react/no-unescaped-entities
+  221:115  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         react/no-unescaped-entities
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\SkeletonLoading.tsx
+  145:50  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\SkeletonLoading.tsx:145:50
+  143 |                         key={i}
+  144 |                         className="flex-1 rounded-t-lg"
+> 145 |                         style={{ height: `${30 + Math.random() * 60}%` }}
+      |                                                  ^^^^^^^^^^^^^ Cannot call impure function
+  146 |                     />
+  147 |                 ))}
+  148 |             </div>  react-hooks/purity
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\ThemeProvider.tsx
+  46:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\ThemeProvider.tsx:46:9
+  44 |
+  45 |     useEffect(() => {
+> 46 |         setMounted(true);
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  47 |         const stored = localStorage.getItem(storageKey) as Theme | null;
+  48 |         if (stored) {
+  49 |             setThemeState(stored);  react-hooks/set-state-in-effect
+  68:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\ui\ThemeProvider.tsx:68:9
+  66 |
+  67 |         root.classList.add(resolved);
+> 68 |         setResolvedTheme(resolved);
+     |         ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  69 |     }, [theme, mounted]);
+  70 |
+  71 |     useEffect(() => {                                                    react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\widgets\PomodoroTimer.tsx
+  51:17  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\widgets\PomodoroTimer.tsx:51:17
+  49 |             
+  50 |             if (mode === 'focus') {
+> 51 |                 setSessions(prev => prev + 1);
+     |                 ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  52 |                 setMode('break');
+  53 |                 setTimeLeft(defaultBreakMinutes * 60);
+  54 |             } else {  react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\components\widgets\XPFlowParticles.tsx
+  24:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\context\FocusModeContext.tsx
+  27:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\context\FocusModeContext.tsx:27:13
+  25 |         const saved = localStorage.getItem(FOCUS_MODE_KEY);
+  26 |         if (saved === 'true') {
+> 27 |             setIsFocusMode(true);
+     |             ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  28 |         }
+  29 |     }, []);
+  30 |  react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\context\LowDataContext.tsx
+  27:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\context\LowDataContext.tsx:27:13
+  25 |         const saved = localStorage.getItem(LOW_DATA_KEY);
+  26 |         if (saved === 'true') {
+> 27 |             setIsLowDataMode(true);
+     |             ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  28 |         }
+  29 |         
+  30 |         // Also detect slow connection  react-hooks/set-state-in-effect
+  32:46  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\__tests__\useAttendance.test.ts
+  13:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  32:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useAdminDashboard.ts
+   35:34  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+   61:59  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+  109:42  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+  139:17  error  'schoolMap' is never reassigned. Use 'const' instead                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             prefer-const
+  146:42  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+  149:35  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+  187:15  error  Error: Cannot access variable before it is declared
+
+`refreshData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useAdminDashboard.ts:187:15
+  185 |
+  186 |         toast.success(`Sekolah "${name}" berhasil dibuat!`);
+> 187 |         await refreshData();
+      |               ^^^^^^^^^^^ `refreshData` accessed before it is declared
+  188 |         return school;
+  189 |     }, [user]);
+  190 |
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useAdminDashboard.ts:248:5
+  246 |     }, [user, users, fetchUsers]);
+  247 |
+> 248 |     const refreshData = useCallback(async () => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 249 |         await fetchHealthView();
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 250 |         await fetchSchools();
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 251 |         await fetchUsers();
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 252 |     }, [fetchHealthView, fetchSchools, fetchUsers]);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `refreshData` is declared here
+  253 |
+  254 |     useEffect(() => {
+  255 |         if (!user) return;  react-hooks/immutability
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useAnalytics.ts
+  59:37  error  Unexpected any. Specify a different type                    @typescript-eslint/no-explicit-any
+  61:26  error  Unexpected any. Specify a different type                    @typescript-eslint/no-explicit-any
+  67:17  error  'attendanceQuery' is never reassigned. Use 'const' instead  prefer-const
+  79:44  error  Unexpected any. Specify a different type                    @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useAttendance.ts
+  219:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useClasses.ts
+  94:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useClasses.ts:94:13
+  92 |     useEffect(() => {
+  93 |         if (classes.length > 0 && !selectedClassId) {
+> 94 |             setSelectedClassId(classes[0].id);
+     |             ^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  95 |         }
+  96 |     }, [classes, selectedClassId]);
+  97 |  react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useDataArchive.ts
+  174:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  196:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  234:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useGamification.ts
+  88:82  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useGuruDashboard.ts
+  139:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useGuruDashboard.ts:139:13
+  137 |     useEffect(() => {
+  138 |         if (user?.full_name) {
+> 139 |             setTeacherName(user.full_name);
+      |             ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  140 |         }
+  141 |     }, [user]);
+  142 |                                         react-hooks/set-state-in-effect
+  176:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useGuruDashboard.ts:176:13
+  174 |     useEffect(() => {
+  175 |         if (activeTab === 'portofolio') {
+> 176 |             fetchTeacherPortfolio();
+      |             ^^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  177 |         }
+  178 |     }, [activeTab, fetchTeacherPortfolio]);
+  179 |  react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useGuruStats.ts
+  68:26   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  74:74   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  95:81   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  95:123  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useKepsekDashboard.ts
+   58:34  error  Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `user`, but the source dependencies were [user?.school_id]. Inferred less specific property than source.
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useKepsekDashboard.ts:58:34
+   56 |     const [loading, setLoading] = useState(true);
+   57 |
+>  58 |     const fetchAll = useCallback(async () => {
+      |                                  ^^^^^^^^^^^^^
+>  59 |         if (!user?.school_id) return;
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  60 |         const schoolId = user.school_id;
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 157 |         setAlerts(newAlerts);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 158 |     }, [user?.school_id]);
+      | ^^^^^^ Could not preserve existing manual memoization
+  159 |
+  160 |     useEffect(() => {
+  161 |         if (!user) return;  react-hooks/preserve-manual-memoization
+   70:51  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+   85:62  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+  162:9   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useKepsekDashboard.ts:162:9
+  160 |     useEffect(() => {
+  161 |         if (!user) return;
+> 162 |         setLoading(true);
+      |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  163 |         fetchAll().finally(() => setLoading(false));
+  164 |     }, [user, fetchAll]);
+  165 |                                                                                                                               react-hooks/set-state-in-effect
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useManualGrade.ts
+  216:17  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useMoodCheckin.ts
+  93:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useOnboarding.ts
+  79:9  error  Error: Cannot access variable before it is declared
+
+`checkOnboardingStatus` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useOnboarding.ts:79:9
+  77 |         }
+  78 |
+> 79 |         checkOnboardingStatus();
+     |         ^^^^^^^^^^^^^^^^^^^^^ `checkOnboardingStatus` accessed before it is declared
+  80 |     }, [userId]);
+  81 |
+  82 |     async function checkOnboardingStatus() {
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useOnboarding.ts:82:5
+   80 |     }, [userId]);
+   81 |
+>  82 |     async function checkOnboardingStatus() {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  83 |         try {
+      | ^^^^^^^^^^^^^
+>  84 |             const { data, error } = await supabase
+      ΓÇª
+      | ^^^^^^^^^^^^^
+> 110 |         }
+      | ^^^^^^^^^^^^^
+> 111 |     }
+      | ^^^^^^ `checkOnboardingStatus` is declared here
+  112 |
+  113 |     const nextStep = useCallback(async () => {
+  114 |         const newStep = Math.min(status.currentStep + 1, TUTORIAL_STEPS.length - 1);  react-hooks/immutability
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\hooks\useXPSystem.ts
+  89:25  error  'error' is never reassigned. Use 'const' instead  prefer-const
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\lib\firebase.ts
+  74:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\USER\Desktop\Project\Klolakelas\src\lib\peerReview.ts
+   70:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   86:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  107:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  134:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Γ£û 133 problems (133 errors, 0 warnings)
+  3 errors and 0 warnings potentially fixable with the `--fix` option.
+

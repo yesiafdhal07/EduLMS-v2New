@@ -1,17 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Footer, EntranceAnimation } from '@/components/ui';
+import { AmbientBackground } from '@/components/landing-new/AmbientBackground';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('error') === 'profile_missing') {
+            void supabase.auth.signOut();
+            toast.error(
+                'Sesi tidak memiliki profil di database. Silakan masuk lagi setelah admin memperbaiki akun, atau hubungi administrator.'
+            );
+            params.delete('error');
+            const next = `${window.location.pathname}${params.toString() ? `?${params}` : ''}`;
+            window.history.replaceState({}, '', next);
+        }
+    }, []);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,77 +52,88 @@ export default function LoginPage() {
                 .eq('id', data.user.id)
                 .single();
 
+            const roleRoutes: Record<string, string> = {
+                admin: '/admin',
+                kepala_sekolah: '/kepala-sekolah',
+                guru: '/guru',
+                siswa: '/siswa',
+                orang_tua: '/ortu',
+            };
+
             if (dbError || !dbUser) {
-                // Fallback to metadata if DB query fails, but log warning
-                console.warn('Could not verify role from database, using metadata');
-                const role = data.user.user_metadata?.role;
-                router.push(role === 'guru' ? '/guru' : '/siswa');
+                console.error('Login blocked: auth user has no public.users row (cannot verify role)', dbError);
+                toast.error(
+                    'Profil akun tidak ditemukan di database. Hubungi admin atau pastikan trigger pendaftaran Supabase aktif.'
+                );
+                await supabase.auth.signOut();
             } else {
-                // Use database role as source of truth
-                if (dbUser.role === 'guru' || dbUser.role === 'admin') {
-                    router.push('/guru');
-                } else {
-                    router.push('/siswa');
-                }
+                document.cookie = `user_role=${dbUser.role}; path=/; max-age=604800; SameSite=Strict${window.location.protocol === 'https:' ? '; Secure' : ''}`;
+                router.push(roleRoutes[dbUser.role] || '/siswa');
             }
         }
         setLoading(false);
     };
 
+    // Google OAuth removed — login is email/password only
+
     return (
         <EntranceAnimation>
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-4">
-                <div className="w-full max-w-md bg-white/5 backdrop-blur-md rounded-[2.5rem] p-8 border border-white/10 shadow-2xl shadow-black/50">
+            <div className="min-h-screen flex items-center justify-center bg-[#0F1014] p-4 relative overflow-hidden">
+                <AmbientBackground />
+                <div className="w-full max-w-md bg-[#181A20]/80 backdrop-blur-xl rounded-[3rem] p-10 border border-white/5 shadow-2xl relative z-10">
                     <div className="text-center mb-10">
-                        <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 tracking-tight">
+                        <div className="w-16 h-16 bg-[#B4A3FF] rounded-2xl flex items-center justify-center font-black text-[#0F1014] text-3xl mx-auto mb-6 shadow-[0_10px_30px_rgba(180,163,255,0.3)]">K</div>
+                        <h1 className="text-4xl font-black text-white tracking-tight">
                             Klolakelas
                         </h1>
-                        <p className="text-slate-400 mt-2 font-medium">Selamat datang di platform belajar digital</p>
+                        <p className="text-slate-400 mt-3 font-medium text-sm">Masuk log ke portal eksekutif Anda.</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-6">
-                        <div>
-                            <label htmlFor="login-email" className="block text-sm font-bold text-slate-300 mb-2 uppercase tracking-wide">Email</label>
-                            <input
-                                id="login-email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
-                                placeholder="nama@sekolah.id"
-                                autoComplete="email"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="login-password" className="block text-sm font-bold text-slate-300 mb-2 uppercase tracking-wide">Password</label>
-                            <input
-                                id="login-password"
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-medium"
-                                placeholder="••••••••"
-                                autoComplete="current-password"
-                                required
-                            />
-                        </div>
+                    <div className="space-y-6">
+                        <form onSubmit={handleLogin} className="space-y-6">
+                            <div>
+                                <label htmlFor="login-email" className="block text-sm font-bold text-slate-300 mb-2 uppercase tracking-wide">Email</label>
+                                <input
+                                    id="login-email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full bg-[#0F1014] border border-white/5 rounded-2xl px-5 py-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#B4A3FF] transition-all font-medium"
+                                    placeholder="nama@sekolah.id"
+                                    autoComplete="email"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="login-password" className="block text-sm font-bold text-slate-300 mb-2 uppercase tracking-wide">Password</label>
+                                <input
+                                    id="login-password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full bg-[#0F1014] border border-white/5 rounded-2xl px-5 py-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-[#B4A3FF] transition-all font-medium"
+                                    placeholder="••••••••"
+                                    autoComplete="current-password"
+                                    required
+                                />
+                            </div>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black py-4 rounded-2xl shadow-xl shadow-indigo-600/20 transform active:scale-95 transition-all disabled:opacity-50 uppercase tracking-widest text-sm"
-                        >
-                            {loading ? 'Memuat...' : 'Masuk'}
-                        </button>
-                    </form>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full bg-white hover:bg-slate-200 text-[#0F1014] font-black py-4 rounded-2xl shadow-[0_10px_30px_rgba(255,255,255,0.1)] transform hover:-translate-y-1 transition-all disabled:opacity-50 tracking-wide text-[15px]"
+                            >
+                                {loading ? 'Memuat...' : 'Akses Portal'}
+                            </button>
+                        </form>
+                    </div>
 
                     <div className="mt-8 text-center space-y-4">
-                        <p className="text-slate-400 text-sm">
-                            Belum punya akun? <Link href="/register" className="text-indigo-400 font-bold hover:text-indigo-300 transition-colors">Daftar di sini</Link>
+                        <p className="text-slate-400 text-sm font-medium">
+                            Belum mendaftar? <Link href="/register" className="text-[#86EAA5] font-bold hover:text-[#6cdb8d] transition-colors">Konsultasi ke Ahli</Link>
                         </p>
                         <p className="text-slate-500 text-xs">
-                            Lupa password? <span className="hover:text-slate-300 cursor-pointer transition-colors">Hubungi Admin</span>
+                            Lupa password? <Link href="/forgot-password" className="hover:text-slate-300 cursor-pointer transition-colors">Reset di sini</Link>
                         </p>
                     </div>
                 </div>

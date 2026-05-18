@@ -24,79 +24,56 @@ export function useAnalytics(classId?: string) {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
-            // 1. Grades Stats (Average & Pass Rate)
-            let gradesQuery = supabase.from('grades').select('score');
-            // Note: filtering by classId for grades requires joining submissions -> assignments -> subjects
-            // For simplicity/performance in this summary, we might fetch all teacher's grades if classId is missing,
-            // or filtering client-side if dataset is small. 
-            // But to be proper, let's assume if classId is provided we want specific class.
+            // 1. Get Class Members if classId is provided
+            let studentIds: string[] = [];
+            if (classId) {
+                const { data: members } = await supabase
+                    .from('class_members')
+                    .select('user_id')
+                    .eq('class_id', classId);
+                studentIds = members?.map(m => m.user_id) || [];
+                
+                if (studentIds.length === 0) {
+                    setStats({ averageScore: 0, passRate: 0, attendanceRate: 0, completedAssignments: 0 });
+                    setLoading(false);
+                    return;
+                }
+            }
+
+            // 2. Fetch Assignments for this class
+            const { data: assignments } = await supabase
+                .from('assignments')
+                .select('id')
+                .eq('class_id', classId);
+            const assignmentIds = (assignments || []).map(a => a.id);
+
+            // 3. Parallel Queries for Data
+            const [assignmentGradesResult, keaktifanGradesResult, submissionsResult] = await Promise.all([
+                assignmentIds.length > 0 ? supabase.from('grades').select('score, type, created_at, student_id').in('assignment_id', assignmentIds) : Promise.resolve({ data: [] }),
+                supabase.from('grades').select('score, type, created_at, student_id').eq('class_id', classId),
+                assignmentIds.length > 0 ? supabase.from('submissions').select('id, student_id').in('assignment_id', assignmentIds) : Promise.resolve({ data: [] })
+            ]);
+
+            const allGrades = [...(assignmentGradesResult.data || []), ...(keaktifanGradesResult.data || [])];
+            const allSubmissions = submissionsResult.data || [];
+
+            // Filter grades and submissions strictly to enrolled students
+            const validGrades = allGrades.filter(g => studentIds.includes(g.student_id)).filter(g => g.score !== null);
+            const validSubmissions = allSubmissions.filter(s => studentIds.includes(s.student_id));
             
-            // However, RLS usually filters to "Teacher's Own Data". 
-            // If classId is present, we should filter.
-            if (classId) {
-                // Complex filter not easily done in one simple query without join. 
-                // We'll fetch all grades for simplicity as optimization later, OR specific query with RPC if needed.
-                // For now, let's try to fetch all and filter in memory if volume isn't huge, 
-                // OR better: use separate queries if we can't join easily.
-                
-                // Actually, let's use the same query pattern as charts:
-                 const { data: grades } = await supabase
-                    .from('grades')
-                    .select(`
-                        score,
-                        submissions!inner(
-                            assignments!inner(
-                                subjects!inner(class_id)
-                            )
-                        )
-                    `)
-                    .eq('submissions.assignments.subjects.class_id', classId);
-                 
-                 processGrades(grades?.map(g => ({ score: g.score })) || []);
-            } else {
-                 const { data: grades } = await supabase.from('grades').select('score');
-                 processGrades(grades || []);
-            }
+            processGrades(validGrades);
 
-            // 2. Attendance Stats
-            if (classId) {
-                const { count: total, error: tErr } = await supabase
-                    .from('attendance_records')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('attendance.class_id', classId); // Joining implicitly via RLS? No, need explicit join or filter
-                
-                // Actually attendance_records -> attendance(class_id)
-                const { data: recs } = await supabase
-                    .from('attendance_records')
-                    .select(`status, attendance!inner(class_id)`)
-                    .eq('attendance.class_id', classId);
-                
-                processAttendance(recs || []);
-            } else {
-                const { data: recs } = await supabase.from('attendance_records').select('status');
-                processAttendance(recs || []);
-            }
+            // 4. Attendance Stats 
+            const attendanceQuery = supabase.from('attendance_records').select(`
+                status, 
+                attendance!inner(id)
+            `).eq('attendance.class_id', classId);
+            
+            const { data: recs } = await attendanceQuery;
+            processAttendance(recs || []);
 
-            // 3. Completed Assignments (Submissions)
-             if (classId) {
-                 const { count } = await supabase
-                    .from('submissions')
-                    .select(`
-                        id,
-                        assignments!inner(
-                            subjects!inner(class_id)
-                        )
-                    `, { count: 'exact', head: true })
-                    .eq('assignments.subjects.class_id', classId);
-                 
-                 setStats(prev => ({ ...prev, completedAssignments: count || 0 }));
-             } else {
-                 const { count } = await supabase
-                    .from('submissions')
-                    .select('id', { count: 'exact', head: true });
-                 
-                 setStats(prev => ({ ...prev, completedAssignments: count || 0 }));
-            }
+            // 5. Submissions Count
+            setStats(prev => ({ ...prev, completedAssignments: validSubmissions.length }));
 
         } catch (error) {
             logError(error, 'useAnalytics.fetchStats');

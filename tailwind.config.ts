@@ -39,16 +39,61 @@ const config: Config = {
             fontFamily: {
                 sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
                 outfit: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+                // Universe Fonts
+                fraunces: ['var(--font-fraunces)', 'Georgia', 'serif'],         // Guru: Literary & warm
+                'space-grotesk': ['var(--font-space-grotesk)', 'system-ui', 'sans-serif'], // Siswa: Bold & modern
+                'geist-mono': ['var(--font-geist-mono)', 'monospace'],           // Admin: Technical precision
+            },
+            // Semantic color tokens (global, same across all universes)
+            colors: {
+                'semantic-success': '#10B981',
+                'semantic-warning': '#F59E0B',
+                'semantic-error': '#EF4444',
+                'semantic-info': '#3B82F6',
+            },
+            // Z-index scale
+            zIndex: {
+                'base': '0',
+                'raised': '10',
+                'dropdown': '100',
+                'sticky': '200',
+                'overlay': '300',
+                'modal': '400',
+                'toast': '500',
             },
             // Custom Animations
             keyframes: {
                 'flip-in': {
                     '0%': { transform: 'perspective(2000px) rotateX(-60deg) scale(0.95)', opacity: '0' },
                     '100%': { transform: 'perspective(2000px) rotateX(0deg) scale(1)', opacity: '1' }
+                },
+                'scan': {
+                    '0%': { transform: 'translateY(-100%)', opacity: '0' },
+                    '50%': { opacity: '1' },
+                    '100%': { transform: 'translateY(100vh)', opacity: '0' }
+                },
+                'float': {
+                    '0%, 100%': { transform: 'translateY(0) scale(1)' },
+                    '50%': { transform: 'translateY(-20px) scale(1.05)' }
+                },
+                'twinkle': {
+                    '0%, 100%': { opacity: '0.2', transform: 'scale(0.8)' },
+                    '50%': { opacity: '1', transform: 'scale(1.2)' }
+                },
+                'bounce-subtle': {
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '50%': { transform: 'translateY(-10px)' }
                 }
             },
             animation: {
                 'flip-in': 'flip-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+                'scan': 'scan 3s linear infinite',
+                'float': 'float 6s ease-in-out infinite',
+                'float-delayed': 'float 6s ease-in-out 3s infinite',
+                'twinkle': 'twinkle 4s ease-in-out infinite',
+                'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                'bounce-subtle': 'bounce-subtle 3s ease-in-out infinite',
+                'ping-slow': 'ping 3s cubic-bezier(0, 0, 0.2, 1) infinite',
             }
         },
     },

@@ -1,14 +1,10 @@
 import { getRequestConfig } from 'next-intl/server';
-import { routing } from './routing';
+import { cookies } from 'next/headers';
 
-export default getRequestConfig(async ({ requestLocale }) => {
-    // Get the locale from the request
-    let locale = await requestLocale;
-
-    // Validate that the incoming locale is supported
-    if (!locale || !routing.locales.includes(locale as 'id' | 'en')) {
-        locale = routing.defaultLocale;
-    }
+export default getRequestConfig(async () => {
+    // Read language preference from cookies, default to Indonesian
+    const cookieStore = await cookies();
+    const locale = cookieStore.get('NEXT_LOCALE')?.value || 'id';
 
     return {
         locale,

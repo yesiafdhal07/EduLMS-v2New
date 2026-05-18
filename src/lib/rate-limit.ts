@@ -86,12 +86,12 @@ export async function checkRateLimit(identifier: string): Promise<RateLimitResul
             reset: Math.floor(result.reset / 1000), // Convert to seconds
         };
     } catch (error) {
-        // On Redis error, fail open (allow request) to prevent service disruption
-        console.error('[RateLimit] Redis error, failing open:', error);
+        // SECURITY: On Redis error, fail CLOSED to prevent brute force during outages
+        console.error('[RateLimit] Redis error, failing CLOSED:', error);
         return {
-            success: true,
-            limit: 100,
-            remaining: 100,
+            success: false,
+            limit: 0,
+            remaining: 0,
             reset: Math.floor(Date.now() / 1000) + 60,
         };
     }

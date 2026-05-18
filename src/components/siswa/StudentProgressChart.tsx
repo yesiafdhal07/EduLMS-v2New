@@ -2,6 +2,7 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { TrendingUp, Calendar } from 'lucide-react';
+import { ErrorBoundary } from '@/components/ui';
 
 interface ProgressData {
     week: string;
@@ -41,53 +42,55 @@ export function StudentProgressChart({ data, title = "Progress Nilai" }: Student
             </div>
 
             <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={100}>
-                    <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                        <XAxis
-                            dataKey="week"
-                            tick={{ fontSize: 12, fill: '#94a3b8' }}
-                            tickLine={false}
-                            axisLine={false}
-                        />
-                        <YAxis
-                            domain={[0, 100]}
-                            tick={{ fontSize: 12, fill: '#94a3b8' }}
-                            tickLine={false}
-                            axisLine={false}
-                        />
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: '#0f172a',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                borderRadius: '12px',
-                                color: 'white',
-                                fontSize: '12px',
-                                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
-                            }}
-                            itemStyle={{ color: '#e2e8f0' }}
-                        />
-                        <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                        <Line
-                            type="monotone"
-                            dataKey="nilai"
-                            stroke="#818cf8"
-                            strokeWidth={3}
-                            dot={{ fill: '#818cf8', strokeWidth: 2, r: 4 }}
-                            activeDot={{ r: 6, fill: '#c7d2fe' }}
-                            name="Nilai Anda"
-                        />
-                        <Line
-                            type="monotone"
-                            dataKey="target"
-                            stroke="#34d399"
-                            strokeWidth={2}
-                            strokeDasharray="5 5"
-                            dot={false}
-                            name="Target (75)"
-                        />
-                    </LineChart>
-                </ResponsiveContainer>
+                <ErrorBoundary>
+                    <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={100}>
+                        <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                            <XAxis
+                                dataKey="week"
+                                tick={{ fontSize: 12, fill: '#94a3b8' }}
+                                tickLine={false}
+                                axisLine={false}
+                            />
+                            <YAxis
+                                domain={[0, 100]}
+                                tick={{ fontSize: 12, fill: '#94a3b8' }}
+                                tickLine={false}
+                                axisLine={false}
+                            />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: '#0f172a',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '12px',
+                                    color: 'white',
+                                    fontSize: '12px',
+                                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
+                                }}
+                                itemStyle={{ color: '#e2e8f0' }}
+                            />
+                            <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                            <Line
+                                type="monotone"
+                                dataKey="nilai"
+                                stroke="#818cf8"
+                                strokeWidth={3}
+                                dot={{ fill: '#818cf8', strokeWidth: 2, r: 4 }}
+                                activeDot={{ r: 6, fill: '#c7d2fe' }}
+                                name="Nilai Anda"
+                            />
+                            <Line
+                                type="monotone"
+                                dataKey="target"
+                                stroke="#34d399"
+                                strokeWidth={2}
+                                strokeDasharray="5 5"
+                                dot={false}
+                                name="Target (75)"
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </ErrorBoundary>
             </div>
         </div>
     );

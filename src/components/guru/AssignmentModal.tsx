@@ -85,16 +85,16 @@ export function AssignmentModal({
             />
 
             {/* Modal Container */}
-            <div className="bg-white w-full max-w-xl rounded-[3rem] shadow-2xl relative z-10 overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="bg-[#0C0B12] border border-[var(--guru-border-default)] w-full max-w-xl rounded-[3rem] shadow-2xl shadow-black/50 relative z-10 overflow-hidden animate-in zoom-in-95 duration-300">
 
                 {/* Header */}
-                <div className="p-10 border-b border-slate-100 flex justify-between items-center">
-                    <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase">
+                <div className="p-10 border-b border-white/10 flex justify-between items-center">
+                    <h3 className="text-2xl font-black text-white tracking-tight uppercase">
                         Buat Tugas Baru
                     </h3>
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors"
+                        className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-400 hover:bg-white/10 hover:text-rose-400 transition-colors"
                         aria-label="Tutup modal"
                         type="button"
                     >
@@ -113,7 +113,7 @@ export function AssignmentModal({
                             id="assignment-title"
                             type="text"
                             placeholder="Contoh: Latihan Vektor Bagian 1"
-                            className="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold transition-all text-slate-900 placeholder:text-slate-400"
+                            className="w-full px-8 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[var(--guru-accent)]/20 font-bold transition-all text-white placeholder:text-slate-500"
                             value={form.title}
                             onChange={(e) => updateField('title', e.target.value)}
                         />
@@ -126,13 +126,13 @@ export function AssignmentModal({
                         </label>
                         <select
                             id="assignment-class"
-                            className="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold transition-all text-slate-900"
+                            className="w-full px-8 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[var(--guru-accent)]/20 font-bold transition-all text-white"
                             value={form.classId}
                             onChange={(e) => handleClassChange(e.target.value)}
                         >
-                            <option value="">-- Pilih Kelas --</option>
+                            <option value="" className="bg-[#0C0B12]">-- Pilih Kelas --</option>
                             {classes.map(c => (
-                                <option key={c.id} value={c.id}>{c.name}</option>
+                                <option key={c.id} value={c.id} className="bg-[#0C0B12]">{c.name}</option>
                             ))}
                         </select>
                     </div>
@@ -146,14 +146,14 @@ export function AssignmentModal({
                             <button
                                 type="button"
                                 onClick={() => updateField('targetType', 'class')}
-                                className={`py-4 rounded-xl border-2 font-black transition-all text-xs ${form.targetType === 'class' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-400 border-slate-100'}`}
+                                className={`py-4 rounded-xl border-2 font-black transition-all text-xs ${form.targetType === 'class' ? 'bg-[var(--guru-accent)] text-white border-[var(--guru-accent)]' : 'bg-white/5 text-slate-400 border-white/10'}`}
                             >
                                 SELURUH KELAS
                             </button>
                             <button
                                 type="button"
                                 onClick={() => updateField('targetType', 'student')}
-                                className={`py-4 rounded-xl border-2 font-black transition-all text-xs ${form.targetType === 'student' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-400 border-slate-100'}`}
+                                className={`py-4 rounded-xl border-2 font-black transition-all text-xs ${form.targetType === 'student' ? 'bg-[var(--guru-accent)] text-white border-[var(--guru-accent)]' : 'bg-white/5 text-slate-400 border-white/10'}`}
                             >
                                 MURID TERTENTU
                             </button>
@@ -168,13 +168,13 @@ export function AssignmentModal({
                             </label>
                             <select
                                 id="assignment-student"
-                                className="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold transition-all text-slate-900"
+                                className="w-full px-8 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[var(--guru-accent)]/20 font-bold transition-all text-white"
                                 value={form.targetId}
                                 onChange={(e) => updateField('targetId', e.target.value)}
                             >
-                                <option value="">-- Pilih Murid --</option>
+                                <option value="" className="bg-[#0C0B12]">-- Pilih Murid --</option>
                                 {students.map(s => (
-                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                    <option key={s.id} value={s.id} className="bg-[#0C0B12]">{s.name}</option>
                                 ))}
                             </select>
                         </div>
@@ -190,7 +190,7 @@ export function AssignmentModal({
                                 id="assignment-deadline"
                                 type="datetime-local"
                                 required
-                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-slate-700 font-medium"
+                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--guru-accent)]/20 text-white font-medium [color-scheme:dark]"
                                 value={form.deadline}
                                 onChange={(e) => updateField('deadline', e.target.value)}
                             />
@@ -201,13 +201,13 @@ export function AssignmentModal({
                             </label>
                             <select
                                 id="assignment-format"
-                                className="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold transition-all text-sm text-slate-900"
+                                className="w-full px-8 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[var(--guru-accent)]/20 font-bold transition-all text-sm text-white"
                                 value={form.requiredFormat}
                                 onChange={(e) => updateField('requiredFormat', e.target.value)}
                             >
-                                <option value="PDF">PDF ONLY</option>
-                                <option value="DOCX">WORD</option>
-                                <option value="ANY">BEBAS</option>
+                                <option value="PDF" className="bg-[#0C0B12]">PDF ONLY</option>
+                                <option value="DOCX" className="bg-[#0C0B12]">WORD</option>
+                                <option value="ANY" className="bg-[#0C0B12]">BEBAS</option>
                             </select>
                         </div>
                     </div>
@@ -226,13 +226,13 @@ export function AssignmentModal({
                             />
                             <label
                                 htmlFor="assignment-file"
-                                className="w-full flex items-center gap-4 px-8 py-5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl hover:border-indigo-400 hover:bg-slate-100 transition-all cursor-pointer overflow-hidden"
+                                className="w-full flex items-center gap-4 px-8 py-5 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl hover:border-[var(--guru-accent)]/50 hover:bg-white/10 transition-all cursor-pointer overflow-hidden"
                             >
-                                <div className="p-3 bg-white rounded-xl shadow-sm group-hover:bg-indigo-50 transition-colors">
-                                    {uploading ? <Loader2 size={24} className="text-indigo-600 animate-spin" /> : <Upload size={24} className="text-indigo-600" />}
+                                <div className="p-3 bg-[#0C0B12] rounded-xl shadow-sm border border-white/5 group-hover:border-[var(--guru-accent)]/30 transition-colors">
+                                    {uploading ? <Loader2 size={24} className="text-[var(--guru-accent)] animate-spin" /> : <Upload size={24} className="text-[var(--guru-accent)]" />}
                                 </div>
                                 <div className="flex-1 truncate">
-                                    <p className="text-sm font-black text-slate-700 truncate">
+                                    <p className="text-sm font-black text-white truncate">
                                         {form.fileUrl ? 'File Terpilih' : 'Unggah File Tugas'}
                                     </p>
                                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
@@ -250,7 +250,7 @@ export function AssignmentModal({
                         </label>
                         <textarea
                             id="assignment-desc"
-                            className="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold transition-all h-24 resize-none text-slate-900 placeholder:text-slate-400"
+                            className="w-full px-8 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[var(--guru-accent)]/20 font-bold transition-all h-24 resize-none text-white placeholder:text-slate-500"
                             value={form.description}
                             onChange={(e) => updateField('description', e.target.value)}
                         />
@@ -258,11 +258,11 @@ export function AssignmentModal({
                 </div>
 
                 {/* Footer Actions */}
-                <div className="p-10 bg-slate-50 flex gap-4">
+                <div className="p-10 border-t border-white/10 bg-[#08080C] flex gap-4">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex-1 py-5 bg-white border border-slate-200 text-slate-500 font-black rounded-2xl hover:bg-slate-100 transition-all"
+                        className="flex-1 py-5 bg-white/5 border border-white/10 text-slate-400 font-black rounded-2xl hover:bg-white/10 hover:text-white transition-all"
                     >
                         BATAL
                     </button>
@@ -270,7 +270,7 @@ export function AssignmentModal({
                         type="button"
                         onClick={handleFormSubmit}
                         disabled={uploading || submitting}
-                        className="flex-1 py-5 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 shadow-xl shadow-indigo-600/20 transform active:scale-95 transition-all disabled:opacity-50"
+                        className="flex-1 py-5 bg-[var(--guru-accent)] text-white font-black rounded-2xl hover:opacity-90 shadow-xl shadow-[var(--guru-accent)]/20 transform active:scale-95 transition-all disabled:opacity-50"
                     >
                         {submitting ? 'MEMBUAT...' : uploading ? 'MENGUNGGAH...' : 'BUAT TUGAS'}
                     </button>

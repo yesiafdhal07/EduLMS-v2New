@@ -14,7 +14,7 @@ interface MaterialModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
-    subjectId: string | null;
+    subjectId?: string | null;
     classId: string | null;
 }
 
@@ -155,14 +155,14 @@ export function MaterialModal({
                 onClick={onClose}
                 aria-hidden="true"
             />
-            <div className="bg-white w-full max-w-xl rounded-[3rem] shadow-2xl relative z-10 overflow-hidden animate-in zoom-in-95 duration-300">
-                <div className="p-10 border-b border-slate-100 flex justify-between items-center">
-                    <h3 className="text-2xl font-black text-slate-900 tracking-tight uppercase">
+            <div className="bg-[#0C0B12] border border-[var(--guru-border-default)] w-full max-w-xl rounded-[3rem] shadow-2xl shadow-black/50 relative z-10 overflow-hidden animate-in zoom-in-95 duration-300">
+                <div className="p-10 border-b border-white/10 flex justify-between items-center">
+                    <h3 className="text-2xl font-black text-white tracking-tight uppercase">
                         Tambah Materi Baru
                     </h3>
                     <button
                         onClick={onClose}
-                        className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors"
+                        className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-slate-400 hover:bg-white/10 hover:text-rose-400 transition-colors"
                         aria-label="Tutup modal"
                     >
                         <XCircle size={24} />
@@ -179,7 +179,7 @@ export function MaterialModal({
                             id="material-title"
                             type="text"
                             placeholder="Contoh: Integral Lipat Dua"
-                            className="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold transition-all text-slate-900 placeholder:text-slate-400"
+                            className="w-full px-8 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[var(--guru-accent)]/20 font-bold transition-all text-white placeholder:text-slate-500"
                             value={form.title}
                             onChange={(e) => setForm({ ...form, title: e.target.value })}
                         />
@@ -190,7 +190,7 @@ export function MaterialModal({
                         <button
                             type="button"
                             onClick={() => setForm({ ...form, type: 'file' })}
-                            className={`py-6 rounded-2xl border-2 font-black transition-all flex items-center justify-center gap-3 ${form.type === 'file' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-200' : 'bg-white text-slate-400 border-slate-100'}`}
+                            className={`py-6 rounded-2xl border-2 font-black transition-all flex items-center justify-center gap-3 ${form.type === 'file' ? 'bg-[var(--guru-accent)] text-white border-[var(--guru-accent)] shadow-xl shadow-[var(--guru-accent)]/20' : 'bg-white/5 text-slate-400 border-white/10'}`}
                         >
                             <Upload size={20} />
                             <span>FILE MODUL</span>
@@ -198,7 +198,7 @@ export function MaterialModal({
                         <button
                             type="button"
                             onClick={() => setForm({ ...form, type: 'link' })}
-                            className={`py-6 rounded-2xl border-2 font-black transition-all flex items-center justify-center gap-3 ${form.type === 'link' ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-200' : 'bg-white text-slate-400 border-slate-100'}`}
+                            className={`py-6 rounded-2xl border-2 font-black transition-all flex items-center justify-center gap-3 ${form.type === 'link' ? 'bg-[var(--guru-accent)] text-white border-[var(--guru-accent)] shadow-xl shadow-[var(--guru-accent)]/20' : 'bg-white/5 text-slate-400 border-white/10'}`}
                         >
                             <LinkIcon size={20} />
                             <span>LINK EXTERNAL</span>
@@ -211,17 +211,17 @@ export function MaterialModal({
                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">
                                 Upload File (PDF/DOCX)
                             </label>
-                            <label className="flex flex-col items-center justify-center w-full h-40 border-4 border-dashed border-slate-100 rounded-[2.5rem] cursor-pointer hover:bg-slate-50 transition-all relative overflow-hidden group">
+                            <label className="flex flex-col items-center justify-center w-full h-40 border-4 border-dashed border-white/10 rounded-[2.5rem] cursor-pointer hover:bg-white/5 hover:border-[var(--guru-accent)]/50 transition-all relative overflow-hidden group">
                                 {uploading ? (
-                                    <Loader2 className="animate-spin text-indigo-600" size={40} />
+                                    <Loader2 className="animate-spin text-[var(--guru-accent)]" size={40} />
                                 ) : form.url ? (
-                                    <div className="flex flex-col items-center text-emerald-500 font-black">
+                                    <div className="flex flex-col items-center text-[var(--guru-accent-text)] font-black">
                                         <CheckCircle2 size={40} />
                                         <span className="mt-2 uppercase text-xs">File Siap!</span>
                                     </div>
                                 ) : (
                                     <>
-                                        <Upload size={32} className="text-slate-300 group-hover:text-indigo-600 transition-colors" />
+                                        <Upload size={32} className="text-slate-500 group-hover:text-[var(--guru-accent)] transition-colors" />
                                         <span className="mt-4 text-xs font-bold text-slate-400">Pilih file dari perangkat</span>
                                     </>
                                 )}
@@ -237,7 +237,7 @@ export function MaterialModal({
                                 id="material-url"
                                 type="url"
                                 placeholder="https://..."
-                                className="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold transition-all text-slate-900 placeholder:text-slate-400"
+                                className="w-full px-8 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[var(--guru-accent)]/20 font-bold transition-all text-white placeholder:text-slate-500"
                                 value={form.url}
                                 onChange={(e) => setForm({ ...form, url: e.target.value })}
                             />
@@ -252,7 +252,7 @@ export function MaterialModal({
                         <textarea
                             id="material-content"
                             placeholder="Apa isi materi ini?"
-                            className="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold transition-all h-32 resize-none text-slate-900 placeholder:text-slate-400"
+                            className="w-full px-8 py-5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[var(--guru-accent)]/20 font-bold transition-all h-32 resize-none text-white placeholder:text-slate-500"
                             value={form.content}
                             onChange={(e) => setForm({ ...form, content: e.target.value })}
                         />
@@ -260,17 +260,17 @@ export function MaterialModal({
                 </div>
 
                 {/* Footer */}
-                <div className="p-10 bg-slate-50 flex gap-4">
+                <div className="p-10 border-t border-white/10 bg-[#08080C] flex gap-4">
                     <button
                         onClick={onClose}
-                        className="flex-1 py-5 bg-white border border-slate-200 text-slate-500 font-black rounded-2xl hover:bg-slate-100 transition-all"
+                        className="flex-1 py-5 bg-white/5 border border-white/10 text-slate-400 font-black rounded-2xl hover:bg-white/10 hover:text-white transition-all"
                     >
                         BATAL
                     </button>
                     <button
                         onClick={handleSubmit}
                         disabled={uploading || submitting}
-                        className="flex-[2] py-5 bg-indigo-600 text-white font-black rounded-2xl shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all uppercase tracking-widest disabled:opacity-50"
+                        className="flex-[2] py-5 bg-[var(--guru-accent)] text-white font-black rounded-2xl shadow-xl shadow-[var(--guru-accent)]/20 hover:opacity-90 transition-all uppercase tracking-widest disabled:opacity-50"
                     >
                         {submitting ? 'MENYIMPAN...' : 'Simpan & Publikasikan'}
                     </button>

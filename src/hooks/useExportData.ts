@@ -1,8 +1,7 @@
-'use client';
-
 import { useCallback } from 'react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { exportToExcel, type ExcelColumn, type ExcelSheetConfig } from '@/lib/utils/excel';
 
 interface Student {
     id: string;
@@ -37,103 +36,122 @@ export function useExportData(): UseExportDataReturn {
     const formatDate = () => format(new Date(), 'yyyy-MM-dd', { locale: id });
 
     const exportStudents = useCallback(async (students: Student[], className: string) => {
-        // Dynamic import xlsx - reduces initial bundle size by ~300KB
-        const XLSX = await import('xlsx');
+        const columns: ExcelColumn[] = [
+            { header: 'No', key: 'no', width: 5 },
+            { header: 'Nama Siswa', key: 'name', width: 30 },
+            { header: 'Email', key: 'email', width: 30 },
+            { header: 'Rata-rata Nilai', key: 'avg', width: 15 },
+            { header: 'Status', key: 'status', width: 15 }
+        ];
 
         const data = students.map((s, idx) => ({
-            'No': idx + 1,
-            'Nama Siswa': s.name,
-            'Email': s.email || '-',
-            'Rata-rata Nilai': s.avg || '-',
-            'Status': s.status || '-'
+            no: idx + 1,
+            name: s.name,
+            email: s.email || '-',
+            avg: s.avg || '-',
+            status: s.status || '-'
         }));
 
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Daftar Siswa');
-        ws['!cols'] = [{ wch: 5 }, { wch: 30 }, { wch: 30 }, { wch: 15 }, { wch: 15 }];
-        XLSX.writeFile(wb, `Siswa_${className}_${formatDate()}.xlsx`);
+        await exportToExcel(data, columns, `Siswa_${className}_${formatDate()}`, 'Daftar Siswa');
     }, []);
 
     const exportAttendance = useCallback(async (records: AttendanceRecord[], className: string) => {
-        const XLSX = await import('xlsx');
+        const columns: ExcelColumn[] = [
+            { header: 'No', key: 'no', width: 5 },
+            { header: 'Nama Siswa', key: 'name', width: 30 },
+            { header: 'Tanggal', key: 'date', width: 15 },
+            { header: 'Status', key: 'status', width: 15 }
+        ];
 
         const data = records.map((r, idx) => ({
-            'No': idx + 1,
-            'Nama Siswa': r.studentName,
-            'Tanggal': r.date,
-            'Status': r.status.toUpperCase()
+            no: idx + 1,
+            name: r.studentName,
+            date: r.date,
+            status: r.status.toUpperCase()
         }));
 
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Rekap Kehadiran');
-        ws['!cols'] = [{ wch: 5 }, { wch: 30 }, { wch: 15 }, { wch: 15 }];
-        XLSX.writeFile(wb, `Kehadiran_${className}_${formatDate()}.xlsx`);
+        await exportToExcel(data, columns, `Kehadiran_${className}_${formatDate()}`, 'Rekap Kehadiran');
     }, []);
 
     const exportGrades = useCallback(async (grades: Grade[], className: string) => {
-        const XLSX = await import('xlsx');
+        const columns: ExcelColumn[] = [
+            { header: 'No', key: 'no', width: 5 },
+            { header: 'Nama Siswa', key: 'name', width: 30 },
+            { header: 'Tugas', key: 'assignment', width: 35 },
+            { header: 'Nilai', key: 'score', width: 10 },
+            { header: 'Jenis', key: 'type', width: 15 },
+            { header: 'Feedback', key: 'feedback', width: 40 }
+        ];
 
         const data = grades.map((g, idx) => ({
-            'No': idx + 1,
-            'Nama Siswa': g.studentName,
-            'Tugas': g.assignmentTitle,
-            'Nilai': g.score,
-            'Jenis': g.type === 'formatif' ? 'Formatif' : 'Sumatif',
-            'Feedback': g.feedback || '-'
+            no: idx + 1,
+            name: g.studentName,
+            assignment: g.assignmentTitle,
+            score: g.score,
+            type: g.type === 'formatif' ? 'Formatif' : 'Sumatif',
+            feedback: g.feedback || '-'
         }));
 
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Daftar Nilai');
-        ws['!cols'] = [{ wch: 5 }, { wch: 30 }, { wch: 35 }, { wch: 10 }, { wch: 15 }, { wch: 40 }];
-        XLSX.writeFile(wb, `Nilai_${className}_${formatDate()}.xlsx`);
+        await exportToExcel(data, columns, `Nilai_${className}_${formatDate()}`, 'Daftar Nilai');
     }, []);
 
     const exportAll = useCallback(async (
         data: { students: Student[]; attendance: AttendanceRecord[]; grades: Grade[] },
         className: string
     ) => {
-        const XLSX = await import('xlsx');
-        const wb = XLSX.utils.book_new();
+        const sheets: ExcelSheetConfig[] = [
+            {
+                name: 'Siswa',
+                columns: [
+                    { header: 'No', key: 'no', width: 5 },
+                    { header: 'Nama Siswa', key: 'name', width: 30 },
+                    { header: 'Email', key: 'email', width: 30 },
+                    { header: 'Rata-rata', key: 'avg', width: 15 },
+                    { header: 'Status', key: 'status', width: 15 }
+                ],
+                data: data.students.map((s, idx) => ({
+                    no: idx + 1,
+                    name: s.name,
+                    email: s.email || '-',
+                    avg: s.avg || '-',
+                    status: s.status || '-'
+                }))
+            },
+            {
+                name: 'Kehadiran',
+                columns: [
+                    { header: 'No', key: 'no', width: 5 },
+                    { header: 'Nama Siswa', key: 'name', width: 30 },
+                    { header: 'Tanggal', key: 'date', width: 15 },
+                    { header: 'Status', key: 'status', width: 15 }
+                ],
+                data: data.attendance.map((r, idx) => ({
+                    no: idx + 1,
+                    name: r.studentName,
+                    date: r.date,
+                    status: r.status.toUpperCase()
+                }))
+            },
+            {
+                name: 'Nilai',
+                columns: [
+                    { header: 'No', key: 'no', width: 5 },
+                    { header: 'Nama Siswa', key: 'name', width: 30 },
+                    { header: 'Tugas', key: 'assignment', width: 35 },
+                    { header: 'Nilai', key: 'score', width: 10 },
+                    { header: 'Jenis', key: 'type', width: 15 }
+                ],
+                data: data.grades.map((g, idx) => ({
+                    no: idx + 1,
+                    name: g.studentName,
+                    assignment: g.assignmentTitle,
+                    score: g.score,
+                    type: g.type === 'formatif' ? 'Formatif' : 'Sumatif'
+                }))
+            }
+        ];
 
-        // Students sheet
-        const studentsData = data.students.map((s, idx) => ({
-            'No': idx + 1,
-            'Nama Siswa': s.name,
-            'Email': s.email || '-',
-            'Rata-rata': s.avg || '-',
-            'Status': s.status || '-'
-        }));
-        const ws1 = XLSX.utils.json_to_sheet(studentsData);
-        ws1['!cols'] = [{ wch: 5 }, { wch: 30 }, { wch: 30 }, { wch: 15 }, { wch: 15 }];
-        XLSX.utils.book_append_sheet(wb, ws1, 'Siswa');
-
-        // Attendance sheet
-        const attendanceData = data.attendance.map((r, idx) => ({
-            'No': idx + 1,
-            'Nama Siswa': r.studentName,
-            'Tanggal': r.date,
-            'Status': r.status.toUpperCase()
-        }));
-        const ws2 = XLSX.utils.json_to_sheet(attendanceData);
-        ws2['!cols'] = [{ wch: 5 }, { wch: 30 }, { wch: 15 }, { wch: 15 }];
-        XLSX.utils.book_append_sheet(wb, ws2, 'Kehadiran');
-
-        // Grades sheet
-        const gradesData = data.grades.map((g, idx) => ({
-            'No': idx + 1,
-            'Nama Siswa': g.studentName,
-            'Tugas': g.assignmentTitle,
-            'Nilai': g.score,
-            'Jenis': g.type === 'formatif' ? 'Formatif' : 'Sumatif'
-        }));
-        const ws3 = XLSX.utils.json_to_sheet(gradesData);
-        ws3['!cols'] = [{ wch: 5 }, { wch: 30 }, { wch: 35 }, { wch: 10 }, { wch: 15 }];
-        XLSX.utils.book_append_sheet(wb, ws3, 'Nilai');
-
-        XLSX.writeFile(wb, `LaporanKelas_${className}_${formatDate()}.xlsx`);
+        await exportToExcel(sheets, `LaporanKelas_${className}_${formatDate()}`);
     }, []);
 
     return { exportStudents, exportAttendance, exportGrades, exportAll };

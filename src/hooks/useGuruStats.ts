@@ -32,39 +32,64 @@ export function useGuruStats({ classId, page = 1, pageSize = 50, enabled = true 
             const start = (page - 1) * pageSize;
             const end = start + pageSize - 1;
 
-            // Parallel queries for members and attendance count
-            const [membersResult, attendanceResult] = await Promise.all([
-                supabase
-                    .from('class_members')
-                    .select(`user_id, users!inner (id, full_name, submissions(id, grades(score)))`, { count: 'exact' })
-                    .eq('class_id', classId)
-                    .range(start, end),
-                
-                supabase
-                    .from('attendance')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('class_id', classId)
+            // 1. Fetch Class Members
+            const { data: membersResult, count, error: membersError } = await supabase
+                .from('class_members')
+                .select(`user_id, users!inner (id, full_name)`, { count: 'exact' })
+                .eq('class_id', classId)
+                .range(start, end);
+
+            if (membersError) throw membersError;
+
+            // 2. Fetch Assignments for this class
+            const { data: assignments } = await supabase
+                .from('assignments')
+                .select('id')
+                .eq('class_id', classId);
+            const assignmentIds = (assignments || []).map(a => a.id);
+
+            // 3. Parallel Queries for Stats
+            const [attendanceResult, assignmentGradesResult, keaktifanGradesResult, submissionsResult] = await Promise.all([
+                supabase.from('attendance').select('id').eq('class_id', classId),
+                assignmentIds.length > 0 ? supabase.from('grades').select('student_id, score').in('assignment_id', assignmentIds) : Promise.resolve({ data: [] }),
+                supabase.from('grades').select('student_id, score').eq('class_id', classId),
+                assignmentIds.length > 0 ? supabase.from('submissions').select('student_id').in('assignment_id', assignmentIds) : Promise.resolve({ data: [] })
             ]);
 
-            if (membersResult.error) throw membersResult.error;
-            
+            const allGrades = [...(assignmentGradesResult.data || []), ...(keaktifanGradesResult.data || [])];
+            const allSubmissions = submissionsResult.data || [];
+
+            // Handle Attendance
+            const sessionIds = (attendanceResult.data || []).map(a => a.id);
+            let attendancePercent = 0;
+            if (sessionIds.length > 0) {
+                const { count: presentCount } = await supabase
+                    .from('attendance_records')
+                    .select('*', { count: 'exact', head: true })
+                    .in('attendance_id', sessionIds)
+                    .eq('status', 'hadir');
+                
+                const totalPossible = (count || 1) * sessionIds.length;
+                attendancePercent = Math.min(100, Math.round(((presentCount || 0) / (totalPossible || 1)) * 100));
+            }
+
             // Process Students
-            const students: DashboardStudent[] = (membersResult.data || [])
+            const students: DashboardStudent[] = (membersResult || [])
                 .map((m: any) => {
-                    // Handle both array and object cases from Supabase join
                     const s = Array.isArray(m.users) ? m.users[0] : m.users;
                     if (!s) return null;
 
-                    const submissions = s.submissions || [];
-                    const totalScore = submissions.reduce((acc: number, sub: any) => acc + (sub.grades?.[0]?.score || 0), 0);
-                    const avg = submissions.length > 0 ? totalScore / submissions.length : 0;
+                    // Filter grades just for this student
+                    const studentGrades = allGrades.filter(g => g.student_id === s.id);
+                    const totalScore = studentGrades.reduce((acc: number, g: any) => acc + (g.score || 0), 0);
+                    const avg = studentGrades.length > 0 ? totalScore / studentGrades.length : 0;
                     
                     return {
                         id: s.id,
                         name: s.full_name,
                         avg: avg.toFixed(1),
                         status: avg >= 75 ? 'TUNTAS' : 'REMEDIAL',
-                        submissions
+                        submissions: [] 
                     };
                 })
                 .filter(Boolean) as DashboardStudent[];
@@ -76,23 +101,23 @@ export function useGuruStats({ classId, page = 1, pageSize = 50, enabled = true 
 
             const stats: DashboardStats = {
                 avg: parseFloat(totalAvg.toFixed(1)),
-                attendance: Math.min(100, Math.round((attendanceResult.count || 0) / (students.length || 1) * 100)),
-                submissions: students.reduce((acc, s) => acc + (s.submissions?.length || 0), 0)
+                attendance: attendancePercent,
+                submissions: allSubmissions.length
             };
 
             return { 
                 students, 
                 stats,
                 pagination: {
-                    total: membersResult.count || 0,
+                    total: count || 0,
                     page,
                     pageSize,
-                    totalPages: Math.ceil((membersResult.count || 0) / pageSize)
+                    totalPages: Math.ceil((count || 0) / pageSize)
                 }
             };
         },
         enabled: !!classId && enabled,
-        staleTime: 1000 * 60 * 5, // 5 minutes
+        staleTime: 1000 * 10, // 10 seconds for more "real-time" feel without over-querying
     });
 
     return {

@@ -1,0 +1,709 @@
+/* ═══════════════════════════════════════════════════════════════════
+   GURU DNA — Indigo Studio Design System
+   Centralized CSS Variables & Tokens for Guru (Teacher) Side
+   Prefix: gs- (Guru Studio)
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* ── Surface Tokens — Layered indigo-black depth (Linear-inspired) ── */
+    --guru-surface-void: #08071A;
+    --guru-surface-base: #0C0B1D;
+    --guru-surface-raised: #110F26;
+    --guru-surface-elevated: #16142E;
+    --guru-surface-overlay: #1B1938;
+    --guru-surface-hover: rgba(255, 255, 255, 0.025);
+    --guru-surface-active: rgba(255, 255, 255, 0.06);
+
+    /* ── Accent: Indigo Spectrum ── */
+    --guru-accent: #6366F1;
+    --guru-accent-soft: rgba(99, 102, 241, 0.08);
+    --guru-accent-medium: rgba(99, 102, 241, 0.15);
+    --guru-accent-glow: rgba(99, 102, 241, 0.05);
+    --guru-accent-text: #818CF8;
+    --guru-accent-strong: #4F46E5;
+    --guru-accent-border: rgba(99, 102, 241, 0.20);
+
+    /* ── Secondary: Violet ── */
+    --guru-secondary: #8B5CF6;
+    --guru-secondary-soft: rgba(139, 92, 246, 0.10);
+    --guru-secondary-text: #A78BFA;
+
+    /* ── Border Tokens ── */
+    --guru-border-subtle: rgba(255, 255, 255, 0.03);
+    --guru-border-default: rgba(255, 255, 255, 0.06);
+    --guru-border-strong: rgba(255, 255, 255, 0.12);
+    --guru-border-accent: rgba(99, 102, 241, 0.25);
+
+    /* ── Text Tokens ── */
+    --guru-text-primary: #FFFFFF;
+    --guru-text-secondary: #94A3B8;
+    --guru-text-muted: #64748B;
+    --guru-text-ghost: #334155;
+    --guru-text-code: #CBD5E1;
+
+    /* ── Semantic Status ── */
+    --guru-status-tuntas: #34D399;
+    --guru-status-remedial: #FB7185;
+    --guru-status-pending: #FBBF24;
+    --guru-status-info: #60A5FA;
+    --guru-status-tuntas-bg: rgba(52, 211, 153, 0.10);
+    --guru-status-remedial-bg: rgba(251, 113, 133, 0.10);
+    --guru-status-pending-bg: rgba(251, 191, 36, 0.10);
+    --guru-status-info-bg: rgba(96, 165, 250, 0.10);
+
+    /* ── Spacing Scale ── */
+    --guru-space-xs: 0.25rem;
+    --guru-space-sm: 0.5rem;
+    --guru-space-md: 1rem;
+    --guru-space-lg: 1.5rem;
+    --guru-space-xl: 2rem;
+    --guru-space-2xl: 3rem;
+    --guru-space-3xl: 4rem;
+
+    /* ── Radius ── */
+    --guru-radius-sm: 0.5rem;
+    --guru-radius-md: 0.75rem;
+    --guru-radius-lg: 1rem;
+    --guru-radius-xl: 1.25rem;
+    --guru-radius-2xl: 1.5rem;
+    --guru-radius-3xl: 2rem;
+    --guru-radius-full: 9999px;
+
+    /* ── Typography ── */
+    --guru-font-display: 'Fraunces', serif;
+    --guru-font-body: 'Outfit', sans-serif;
+    --guru-font-mono: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
+
+    /* ── Animation ── */
+    --guru-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --guru-transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --guru-transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    --guru-transition-dramatic: 700ms cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* ── Density (overrideable) ── */
+    --guru-density-padding: 1.25rem;
+    --guru-density-gap: 1rem;
+    --guru-density-row-height: 3rem;
+    --guru-density-font-size: 0.75rem;
+
+    /* ── Glass / Depth ── */
+    --guru-glass-bg: rgba(17, 15, 38, 0.70);
+    --guru-glass-blur: 20px;
+    --guru-glass-stroke: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+}
+
+/* ── Density Modes ── */
+[data-density="compact"] {
+    --guru-density-padding: 0.75rem;
+    --guru-density-gap: 0.5rem;
+    --guru-density-row-height: 2.25rem;
+    --guru-density-font-size: 0.6875rem;
+}
+[data-density="comfortable"] {
+    --guru-density-padding: 1.75rem;
+    --guru-density-gap: 1.25rem;
+    --guru-density-row-height: 3.75rem;
+    --guru-density-font-size: 0.8125rem;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   CARD SYSTEM — Guru Studio Surfaces
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Standard card — the workhorse */
+.gs-card {
+    background: var(--guru-surface-raised);
+    border: 1px solid var(--guru-border-default);
+    border-radius: var(--guru-radius-2xl);
+    transition: border-color var(--guru-transition-normal),
+                box-shadow var(--guru-transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+.gs-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 0.5px;
+    background: var(--guru-glass-stroke);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.5;
+}
+.gs-card:hover {
+    border-color: var(--guru-border-strong);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Accent card — indigo glow on hover */
+.gs-card-accent {
+    background: var(--guru-surface-raised);
+    border: 1px solid var(--guru-border-default);
+    border-radius: var(--guru-radius-2xl);
+    transition: all var(--guru-transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+.gs-card-accent:hover {
+    border-color: var(--guru-border-accent);
+    box-shadow: 0 0 40px var(--guru-accent-glow),
+                0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Elevated card — for modals, popovers */
+.gs-card-elevated {
+    background: var(--guru-surface-elevated);
+    border: 1px solid var(--guru-border-strong);
+    border-radius: var(--guru-radius-3xl);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Glass card — backdrop blur effect */
+.gs-card-glass {
+    background: var(--guru-glass-bg);
+    backdrop-filter: blur(var(--guru-glass-blur));
+    -webkit-backdrop-filter: blur(var(--guru-glass-blur));
+    border: 1px solid var(--guru-border-default);
+    border-radius: var(--guru-radius-2xl);
+    transition: all var(--guru-transition-normal);
+}
+.gs-card-glass:hover {
+    border-color: var(--guru-border-strong);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   STATUS BADGES
+   ═══════════════════════════════════════════════════════════════════ */
+
+.gs-badge {
+    font-size: 0.5625rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 0.2rem 0.625rem;
+    border-radius: var(--guru-radius-sm);
+    border: 1px solid;
+    line-height: 1.4;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.gs-badge-tuntas {
+    background: var(--guru-status-tuntas-bg);
+    color: var(--guru-status-tuntas);
+    border-color: rgba(52, 211, 153, 0.25);
+}
+.gs-badge-remedial {
+    background: var(--guru-status-remedial-bg);
+    color: var(--guru-status-remedial);
+    border-color: rgba(251, 113, 133, 0.25);
+}
+.gs-badge-pending {
+    background: var(--guru-status-pending-bg);
+    color: var(--guru-status-pending);
+    border-color: rgba(251, 191, 36, 0.25);
+}
+.gs-badge-info {
+    background: var(--guru-status-info-bg);
+    color: var(--guru-status-info);
+    border-color: rgba(96, 165, 250, 0.25);
+}
+.gs-badge-accent {
+    background: var(--guru-accent-soft);
+    color: var(--guru-accent-text);
+    border-color: var(--guru-border-accent);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   TYPOGRAPHY UTILITIES
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* KPI / Data Display — tabular numerals, monospace feel */
+.gs-kpi {
+    font-family: var(--guru-font-display);
+    font-variant-numeric: tabular-nums;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+/* Monospace data */
+.gs-mono {
+    font-family: var(--guru-font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+}
+
+/* Section label — tiny uppercase tracker */
+.gs-label {
+    font-size: 0.5625rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--guru-text-muted);
+    line-height: 1;
+}
+
+/* Section title — display font */
+.gs-title {
+    font-family: var(--guru-font-display);
+    font-weight: 900;
+    color: var(--guru-text-primary);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+/* Body text */
+.gs-body {
+    font-family: var(--guru-font-body);
+    color: var(--guru-text-secondary);
+    line-height: 1.6;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   INTERACTIVE ELEMENTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Primary button */
+.gs-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: var(--guru-accent);
+    color: white;
+    font-weight: 900;
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-radius: var(--guru-radius-xl);
+    border: none;
+    cursor: pointer;
+    transition: all var(--guru-transition-fast);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
+}
+.gs-btn-primary:hover {
+    background: var(--guru-accent-strong);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+    transform: translateY(-1px);
+}
+.gs-btn-primary:active {
+    transform: scale(0.97);
+}
+
+/* Ghost button */
+.gs-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: var(--guru-surface-hover);
+    color: var(--guru-text-secondary);
+    font-weight: 700;
+    font-size: 0.75rem;
+    border-radius: var(--guru-radius-xl);
+    border: 1px solid var(--guru-border-default);
+    cursor: pointer;
+    transition: all var(--guru-transition-fast);
+}
+.gs-btn-ghost:hover {
+    background: var(--guru-surface-active);
+    color: var(--guru-text-primary);
+    border-color: var(--guru-border-strong);
+}
+
+/* Table row with density support */
+.gs-table-row {
+    height: var(--guru-density-row-height);
+    font-size: var(--guru-density-font-size);
+    padding: 0 var(--guru-density-padding);
+    transition: background-color var(--guru-transition-fast);
+}
+.gs-table-row:hover {
+    background: var(--guru-surface-hover);
+}
+
+/* Input field */
+.gs-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--guru-surface-base);
+    border: 1px solid var(--guru-border-default);
+    border-radius: var(--guru-radius-lg);
+    color: var(--guru-text-primary);
+    font-family: var(--guru-font-body);
+    font-size: 0.875rem;
+    transition: all var(--guru-transition-fast);
+    outline: none;
+}
+.gs-input::placeholder {
+    color: var(--guru-text-ghost);
+}
+.gs-input:focus {
+    border-color: var(--guru-accent);
+    box-shadow: 0 0 0 3px var(--guru-accent-soft);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   DECORATIVE & EFFECTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Radial glow on hover */
+.gs-glow {
+    position: relative;
+    overflow: hidden;
+}
+.gs-glow::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, var(--guru-accent-glow) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    transition: opacity var(--guru-transition-normal);
+    opacity: 0;
+}
+.gs-glow:hover::after {
+    opacity: 1;
+}
+
+/* Dot grid background */
+.gs-dotgrid {
+    background-image: radial-gradient(circle, var(--guru-border-subtle) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+/* Subtle noise texture overlay */
+.gs-noise {
+    position: relative;
+}
+.gs-noise::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    border-radius: inherit;
+}
+
+/* Section divider — gradient line */
+.gs-divider {
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        var(--guru-accent-glow) 0%,
+        var(--guru-border-default) 30%,
+        var(--guru-border-default) 70%,
+        transparent 100%
+    );
+    border: none;
+    margin: var(--guru-space-lg) 0;
+}
+
+/* Sidebar section label */
+.gs-section-label {
+    font-size: 0.5625rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--guru-text-ghost);
+    padding: 0 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Stagger entrance — children fade in sequentially */
+.gs-stagger > * {
+    opacity: 0;
+    animation: gs-fade-up var(--guru-transition-slow) forwards;
+}
+.gs-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.gs-stagger > *:nth-child(2) { animation-delay: 60ms; }
+.gs-stagger > *:nth-child(3) { animation-delay: 120ms; }
+.gs-stagger > *:nth-child(4) { animation-delay: 180ms; }
+.gs-stagger > *:nth-child(5) { animation-delay: 240ms; }
+.gs-stagger > *:nth-child(6) { animation-delay: 300ms; }
+.gs-stagger > *:nth-child(7) { animation-delay: 360ms; }
+.gs-stagger > *:nth-child(8) { animation-delay: 420ms; }
+.gs-stagger > *:nth-child(9) { animation-delay: 480ms; }
+.gs-stagger > *:nth-child(10) { animation-delay: 540ms; }
+
+@keyframes gs-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* KPI count-up shimmer */
+@keyframes gs-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+.gs-count-shimmer {
+    background: linear-gradient(
+        90deg,
+        var(--guru-text-primary) 40%,
+        var(--guru-accent-text) 50%,
+        var(--guru-text-primary) 60%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gs-shimmer 2s ease-in-out;
+}
+
+/* Pulse ring — for live indicators */
+@keyframes gs-pulse-ring {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+.gs-pulse-ring {
+    position: relative;
+}
+.gs-pulse-ring::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--guru-accent);
+    animation: gs-pulse-ring 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Slide-in from right — for panels */
+@keyframes gs-slide-in-right {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+.gs-slide-right {
+    animation: gs-slide-in-right var(--guru-transition-dramatic) forwards;
+}
+
+/* Heartbeat ECG animation */
+@keyframes gs-ecg-pulse {
+    0% { stroke-dashoffset: 200; }
+    40% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -200; }
+}
+
+/* Progress bar shimmer */
+@keyframes gs-progress-shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+}
+.gs-progress-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: gs-progress-shimmer 2s infinite;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   PRIORITY INBOX ITEMS — Today View specifics
+   ═══════════════════════════════════════════════════════════════════ */
+
+.gs-priority-item {
+    display: flex;
+    align-items: center;
+    gap: var(--guru-space-md);
+    padding: var(--guru-density-padding);
+    background: var(--guru-surface-raised);
+    border: 1px solid var(--guru-border-default);
+    border-radius: var(--guru-radius-2xl);
+    transition: all var(--guru-transition-normal);
+    cursor: pointer;
+}
+.gs-priority-item:hover {
+    background: var(--guru-surface-active);
+    border-color: var(--guru-border-accent);
+    transform: translateX(4px);
+}
+
+.gs-priority-item[data-urgency="high"] {
+    border-left: 3px solid var(--guru-status-remedial);
+}
+.gs-priority-item[data-urgency="medium"] {
+    border-left: 3px solid var(--guru-status-pending);
+}
+.gs-priority-item[data-urgency="low"] {
+    border-left: 3px solid var(--guru-status-tuntas);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   SPEEDGRADE — Split pane layout
+   ═══════════════════════════════════════════════════════════════════ */
+
+.gs-speedgrade {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    height: 100vh;
+    background: var(--guru-surface-void);
+}
+
+.gs-speedgrade-preview {
+    background: var(--guru-surface-base);
+    border-right: 1px solid var(--guru-border-default);
+    overflow-y: auto;
+    padding: var(--guru-space-2xl);
+}
+
+.gs-speedgrade-panel {
+    background: var(--guru-surface-raised);
+    overflow-y: auto;
+    padding: var(--guru-space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--guru-space-lg);
+}
+
+/* Student navigation dots in SpeedGrade */
+.gs-student-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid;
+    transition: all var(--guru-transition-fast);
+    cursor: pointer;
+}
+.gs-student-dot[data-status="graded"] {
+    background: var(--guru-status-tuntas);
+    border-color: var(--guru-status-tuntas);
+}
+.gs-student-dot[data-status="submitted"] {
+    background: transparent;
+    border-color: var(--guru-status-pending);
+}
+.gs-student-dot[data-status="missing"] {
+    background: transparent;
+    border-color: var(--guru-text-ghost);
+}
+.gs-student-dot[data-status="active"] {
+    background: var(--guru-accent);
+    border-color: var(--guru-accent);
+    box-shadow: 0 0 8px var(--guru-accent-glow);
+    transform: scale(1.5);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   VIEW MODE TOGGLES — Konten Tab
+   ═══════════════════════════════════════════════════════════════════ */
+
+.gs-view-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px;
+    background: var(--guru-surface-base);
+    border: 1px solid var(--guru-border-default);
+    border-radius: var(--guru-radius-lg);
+    gap: 2px;
+}
+
+.gs-view-toggle-item {
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--guru-radius-md);
+    font-size: 0.6875rem;
+    font-weight: 800;
+    color: var(--guru-text-muted);
+    transition: all var(--guru-transition-fast);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+.gs-view-toggle-item:hover {
+    color: var(--guru-text-secondary);
+}
+.gs-view-toggle-item[data-active="true"] {
+    background: var(--guru-accent);
+    color: white;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   FILTER CHIPS
+   ═══════════════════════════════════════════════════════════════════ */
+
+.gs-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--guru-radius-full);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    border: 1px solid var(--guru-border-default);
+    background: transparent;
+    color: var(--guru-text-muted);
+    cursor: pointer;
+    transition: all var(--guru-transition-fast);
+}
+.gs-chip:hover {
+    border-color: var(--guru-border-strong);
+    color: var(--guru-text-secondary);
+    background: var(--guru-surface-hover);
+}
+.gs-chip[data-active="true"] {
+    border-color: var(--guru-accent);
+    color: var(--guru-accent-text);
+    background: var(--guru-accent-soft);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE — Mobile adjustments
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .gs-speedgrade {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+
+    .gs-speedgrade-preview {
+        border-right: none;
+        border-bottom: 1px solid var(--guru-border-default);
+    }
+}

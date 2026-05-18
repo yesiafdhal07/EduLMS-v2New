@@ -25,7 +25,7 @@ export default function AboutPage() {
                                 Klolakelas dimulai dengan satu tujuan sederhana: membantu guru matematika menghemat waktu administrasi sehingga mereka bisa fokus pada hal yang paling penting - mengajar.
                             </p>
                             <p className="text-lg text-slate-300 leading-relaxed">
-                                Kami percaya bahwa teknologi tidak seharusnya menggantikan peran guru, tetapi memberdayakan mereka. Platform kami dirancang dengan prinsip "Teacher-First", memastikan setiap fitur benar-benar menjawab kebutuhan di lapangan.
+                                Kami percaya bahwa teknologi tidak seharusnya menggantikan peran guru, tetapi memberdayakan mereka. Platform kami dirancang dengan prinsip &quot;Teacher-First&quot;, memastikan setiap fitur benar-benar menjawab kebutuhan di lapangan.
                             </p>
                         </section>
 

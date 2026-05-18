@@ -24,7 +24,7 @@
 -- ==========================================
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Create types only if they don't exist
-DO $$ BEGIN CREATE TYPE public.user_role AS ENUM ('admin', 'guru', 'siswa');
+DO $$ BEGIN CREATE TYPE public.user_role AS ENUM ('admin', 'kepala_sekolah', 'guru', 'siswa');
 EXCEPTION
 WHEN duplicate_object THEN NULL;
 END $$;
@@ -48,6 +48,8 @@ CREATE TABLE IF NOT EXISTS public.users (
   email TEXT UNIQUE NOT NULL,
   full_name TEXT NOT NULL,
   role public.user_role DEFAULT 'siswa' NOT NULL,
+  school_id UUID REFERENCES public.schools(id),
+  metadata JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE TABLE IF NOT EXISTS public.classes (
@@ -116,6 +118,9 @@ CREATE TABLE IF NOT EXISTS public.grades (
   updated_at TIMESTAMPTZ DEFAULT NOW(),
   is_final BOOLEAN DEFAULT FALSE
 );
+CREATE INDEX IF NOT EXISTS idx_grades_assignment_id ON public.grades(assignment_id);
+CREATE INDEX IF NOT EXISTS idx_grades_student_id ON public.grades(student_id);
+
 -- ==========================================
 -- 3. ATTENDANCE & PROFILES (CREATE IF NOT EXISTS)
 -- ==========================================
@@ -439,12 +444,22 @@ CREATE POLICY "Records view/marked by student" ON public.attendance_records FOR 
 DROP POLICY IF EXISTS "Users view own notifications" ON public.notifications;
 DROP POLICY IF EXISTS "Users update own notifications" ON public.notifications;
 DROP POLICY IF EXISTS "Allow inserts for authenticated" ON public.notifications;
+DROP POLICY IF EXISTS "Allow inserts for admin and guru" ON public.notifications;
 CREATE POLICY "Users view own notifications" ON public.notifications FOR
 SELECT TO authenticated USING (user_id = auth.uid());
 CREATE POLICY "Users update own notifications" ON public.notifications FOR
 UPDATE TO authenticated USING (user_id = auth.uid());
-CREATE POLICY "Allow inserts for authenticated" ON public.notifications FOR
-INSERT TO authenticated WITH CHECK (true);
+-- SECURITY FIX: Restrict notification creation to admins and teachers only.
+-- System-generated notifications use SECURITY DEFINER functions (create_notification)
+-- which bypass RLS, so trigger-based notifications still work.
+CREATE POLICY "Allow inserts for admin and guru" ON public.notifications FOR
+INSERT TO authenticated WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM public.users
+    WHERE id = auth.uid()
+      AND role IN ('admin', 'guru')
+  )
+);
 -- Peer reviews
 DROP POLICY IF EXISTS "Reviewers see assigned reviews" ON public.peer_reviews;
 DROP POLICY IF EXISTS "Reviewers update own reviews" ON public.peer_reviews;
@@ -497,25 +512,52 @@ SELECT TO authenticated USING (
 -- ==========================================
 -- 7. FUNCTIONS (CREATE OR REPLACE - SAFE)
 -- ==========================================
-CREATE OR REPLACE FUNCTION public.handle_new_user() RETURNS trigger AS $$ BEGIN
-INSERT INTO public.users (id, email, full_name, role)
-VALUES (
+-- SECURITY FIX: Never trust client-supplied role from raw_user_meta_data.
+-- Role is derived server-side from validated school_codes table only.
+CREATE OR REPLACE FUNCTION public.handle_new_user() RETURNS trigger AS $$
+DECLARE
+  v_school_code TEXT;
+  v_class_id UUID;
+  v_school_id UUID;
+  v_code_role public.user_role;
+  v_final_role public.user_role := 'siswa'::public.user_role; -- Safe default
+BEGIN
+  -- Extract metadata
+  v_school_code := new.raw_user_meta_data->>'school_code';
+  v_class_id := (new.raw_user_meta_data->>'class_id')::UUID;
+
+  -- Derive school and role from validated school_codes table
+  IF v_school_code IS NOT NULL AND v_school_code != '' THEN
+    SELECT school_id, role::public.user_role INTO v_school_id, v_code_role
+    FROM public.school_codes
+    WHERE code = v_school_code AND is_active = true;
+
+    IF FOUND THEN
+      v_final_role := v_code_role;
+    END IF;
+  END IF;
+
+  -- 1. Create public.users profile
+  INSERT INTO public.users (id, email, full_name, role, school_id)
+  VALUES (
     new.id,
     new.email,
-    COALESCE(
-      new.raw_user_meta_data->>'full_name',
-      'User Baru'
-    ),
-    COALESCE(
-      (new.raw_user_meta_data->>'role')::public.user_role,
-      'siswa'::public.user_role
-    )
-  ) ON CONFLICT (id) DO
-UPDATE
-SET email = EXCLUDED.email,
-  full_name = EXCLUDED.full_name,
-  role = EXCLUDED.role;
-RETURN new;
+    COALESCE(new.raw_user_meta_data->>'full_name', 'User Baru'),
+    v_final_role,
+    v_school_id
+  ) ON CONFLICT (id) DO UPDATE
+  SET email = EXCLUDED.email,
+    full_name = EXCLUDED.full_name,
+    school_id = EXCLUDED.school_id;
+
+  -- 2. If student, automatically join class
+  IF v_final_role = 'siswa' AND v_class_id IS NOT NULL THEN
+    INSERT INTO public.class_members (class_id, user_id)
+    VALUES (v_class_id, new.id)
+    ON CONFLICT DO NOTHING;
+  END IF;
+
+  RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Drop and recreate trigger safely
@@ -942,4 +984,129 @@ FROM auth.users ON CONFLICT (id) DO NOTHING;
 --
 -- TIDAK ada data yang dihapus! 🎉
 -- ==========================================
-SELECT 'UNIFIED_MASTER_SCRIPT (SAFE VERSION) berhasil dijalankan!' AS message;
+-- ==========================================
+-- 8. SECURITY FIXES (SPRINT 1)
+-- ==========================================
+
+-- BUG-008: Server-side Auto Grading
+CREATE OR REPLACE FUNCTION public.grade_quiz_answer() RETURNS TRIGGER AS $$
+DECLARE
+    v_question RECORD;
+    v_is_correct BOOLEAN := false;
+BEGIN
+    -- Fetch the correct answer and points from the question
+    SELECT type, correct_answer, points INTO v_question 
+    FROM public.questions 
+    WHERE id = NEW.question_id;
+
+    IF FOUND THEN
+        -- Evaluate based on question type
+        IF v_question.type IN ('multiple_choice', 'true_false') THEN
+            -- Exact match for JSON strings (we strip quotes to compare safely)
+            v_is_correct := (NEW.answer::text = v_question.correct_answer::text) OR
+                            (trim(both '"' from NEW.answer::text) = trim(both '"' from v_question.correct_answer::text));
+                            
+        ELSIF v_question.type = 'short_answer' THEN
+            -- Check if the answer matches any of the valid short answers (assuming JSON array in correct_answer)
+            -- For simplicity in trigger, basic text match for now. Advanced grading may need edge functions.
+            v_is_correct := (lower(trim(both '"' from NEW.answer::text)) = lower(trim(both '"' from v_question.correct_answer::text)));
+        END IF;
+
+        -- Assign results
+        NEW.is_correct := v_is_correct;
+        NEW.points_earned := CASE WHEN v_is_correct THEN v_question.points ELSE 0 END;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trigger_grade_quiz_answer ON public.quiz_answers;
+CREATE TRIGGER trigger_grade_quiz_answer
+BEFORE INSERT OR UPDATE ON public.quiz_answers
+FOR EACH ROW EXECUTE FUNCTION public.grade_quiz_answer();
+
+
+-- BUG-003: Secure School Code Validation (RPC)
+CREATE OR REPLACE FUNCTION public.validate_school_code(p_code TEXT)
+RETURNS JSON AS $$
+DECLARE
+    v_result JSON;
+BEGIN
+    SELECT json_build_object(
+        'valid', true,
+        'school_id', s.id,
+        'school_name', s.name,
+        'role', sc.role
+    ) INTO v_result
+    FROM public.school_codes sc
+    JOIN public.schools s ON sc.school_id = s.id
+    WHERE sc.code = upper(trim(p_code)) AND sc.is_active = true;
+
+    IF v_result IS NULL THEN
+        RETURN json_build_object('valid', false, 'message', 'Kode tidak valid atau non-aktif');
+    END IF;
+
+    RETURN v_result;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Revoke dangerous table access, allow RPC instead
+REVOKE ALL ON public.school_codes FROM anon;
+GRANT EXECUTE ON FUNCTION public.validate_school_code(TEXT) TO anon;
+
+REVOKE ALL ON public.school_codes FROM anon;
+GRANT EXECUTE ON FUNCTION public.validate_school_code(TEXT) TO anon;
+
+-- ==========================================
+-- 9. PERFORMANCE & DATA INTEGRITY (SPRINT 2)
+-- ==========================================
+
+-- BUG-012: Fix Race Conditions & Scoping in Manual Grades
+ALTER TABLE public.grades ADD COLUMN IF NOT EXISTS class_id UUID REFERENCES public.classes(id) ON DELETE CASCADE;
+
+CREATE OR REPLACE FUNCTION public.upsert_manual_grade(
+    p_student_id UUID,
+    p_class_id UUID,
+    p_assignment_id UUID,
+    p_mode TEXT,
+    p_score NUMERIC,
+    p_feedback TEXT
+) RETURNS JSON AS $$
+DECLARE
+    v_existing_id UUID;
+BEGIN
+    -- Check for existing grade safely
+    IF p_mode = 'keaktifan' THEN
+        SELECT id INTO v_existing_id FROM public.grades 
+        WHERE student_id = p_student_id AND type = 'keaktifan' AND class_id = p_class_id 
+        FOR UPDATE SKIP LOCKED; -- Prevent race conditions
+    ELSE
+        SELECT id INTO v_existing_id FROM public.grades 
+        WHERE student_id = p_student_id AND type = 'manual' AND assignment_id = p_assignment_id
+        FOR UPDATE SKIP LOCKED;
+    END IF;
+
+    IF v_existing_id IS NOT NULL THEN
+        -- Update
+        UPDATE public.grades 
+        SET score = p_score, feedback = p_feedback, updated_at = NOW() 
+        WHERE id = v_existing_id;
+    ELSE
+        -- Insert
+        INSERT INTO public.grades (student_id, class_id, assignment_id, type, score, feedback)
+        VALUES (
+            p_student_id, 
+            p_class_id, 
+            p_assignment_id, 
+            p_mode::public.grade_type, 
+            p_score, 
+            p_feedback
+        );
+    END IF;
+
+    RETURN json_build_object('success', true);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+SELECT 'UNIFIED_MASTER_SCRIPT (SAFE VERSION + SPRINT 1 & 2 PATCHES) berhasil dijalankan!' AS message;

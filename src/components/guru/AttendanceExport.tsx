@@ -5,6 +5,7 @@ import { Download, Calendar, Loader2, FileText } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { exportAttendanceToPdf, type AttendanceRecord } from '@/lib/exportPdf';
+import { exportToExcel, type ExcelSheetConfig } from '@/lib/utils/excel';
 
 interface AttendanceExportProps {
     classId: string;
@@ -80,9 +81,7 @@ export function AttendanceExport({ classId, className }: AttendanceExportProps) 
             // Transform data for Excel
             const excelData: AttendanceData[] = [];
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data.forEach((attendance: any) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 attendance.attendance_records?.forEach((record: any) => {
                     excelData.push({
                         date: new Date(attendance.date).toLocaleDateString('id-ID', {
@@ -106,55 +105,38 @@ export function AttendanceExport({ classId, className }: AttendanceExportProps) 
                 return a.student_name.localeCompare(b.student_name);
             });
 
-            // Dynamic import xlsx - reduces initial bundle size
-            const XLSX = await import('xlsx');
-
-            // Create workbook
-            const wb = XLSX.utils.book_new();
-
-            // Create main data sheet
-            const ws = XLSX.utils.json_to_sheet(excelData, {
-                header: ['date', 'student_name', 'status', 'recorded_at']
-            });
-
-            // Set column headers
-            XLSX.utils.sheet_add_aoa(ws, [
-                ['Tanggal', 'Nama Siswa', 'Status', 'Waktu Presensi']
-            ], { origin: 'A1' });
-
-            // Set column widths
-            ws['!cols'] = [
-                { wch: 30 },  // Tanggal
-                { wch: 25 },  // Nama Siswa
-                { wch: 10 },  // Status
-                { wch: 15 }   // Waktu
-            ];
-
-            XLSX.utils.book_append_sheet(wb, ws, 'Rekap Absensi');
-
-            // Create summary sheet
             const summaryData = calculateSummary(excelData);
-            const summaryWs = XLSX.utils.json_to_sheet(summaryData);
-            XLSX.utils.sheet_add_aoa(summaryWs, [
-                ['Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpa', 'Total', 'Persentase Kehadiran']
-            ], { origin: 'A1' });
-            summaryWs['!cols'] = [
-                { wch: 25 },
-                { wch: 8 },
-                { wch: 8 },
-                { wch: 8 },
-                { wch: 8 },
-                { wch: 8 },
-                { wch: 20 }
-            ];
-            XLSX.utils.book_append_sheet(wb, summaryWs, 'Ringkasan');
 
-            // Generate filename
+            const sheets: ExcelSheetConfig[] = [
+                {
+                    name: 'Rekap Absensi',
+                    columns: [
+                        { header: 'Tanggal', key: 'date', width: 30 },
+                        { header: 'Nama Siswa', key: 'student_name', width: 25 },
+                        { header: 'Status', key: 'status', width: 10 },
+                        { header: 'Waktu Presensi', key: 'recorded_at', width: 15 }
+                    ],
+                    data: excelData
+                },
+                {
+                    name: 'Ringkasan',
+                    columns: [
+                        { header: 'Nama Siswa', key: 'student_name', width: 25 },
+                        { header: 'Hadir', key: 'hadir', width: 8 },
+                        { header: 'Izin', key: 'izin', width: 8 },
+                        { header: 'Sakit', key: 'sakit', width: 8 },
+                        { header: 'Alpa', key: 'alpa', width: 8 },
+                        { header: 'Total', key: 'total', width: 8 },
+                        { header: 'Persentase Kehadiran', key: 'percentage', width: 20 }
+                    ],
+                    data: summaryData
+                }
+            ];
+
             const rangeLabel = dateRange === 'week' ? 'Mingguan' : dateRange === 'month' ? 'Bulanan' : 'Semester';
             const filename = `Absensi_${className}_${rangeLabel}_${new Date().toISOString().split('T')[0]}.xlsx`;
 
-            // Download
-            XLSX.writeFile(wb, filename);
+            await exportToExcel(sheets, filename);
             toast.success('File berhasil diunduh!');
 
         } catch (error) {
@@ -201,9 +183,7 @@ export function AttendanceExport({ classId, className }: AttendanceExportProps) 
 
             // Transform data for PDF
             const pdfData: AttendanceRecord[] = [];
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data.forEach((attendance: any) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 attendance.attendance_records?.forEach((record: any) => {
                     pdfData.push({
                         studentName: record.users?.full_name || 'Unknown',

@@ -1,9 +1,7 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
-import { Trophy, Star } from 'lucide-react';
-import { useGSAP } from '@gsap/react';
-import { gsap } from '@/lib/gsap';
+import { useState, useEffect } from 'react';
+import { Trophy, Star, Sparkles } from 'lucide-react';
 
 interface XPProgressBarProps {
     currentXP: number;
@@ -15,43 +13,43 @@ interface XPProgressBarProps {
 
 export function XPProgressBar({ currentXP, level, nextLevelXP, className = '', variant = 'default' }: XPProgressBarProps) {
     const [displayXP, setDisplayXP] = useState(currentXP);
-    const xpContainerRef = useRef<HTMLDivElement>(null);
-    const xpValRef = useRef({ val: currentXP });
     
+    // Simple count-up effect without GSAP for stability
+    useEffect(() => {
+        const start = displayXP;
+        const end = currentXP;
+        if (start === end) return;
+
+        const duration = 1000;
+        const startTime = performance.now();
+
+        function update(currentTime: number) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const current = Math.round(start + (end - start) * progress);
+            setDisplayXP(current);
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            }
+        }
+
+        requestAnimationFrame(update);
+    }, [currentXP]);
+
     const progress = Math.min(100, Math.max(0, (displayXP / nextLevelXP) * 100));
     const xpRemaining = Math.max(0, nextLevelXP - displayXP);
 
-    // Number Ticking Animation
-    useGSAP(() => {
-        gsap.to(xpValRef.current, {
-            val: currentXP,
-            duration: 1.5,
-            ease: "power2.out",
-            onUpdate: () => {
-                setDisplayXP(Math.round(xpValRef.current.val));
-            }
-        });
-    }, [currentXP]);
-
-    // Level-up celebration animation (burst effect)
-    useGSAP(() => {
-        if (level > 1) { // Skip on initial load
-            gsap.fromTo(".level-badge", 
-                { scale: 0.8, rotate: -10 },
-                { scale: 1.2, rotate: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" }
-            );
-        }
-    }, [level]);
-
+    // SISWA UNIVERSE DNA — emerald/cyan/neon
     if (variant === 'minimal') {
         return (
-            <div className={`flex items-center gap-3 ${className}`}>
-                <div className="level-badge w-8 h-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-black text-xs border border-amber-500/30">
+            <div className={`flex items-center gap-3 font-space-grotesk ${className}`}>
+                <div className="level-badge w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-xs border border-emerald-500/30">
                     {level}
                 </div>
-                <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
                     <div 
-                        className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                        className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full transition-all duration-700 ease-out shadow-[0_0_12px_rgba(16,185,129,0.4)]"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
@@ -61,23 +59,30 @@ export function XPProgressBar({ currentXP, level, nextLevelXP, className = '', v
 
     if (variant === 'compact') {
         return (
-            <div className={`bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-2xl p-4 ${className}`}>
-                <div className="flex justify-between items-end mb-2">
+            <div className={`universe-card p-4 font-space-grotesk ${className}`}>
+                <div className="flex justify-between items-end mb-2.5">
                     <div className="flex items-center gap-2">
-                        <div className="level-badge bg-amber-500/10 p-1.5 rounded-lg">
-                            <Trophy size={16} className="text-amber-500" />
+                        <div className="level-badge bg-emerald-500/10 p-1.5 rounded-lg border border-emerald-500/20">
+                            <Trophy size={14} className="text-emerald-400" />
                         </div>
-                        <span className="text-sm font-bold text-white">Level {level}</span>
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-emerald-500/70 uppercase tracking-widest leading-none mb-1">Level</span>
+                            <span className="text-sm font-black text-white leading-none">{level}</span>
+                        </div>
                     </div>
-                    <span className="text-xs font-medium text-slate-400">
-                        <span className="text-amber-400 font-bold">{displayXP}</span> / {nextLevelXP} XP
-                    </span>
+                    <div className="text-right">
+                        <span className="text-[10px] font-bold text-slate-500 block mb-0.5 uppercase tracking-wider">Progress XP</span>
+                        <span className="text-xs font-black text-emerald-400">
+                            {displayXP.toLocaleString()} <span className="text-slate-600">/ {nextLevelXP.toLocaleString()}</span>
+                        </span>
+                    </div>
                 </div>
-                <div className={`w-full bg-slate-800 rounded-full overflow-hidden border border-white/5 h-3`}>
+                <div className="w-full bg-white/5 rounded-full overflow-hidden border border-white/8 h-3.5 relative">
                     <div
-                        className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 bg-[length:200%_100%] animate-gradient-x shadow-[0_0_20px_rgba(99,102,241,0.5)] relative"
-                        style={{ width: `${progress}%` }}
+                        className="h-full bg-gradient-to-r from-emerald-500 via-cyan-400 to-emerald-500 bg-[length:200%_100%] transition-all duration-1000 ease-out relative"
+                        style={{ width: `${progress}%`, animation: 'nebulaFloat 3s linear infinite' }}
                     >
+                        {/* Shimmer effect */}
                         <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
                     </div>
                 </div>
@@ -86,38 +91,41 @@ export function XPProgressBar({ currentXP, level, nextLevelXP, className = '', v
     }
 
     return (
-        <div ref={xpContainerRef} className={`glass-panel p-6 rounded-[2rem] relative overflow-hidden group ${className}`}>
+        <div className={`universe-card p-6 relative overflow-hidden group font-space-grotesk ${className}`}>
             {/* Background Glow */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/5 blur-3xl rounded-full -mr-20 -mt-20 pointer-events-none group-hover:bg-emerald-500/10 transition-colors duration-500"></div>
 
-            <div className="flex items-center gap-4 mb-4 relative z-10">
-                <div className="level-badge w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/20 transform -rotate-3 group-hover:rotate-0 transition-transform duration-300">
-                    <span className="text-2xl font-black text-white drop-shadow-md">{level}</span>
+            <div className="flex items-center gap-5 mb-5 relative z-10">
+                <div className="level-badge w-16 h-16 bg-gradient-to-br from-emerald-400 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 transform -rotate-3 group-hover:rotate-0 transition-all duration-500 border border-white/10">
+                    <span className="text-3xl font-black text-white drop-shadow-md">{level}</span>
+                    <Sparkles className="absolute -top-2 -right-2 text-yellow-300 w-5 h-5 animate-pulse" />
                 </div>
                 <div>
-                    <h3 className="text-lg font-black text-white tracking-tight">Level {level}</h3>
-                    <p className="text-amber-400 text-xs font-bold uppercase tracking-widest flex items-center gap-1">
-                        <Star size={12} className="fill-amber-400" />
-                        {level < 5 ? 'Pemula' : level < 10 ? 'Menengah' : 'Ahli'}
-                    </p>
+                    <div className="flex items-center gap-2 mb-1">
+                        <Star size={12} className="fill-emerald-400 text-emerald-400" />
+                        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">
+                            {level < 5 ? 'Novice' : level < 15 ? 'Apprentice' : 'Grandmaster'}
+                        </span>
+                    </div>
+                    <h3 className="text-xl font-black text-white tracking-tight leading-none">Power Rank</h3>
                 </div>
                 <div className="ml-auto text-right">
-                    <p className="text-2xl font-black text-white tracking-tighter">{displayXP}</p>
-                    <p className="text-xs text-slate-400 font-medium">/ {nextLevelXP} XP</p>
+                    <p className="text-2xl font-black text-white tracking-tighter tabular-nums">{displayXP.toLocaleString()}</p>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">/ {nextLevelXP.toLocaleString()} XP</p>
                 </div>
             </div>
 
-            <div className="relative h-4 bg-slate-800/50 rounded-full overflow-hidden border border-white/5">
+            <div className="relative h-5 bg-white/5 rounded-full overflow-hidden border border-white/10 p-1">
                 <div 
-                    className="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-500 shadow-[0_0_20px_rgba(251,191,36,0.4)] relative"
+                    className="h-full bg-gradient-to-r from-emerald-500 via-cyan-400 to-teal-400 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all duration-1000 ease-out"
                     style={{ width: `${progress}%` }}
                 >
-                    <div className="absolute inset-0 bg-white/20 animate-pulse-slow"></div>
+                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] translate-x-[-100%] animate-[shimmer_2s_infinite]" />
                 </div>
             </div>
 
-            <p className="text-center text-xs text-slate-500 mt-4 font-medium">
-                Butuh <span className="text-white font-bold">{Math.round(xpRemaining)} XP</span> lagi untuk naik level berikutnya!
+            <p className="text-center text-[11px] text-slate-500 mt-5 font-medium tracking-wide">
+                Kumpulkan <span className="text-emerald-400 font-black">{Math.round(xpRemaining).toLocaleString()} XP</span> lagi untuk mencapai <span className="text-white font-black">Level {level + 1}</span>
             </p>
         </div>
     );

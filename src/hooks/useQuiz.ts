@@ -264,37 +264,17 @@ export function useQuiz(classId?: string) {
 
     // Save an answer
     const saveAnswer = async (attemptId: string, questionId: string, answer: unknown): Promise<boolean> => {
-        // Get question to check correctness
-        const { data: question } = await supabase
-            .from('questions')
-            .select('type, correct_answer, points')
-            .eq('id', questionId)
-            .single();
-
-        let isCorrect: boolean | null = null;
-
-        // Auto-grade for supported types
-        if (question) {
-            if (question.type === 'multiple_choice' || question.type === 'true_false') {
-                isCorrect = answer === question.correct_answer;
-            } else if (question.type === 'short_answer') {
-                const correctAnswers = Array.isArray(question.correct_answer)
-                    ? question.correct_answer
-                    : [question.correct_answer];
-                isCorrect = correctAnswers.some((correct: string) =>
-                    String(answer).toLowerCase().trim() === String(correct).toLowerCase().trim()
-                );
-            }
-        }
-
+        // SECURITY FIX (BUG-008): Removed client-side grading.
+        // We no longer fetch `correct_answer` to the client.
+        // We simply upsert the user's answer. A secure database trigger will handle 
+        // the grading (`is_correct`, `points_earned`) server-side.
+        
         const { error: saveError } = await supabase
             .from('quiz_answers')
             .upsert({
                 attempt_id: attemptId,
                 question_id: questionId,
-                answer,
-                is_correct: isCorrect,
-                points_earned: isCorrect && question ? question.points : 0,
+                answer
             }, {
                 onConflict: 'attempt_id,question_id'
             });

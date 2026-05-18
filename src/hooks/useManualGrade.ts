@@ -31,8 +31,10 @@ export interface UseManualGradeReturn {
     grades: Record<string, GradeEntry>;
     loading: boolean;
     saving: string | null;
+    savingBulk: boolean;
     updateGrade: (studentId: string, field: 'score' | 'feedback', value: string) => void;
     saveGrade: (studentId: string) => Promise<void>;
+    bulkSaveGrades: () => Promise<void>;
     fetchStudents: () => Promise<void>;
 }
 
@@ -74,6 +76,7 @@ export function useManualGrade(
     const [grades, setGrades] = useState<Record<string, GradeEntry>>({});
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState<string | null>(null);
+    const [savingBulk, setSavingBulk] = useState(false);
 
     // Fetch students in class (with keaktifan attendance filter)
     const fetchStudents = useCallback(async () => {
@@ -84,8 +87,9 @@ export function useManualGrade(
             // Fetch class members
             const { data: membersData, error: membersError } = await supabase
                 .from('class_members')
-                .select(`user_id, users!inner(id, full_name)`)
-                .eq('class_id', classId);
+                .select(`user_id, users!inner(id, full_name), classes!inner(deleted_at)`)
+                .eq('class_id', classId)
+                .is('classes.deleted_at', null);
 
             if (membersError) throw membersError;
 
@@ -133,11 +137,12 @@ export function useManualGrade(
 
             // Fetch existing grades
             let existingGrades: ExistingGrade[] = [];
-            if (mode === 'keaktifan') {
+            if (mode === 'keaktifan' && classId) {
                 const { data } = await supabase
                     .from('grades')
                     .select('student_id, score')
                     .eq('type', 'keaktifan')
+                    .eq('class_id', classId)
                     .in('student_id', studentList.map(s => s.id));
                 existingGrades = (data as ExistingGrade[]) || [];
             } else if (assignment) {
@@ -196,7 +201,7 @@ export function useManualGrade(
     // Save grade to database
     const saveGrade = useCallback(async (studentId: string) => {
         const gradeData = grades[studentId];
-        const score = parseInt(gradeData.score);
+        const score = parseFloat(gradeData.score);
 
         if (isNaN(score) || score < 0 || score > 100) {
             toast.warning('Nilai harus antara 0-100');
@@ -205,47 +210,17 @@ export function useManualGrade(
 
         setSaving(studentId);
         try {
-            const gradePayload: GradePayload = {
-                score,
-                feedback: gradeData.feedback || null,
-                type: mode,
-                student_id: studentId
-            };
+            // BUG-012 FIX: Use atomic RPC for UPSERT to avoid race conditions
+            const { error } = await supabase.rpc('upsert_manual_grade', {
+                p_student_id: studentId,
+                p_class_id: classId || null,
+                p_assignment_id: mode === 'manual' && assignment ? assignment.id : null,
+                p_mode: mode,
+                p_score: score,
+                p_feedback: gradeData.feedback || null
+            });
 
-            if (classId) {
-                // @ts-ignore - class_id will be added via migration
-                gradePayload.class_id = classId;
-            }
-
-            if (mode === 'manual' && assignment) {
-                gradePayload.assignment_id = assignment.id;
-            }
-
-            // Check existing grade
-            let existingQuery = supabase
-                .from('grades')
-                .select('id')
-                .eq('student_id', studentId)
-                .eq('type', mode);
-
-            if (mode === 'manual' && assignment) {
-                existingQuery = existingQuery.eq('assignment_id', assignment.id);
-            }
-
-            const { data: existing } = await existingQuery.maybeSingle();
-
-            if (existing) {
-                // Update
-                const { error } = await supabase
-                    .from('grades')
-                    .update({ score, feedback: gradeData.feedback })
-                    .eq('id', existing.id);
-                if (error) throw error;
-            } else {
-                // Insert
-                const { error } = await supabase.from('grades').insert(gradePayload);
-                if (error) throw error;
-            }
+            if (error) throw error;
 
             toast.success(`Nilai ${mode === 'keaktifan' ? 'keaktifan' : ''} berhasil disimpan!`);
 
@@ -270,15 +245,60 @@ export function useManualGrade(
         } finally {
             setSaving(null);
         }
-    }, [grades, mode, assignment]);
+    }, [grades, mode, assignment, classId]);
+
+    // Bulk save grades
+    const bulkSaveGrades = useCallback(async () => {
+        setSavingBulk(true);
+        try {
+            let successCount = 0;
+            const promises = students.map(async (student) => {
+                const gradeData = grades[student.id];
+                if (!gradeData || !gradeData.score) return;
+                
+                const score = parseFloat(gradeData.score);
+                if (isNaN(score) || score < 0 || score > 100) return;
+
+                const { error } = await supabase.rpc('upsert_manual_grade', {
+                    p_student_id: student.id,
+                    p_class_id: classId || null,
+                    p_assignment_id: mode === 'manual' && assignment ? assignment.id : null,
+                    p_mode: mode,
+                    p_score: score,
+                    p_feedback: gradeData.feedback || null
+                });
+
+                if (!error) {
+                    successCount++;
+                    setStudents(prev => prev.map(s => 
+                        s.id === student.id ? { ...s, existingGrade: score } : s
+                    ));
+                }
+            });
+
+            await Promise.all(promises);
+            if (successCount > 0) {
+                toast.success(`Berhasil menyimpan ${successCount} nilai!`);
+            } else {
+                toast.info('Tidak ada nilai valid yang disimpan.');
+            }
+        } catch (error) {
+            console.error('Error in bulk save:', error);
+            toast.error('Terjadi kesalahan saat menyimpan bulk nilai.');
+        } finally {
+            setSavingBulk(false);
+        }
+    }, [grades, students, mode, assignment, classId]);
 
     return {
         students,
         grades,
         loading,
         saving,
+        savingBulk,
         updateGrade,
         saveGrade,
+        bulkSaveGrades,
         fetchStudents
     };
 }

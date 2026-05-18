@@ -47,6 +47,7 @@ export function SubmittedAssignments({ studentId }: SubmittedAssignmentsProps) {
                         feedback
                     )
                 `)
+                .eq('student_id', studentId)
                 .order('submitted_at', { ascending: false })
                 .limit(50);
 

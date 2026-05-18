@@ -11,3 +11,6 @@ export * from './StudentProfilePanel';
 export * from './SubmittedAssignments';
 export * from './PembelajaranSiswaTab';
 export * from './StudentAnalytics';
+export * from './NextActionEngine';
+export * from './SkillMap';
+export * from './StudentPortfolio';

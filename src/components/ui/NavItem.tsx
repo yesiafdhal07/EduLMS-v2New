@@ -1,6 +1,8 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
+import type { AppRole } from '@/types';
+import { getRoleTheme } from '@/lib/theme/roleTheme';
 
 interface NavItemProps {
     icon: ReactNode;
@@ -8,22 +10,14 @@ interface NavItemProps {
     active: boolean;
     onClick: () => void;
     variant?: 'sidebar' | 'mobile';
-    role?: 'guru' | 'siswa';
-    description?: string; // Optional description for better UX
+    role?: AppRole;
+    description?: string;
 }
 
 export function NavItem({ icon, label, active, onClick, variant = 'sidebar', role = 'guru', description }: NavItemProps) {
     const [showTooltip, setShowTooltip] = useState(false);
-
-    // Theme colors based on role
-    const activeColors = role === 'siswa'
-        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-        : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30';
-
-    const accentColor = role === 'siswa' ? 'text-emerald-400' : 'text-indigo-400';
-    const mobileActiveColors = role === 'siswa'
-        ? 'text-emerald-300 bg-emerald-900/50 border border-emerald-500/20'
-        : 'text-indigo-300 bg-indigo-900/50 border border-indigo-500/20';
+    const theme = getRoleTheme(role);
+    const mobileActive = `${theme.accentText} ${theme.accentBgSoft} ${theme.accentBorder}`;
 
     if (variant === 'mobile') {
         return (
@@ -34,18 +28,14 @@ export function NavItem({ icon, label, active, onClick, variant = 'sidebar', rol
                 onMouseEnter={() => setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
             >
-                <div className={`p-2 rounded-2xl transition-all duration-300 ${active ? `${mobileActiveColors} shadow-lg shadow-indigo-500/20 scale-110` : 'bg-transparent'}`}>
+                <div className={`p-2 rounded-2xl transition-all duration-300 ${active ? `${mobileActive} shadow-lg scale-110` : 'bg-transparent'}`}>
                     {icon}
                 </div>
                 <span className={`text-[10px] font-bold tracking-tight transition-all ${active ? 'opacity-100 scale-105' : 'opacity-70'}`}>{label}</span>
-
-                {/* Mobile Active Glow */}
-                {active && <div className="absolute inset-0 bg-indigo-500/20 blur-xl rounded-full -z-10"></div>}
             </button>
         );
     }
 
-    // Default: sidebar variant
     return (
         <div
             onClick={onClick}
@@ -55,17 +45,14 @@ export function NavItem({ icon, label, active, onClick, variant = 'sidebar', rol
                 flex items-center gap-4 p-4 rounded-2xl cursor-pointer transition-all duration-300 group relative overflow-hidden 
                 active:scale-95 
                 ${active 
-                    ? `${activeColors} shadow-lg shadow-${role === 'siswa' ? 'emerald' : 'indigo'}-500/10` 
+                    ? `${theme.navItemActive} shadow-lg` 
                     : 'hover:bg-white/5 hover:border hover:border-white/5 border border-transparent'
                 }
             `}
         >
             <div className={`
                 relative z-10 p-2.5 rounded-xl transition-all duration-300 
-                ${active 
-                    ? 'bg-white/10 shadow-inner' 
-                    : 'bg-white/5 group-hover:bg-white/10 group-hover:scale-110'
-                } 
+                ${active ? 'bg-white/10 shadow-inner' : 'bg-white/5 group-hover:bg-white/10 group-hover:scale-110'} 
                 ${active ? 'text-white' : 'text-slate-400 group-hover:text-white'}
             `}>
                 {icon}
@@ -79,19 +66,14 @@ export function NavItem({ icon, label, active, onClick, variant = 'sidebar', rol
                 )}
             </div>
 
-            {/* Active Badge */}
             {active && (
-                <div className={`relative z-10 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${role === 'siswa' ? 'bg-emerald-500/30 text-emerald-300' : 'bg-indigo-500/30 text-indigo-300'}`}>
+                <div className={`relative z-10 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${theme.accentBgStrong} ${theme.accentText} border ${theme.accentBorder}`}>
                     Aktif
                 </div>
             )}
 
-            {/* Glow Effect */}
-            {active && <div className={`absolute inset-0 opacity-20 bg-gradient-to-r ${role === 'siswa' ? 'from-emerald-500/20 to-transparent' : 'from-indigo-500/20 to-transparent'}`} />}
-            
-            {/* Hover Glow for Inactive */}
+            {active && <div className={`absolute inset-0 opacity-20 bg-gradient-to-r ${theme.navItemGlow}`} />}
             {!active && <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />}
         </div>
     );
 }
-

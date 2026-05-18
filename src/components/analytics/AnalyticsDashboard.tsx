@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
@@ -11,8 +12,10 @@ import {
     Award, Calendar, FileText, BarChart3, PieChartIcon,
     Download, Filter, RefreshCcw
 } from 'lucide-react';
+import { ReportCardGenerator } from './ReportCardGenerator';
 import { supabase } from '@/lib/supabase';
 import { SkeletonDashboard } from '@/components/ui/SkeletonLoading';
+import { ErrorBoundary } from '@/components/ui';
 
 // ========================================================
 // ANALYTICS DASHBOARD
@@ -68,59 +71,18 @@ export function AnalyticsDashboard({ classId, className }: AnalyticsDashboardPro
     const [dateRange, setDateRange] = useState<'week' | 'month' | 'semester'>('month');
     const [activeChart, setActiveChart] = useState<'attendance' | 'assignments' | 'students' | 'quizzes' | 'keaktifan'>('attendance');
 
-    useEffect(() => {
-        fetchAnalytics();
-
-        // Realtime Subscriptions
-        const channels = [
-            // Watch for new attendance check-ins
-            // 'attendance_logs' is usually a view, so we subscribe to the underlying 'attendance_records' table
-            supabase.channel(`analytics_attendance_${classId}`)
-                // Filter by attendance_id would be ideal but that requires joining.
-                // Instead, we just watch for global attendance_records changes and rely on debounce or teacher RLS.
-                // Or better: filter by nothing and let debounce handle it, or filter by user if possible.
-                // Given RLS, teacher only receives events for their classes if policies are set correctly for realtime.
-                // Safest broad approach:
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'attendance_records' }, () => debounceFetch())
-                .subscribe(),
-
-            // Watch for NEW submissions & grades
-            supabase.channel(`analytics_global_changes`)
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'submissions' }, () => debounceFetch())
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'grades' }, () => debounceFetch())
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'quiz_attempts' }, () => debounceFetch())
-                .subscribe()
-        ];
-
-        return () => {
-            channels.forEach(channel => supabase.removeChannel(channel));
-        };
-    }, [classId, dateRange]);
-
     // Debounce ref to prevent memory leaks
     const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-    const debounceFetch = useCallback(() => {
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-        debounceRef.current = setTimeout(() => fetchAnalytics(), 2000);
-    }, []);
-
-    // Cleanup debounce on unmount
-    useEffect(() => {
-        return () => {
-            if (debounceRef.current) clearTimeout(debounceRef.current);
-        };
-    }, []);
-
-    const fetchAnalytics = async () => {
+    const fetchAnalytics = useCallback(async () => {
         setLoading(true);
 
         // Fetch attendance data with limit for performance
         const { data: attendanceData } = await supabase
-            .from('attendance_logs')
-            .select('status, created_at')
-            .eq('class_id', classId)
-            .order('created_at', { ascending: false })
+            .from('attendance_records')
+            .select('status, recorded_at, attendance!inner(class_id)')
+            .eq('attendance.class_id', classId)
+            .order('recorded_at', { ascending: false })
             .limit(500);
 
         // Fetch assignment submissions
@@ -136,7 +98,7 @@ export function AnalyticsDashboard({ classId, className }: AnalyticsDashboardPro
         const { data: studentData } = await supabase
             .from('class_members')
             .select(`
-                user:users!inner(id, name)
+                users!inner(id, full_name)
             `)
             .eq('class_id', classId);
 
@@ -151,15 +113,14 @@ export function AnalyticsDashboard({ classId, className }: AnalyticsDashboardPro
             .eq('status', 'graded');
 
         // Fetch keaktifan grades
-        const studentIds = (studentData as any || []).map((s: any) => s.user.id);
+        // const studentIds = (studentData as any || []).map((s: any) => s.users?.id); // Updated s.user to s.users
 
-        const { data: keaktifanData, error: keaktifanError } = await supabase
+        const { data: keaktifanData } = await supabase
             .from('grades')
             .select(`
                 score, student_id, created_at,
                 user:users!grades_student_id_fkey(full_name)
             `)
-            .eq('type', 'keaktifan')
             .eq('type', 'keaktifan')
             .eq('class_id', classId) // Filter by class_id for accuracy
             .limit(200);
@@ -198,7 +159,41 @@ export function AnalyticsDashboard({ classId, className }: AnalyticsDashboardPro
 
         setData(processedData);
         setLoading(false);
-    };
+    }, [classId]); // Add classId as dependency
+
+    const debounceFetch = useCallback(() => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => fetchAnalytics(), 2000);
+    }, [fetchAnalytics]);
+
+    useEffect(() => {
+        // eslint-disable-next-line
+        fetchAnalytics();
+
+        // Realtime Subscriptions
+        const channels = [
+            supabase.channel(`analytics_attendance_${classId}`)
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'attendance_records' }, () => debounceFetch())
+                .subscribe(),
+
+            supabase.channel(`analytics_global_changes`)
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'submissions' }, () => debounceFetch())
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'grades' }, () => debounceFetch())
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'quiz_attempts' }, () => debounceFetch())
+                .subscribe()
+        ];
+
+        return () => {
+            channels.forEach(channel => supabase.removeChannel(channel));
+        };
+    }, [classId, dateRange, fetchAnalytics, debounceFetch]);
+
+    // Cleanup debounce on unmount
+    useEffect(() => {
+        return () => {
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+        };
+    }, []);
 
     if (loading) {
         return (
@@ -304,7 +299,47 @@ export function AnalyticsDashboard({ classId, className }: AnalyticsDashboardPro
             <div className="bg-white/5 backdrop-blur-md rounded-[2rem] p-6 border border-white/10">
                 {activeChart === 'attendance' && <AttendanceChart data={data.attendance} />}
                 {activeChart === 'assignments' && <AssignmentsChart data={data.assignments} />}
-                {activeChart === 'students' && <StudentsChart data={data.students} />}
+                {activeChart === 'students' && (
+                    <div className="space-y-8">
+                        <StudentsChart data={data.students} />
+                        
+                        <div className="pt-8 border-t border-white/5">
+                            <div className="flex items-center justify-between mb-6">
+                                <h4 className="text-lg font-bold text-white flex items-center gap-2">
+                                    <FileText size={20} className="text-indigo-400" />
+                                    Export Rapor Siswa
+                                </h4>
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pilih siswa untuk mengunduh laporan PDF</span>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
+                                {data.students.topPerformers.map((student: any, i: number) => {
+                                    // We need studentId here, but processStudentData might need to include it
+                                    // Assuming student object has 'id' if we fix processStudentData
+                                    return (
+                                        <div key={i} className="flex items-center justify-between bg-white/[0.03] border border-white/5 p-4 rounded-2xl hover:bg-white/5 transition-all">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold">
+                                                    {student.name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-white">{student.name}</p>
+                                                    <p className="text-[10px] text-slate-500 font-medium">Avg: {student.score}%</p>
+                                                </div>
+                                            </div>
+                                            <ReportCardGenerator 
+                                                classId={classId} 
+                                                studentId={student.id || ''} 
+                                                studentName={student.name} 
+                                                className={className}
+                                            />
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                )}
                 {activeChart === 'quizzes' && <QuizzesChart data={data.quizzes} />}
                 {activeChart === 'keaktifan' && <KeaktifanChart data={data.keaktifan} />}
             </div>
@@ -350,19 +385,21 @@ function StatCard({
     };
 
     return (
-        <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10">
-            <div className="flex items-center justify-between mb-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorClasses[color]}`}>
-                    {icon}
-                </div>
-                {trend && (
-                    <div className={`flex items-center gap-1 text-xs ${trend === 'up' ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {trend === 'up' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-                    </div>
-                )}
+        <div className="bg-white/5 hover:bg-white/10 transition-colors backdrop-blur-md rounded-2xl p-4 border border-white/10 flex items-center gap-4 group">
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${colorClasses[color]}`}>
+                {icon}
             </div>
-            <p className="text-2xl font-black text-white">{value}</p>
-            <p className="text-xs text-slate-400">{label}</p>
+            <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider truncate mb-0.5">{label}</p>
+                <div className="flex items-baseline gap-2">
+                    <p className="text-2xl font-black text-white leading-none">{value}</p>
+                    {trend && (
+                        <span className={`flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded ${trend === 'up' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
+                            {trend === 'up' ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                        </span>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
@@ -380,50 +417,54 @@ function AttendanceChart({ data }: { data: AnalyticsData['attendance'] }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
                 <h4 className="text-lg font-bold text-white mb-4">Distribusi Kehadiran</h4>
-                <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
-                        <Pie
-                            data={pieData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={100}
-                            paddingAngle={2}
-                            dataKey="value"
-                        >
-                            {pieData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                        </Pie>
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: '#1e293b',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                borderRadius: '12px'
-                            }}
-                        />
-                        <Legend />
-                    </PieChart>
-                </ResponsiveContainer>
+                <ErrorBoundary>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <PieChart>
+                            <Pie
+                                data={pieData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={60}
+                                outerRadius={100}
+                                paddingAngle={2}
+                                dataKey="value"
+                            >
+                                {pieData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                ))}
+                            </Pie>
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: '#1e293b',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '12px'
+                                }}
+                            />
+                            <Legend />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </ErrorBoundary>
             </div>
             <div>
                 <h4 className="text-lg font-bold text-white mb-4">Tren Kehadiran</h4>
-                <ResponsiveContainer width="100%" height={250}>
-                    <AreaChart data={data.trend}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                        <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} />
-                        <YAxis stroke="#94a3b8" fontSize={12} />
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: '#1e293b',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                borderRadius: '12px'
-                            }}
-                        />
-                        <Area type="monotone" dataKey="present" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.3} name="Hadir" />
-                        <Area type="monotone" dataKey="absent" stackId="1" stroke="#ef4444" fill="#ef4444" fillOpacity={0.3} name="Tidak Hadir" />
-                    </AreaChart>
-                </ResponsiveContainer>
+                <ErrorBoundary>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <AreaChart data={data.trend}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                            <XAxis dataKey="date" stroke="#94a3b8" fontSize={12} />
+                            <YAxis stroke="#94a3b8" fontSize={12} />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: '#1e293b',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '12px'
+                                }}
+                            />
+                            <Area type="monotone" dataKey="present" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.3} name="Hadir" />
+                            <Area type="monotone" dataKey="absent" stackId="1" stroke="#ef4444" fill="#ef4444" fillOpacity={0.3} name="Tidak Hadir" />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </ErrorBoundary>
             </div>
         </div>
     );
@@ -434,23 +475,25 @@ function AssignmentsChart({ data }: { data: AnalyticsData['assignments'] }) {
     return (
         <div>
             <h4 className="text-lg font-bold text-white mb-4">Pengumpulan per Tugas</h4>
-            <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={data.byAssignment}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
-                    <YAxis stroke="#94a3b8" fontSize={12} />
-                    <Tooltip
-                        contentStyle={{
-                            backgroundColor: '#1e293b',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            borderRadius: '12px'
-                        }}
-                    />
-                    <Legend />
-                    <Bar dataKey="submitted" fill="#10b981" name="Dikumpul" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="total" fill="#6366f1" name="Total Siswa" radius={[4, 4, 0, 0]} />
-                </BarChart>
-            </ResponsiveContainer>
+            <ErrorBoundary>
+                <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={data.byAssignment}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                        <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
+                        <YAxis stroke="#94a3b8" fontSize={12} />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: '#1e293b',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '12px'
+                            }}
+                        />
+                        <Legend />
+                        <Bar dataKey="submitted" fill="#10b981" name="Dikumpul" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="total" fill="#6366f1" name="Total Siswa" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                </ResponsiveContainer>
+            </ErrorBoundary>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                 <div className="bg-white/5 rounded-xl p-4 text-center">
@@ -476,21 +519,23 @@ function StudentsChart({ data }: { data: AnalyticsData['students'] }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
                 <h4 className="text-lg font-bold text-white mb-4">Distribusi Nilai</h4>
-                <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={data.distribution}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                        <XAxis dataKey="grade" stroke="#94a3b8" fontSize={12} />
-                        <YAxis stroke="#94a3b8" fontSize={12} />
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: '#1e293b',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                borderRadius: '12px'
-                            }}
-                        />
-                        <Bar dataKey="count" fill="#6366f1" name="Jumlah Siswa" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                </ResponsiveContainer>
+                <ErrorBoundary>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={data.distribution}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                            <XAxis dataKey="grade" stroke="#94a3b8" fontSize={12} />
+                            <YAxis stroke="#94a3b8" fontSize={12} />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: '#1e293b',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '12px'
+                                }}
+                            />
+                            <Bar dataKey="count" fill="#6366f1" name="Jumlah Siswa" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </ErrorBoundary>
             </div>
             <div>
                 <h4 className="text-lg font-bold text-white mb-4">Top Performers</h4>
@@ -519,23 +564,25 @@ function QuizzesChart({ data }: { data: AnalyticsData['quizzes'] }) {
     return (
         <div>
             <h4 className="text-lg font-bold text-white mb-4">Performa Kuis</h4>
-            <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={data.byQuiz}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                    <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
-                    <YAxis stroke="#94a3b8" fontSize={12} />
-                    <Tooltip
-                        contentStyle={{
-                            backgroundColor: '#1e293b',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            borderRadius: '12px'
-                        }}
-                    />
-                    <Legend />
-                    <Line type="monotone" dataKey="avgScore" stroke="#6366f1" strokeWidth={2} name="Rata-rata Nilai" dot={{ fill: '#6366f1' }} />
-                    <Line type="monotone" dataKey="attempts" stroke="#10b981" strokeWidth={2} name="Jumlah Percobaan" dot={{ fill: '#10b981' }} />
-                </LineChart>
-            </ResponsiveContainer>
+            <ErrorBoundary>
+                <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={data.byQuiz}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                        <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
+                        <YAxis stroke="#94a3b8" fontSize={12} />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: '#1e293b',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '12px'
+                            }}
+                        />
+                        <Legend />
+                        <Line type="monotone" dataKey="avgScore" stroke="#6366f1" strokeWidth={2} name="Rata-rata Nilai" dot={{ fill: '#6366f1' }} />
+                        <Line type="monotone" dataKey="attempts" stroke="#10b981" strokeWidth={2} name="Jumlah Percobaan" dot={{ fill: '#10b981' }} />
+                    </LineChart>
+                </ResponsiveContainer>
+            </ErrorBoundary>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                 <div className="bg-white/5 rounded-xl p-4 text-center">
@@ -561,21 +608,23 @@ function KeaktifanChart({ data }: { data: AnalyticsData['keaktifan'] }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
                 <h4 className="text-lg font-bold text-white mb-4">Siswa Teraktif</h4>
-                <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={data.topStudents} layout="vertical">
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                        <XAxis type="number" stroke="#94a3b8" fontSize={12} />
-                        <YAxis dataKey="name" type="category" stroke="#94a3b8" fontSize={12} width={100} />
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: '#1e293b',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                borderRadius: '12px'
-                            }}
-                        />
-                        <Bar dataKey="score" fill="#f59e0b" name="Skor Keaktifan" radius={[0, 4, 4, 0]} />
-                    </BarChart>
-                </ResponsiveContainer>
+                <ErrorBoundary>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={data.topStudents} layout="vertical">
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                            <XAxis type="number" stroke="#94a3b8" fontSize={12} />
+                            <YAxis dataKey="name" type="category" stroke="#94a3b8" fontSize={12} width={100} />
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: '#1e293b',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '12px'
+                                }}
+                            />
+                            <Bar dataKey="score" fill="#f59e0b" name="Skor Keaktifan" radius={[0, 4, 4, 0]} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </ErrorBoundary>
             </div>
             <div>
                 <h4 className="text-lg font-bold text-white mb-4">Peringkat Keaktifan</h4>
@@ -612,16 +661,16 @@ function KeaktifanChart({ data }: { data: AnalyticsData['keaktifan'] }) {
     );
 }
 
-// Data processing functions
-function processAttendanceData(logs: { status: string; created_at: string }[]): AnalyticsData['attendance'] {
+function processAttendanceData(logs: any[]): AnalyticsData['attendance'] {
     const present = logs.filter(l => l.status === 'present' || l.status === 'hadir').length;
-    const absent = logs.filter(l => l.status === 'absent' || l.status === 'alpha').length;
+    const absent = logs.filter(l => l.status === 'absent' || l.status === 'alpa').length;
     const late = logs.filter(l => l.status === 'late' || l.status === 'terlambat').length;
     const excused = logs.filter(l => l.status === 'excused' || l.status === 'izin' || l.status === 'sakit').length;
 
     // Group by date for trend
     const byDate = logs.reduce((acc, log) => {
-        const date = new Date(log.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+        const dateStr = log.recorded_at || log.created_at || new Date().toISOString();
+        const date = new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
         if (!acc[date]) acc[date] = { present: 0, absent: 0 };
         if (log.status === 'present' || log.status === 'hadir') acc[date].present++;
         else acc[date].absent++;
@@ -630,7 +679,8 @@ function processAttendanceData(logs: { status: string; created_at: string }[]): 
 
     const trend = Object.entries(byDate).map(([date, counts]) => ({
         date,
-        ...counts,
+        present: (counts as any).present,
+        absent: (counts as any).absent,
     })).slice(-7);
 
     return { present, absent, late, excused, trend };
@@ -685,12 +735,13 @@ function processStudentData(
     ];
 
     const topPerformers = students.map((s: any) => {
-        const user = Array.isArray(s.user) ? s.user[0] : s.user;
+        const user = Array.isArray(s.users) ? s.users[0] : s.users;
         return {
-            name: user?.name || 'Unknown',
+            id: user?.id,
+            name: user?.full_name || 'Unknown',
 
             score: (() => {
-                const studentSubmissions = submissions.filter((sub: any) => sub.student_id === s.user.id && sub.grade !== null);
+                const studentSubmissions = submissions.filter((sub: any) => sub.student_id === user?.id && sub.grade !== null);
                 if (studentSubmissions.length === 0) return 0;
                 const total = studentSubmissions.reduce((sum: number, sub: any) => sum + (sub.grade || 0), 0);
                 return Math.round(total / studentSubmissions.length);

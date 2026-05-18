@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 test.describe('Quiz Assessment Flow', () => {
     // Shared login helper
-    async function loginAsStudent(page: any) {
+    async function loginAsStudent(page: Page) {
         await page.goto('/login');
         await page.fill('input[type="email"]', 'siswa@example.com');
         await page.fill('input[type="password"]', 'password123');

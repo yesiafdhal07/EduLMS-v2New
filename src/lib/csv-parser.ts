@@ -17,11 +17,12 @@ export interface CSVParseResult {
     warnings: { row: number; message: string }[];
 }
 
+import Papa from 'papaparse';
+
 /**
- * Parse CSV content to student data
+ * Parse CSV content to student data using PapaParse
  */
 export function parseCSV(content: string): CSVParseResult {
-    const lines = content.trim().split('\n');
     const result: CSVParseResult = {
         success: true,
         data: [],
@@ -29,81 +30,83 @@ export function parseCSV(content: string): CSVParseResult {
         warnings: [],
     };
 
-    if (lines.length < 2) {
+    const parsed = Papa.parse<Record<string, string>>(content, {
+        header: true,
+        skipEmptyLines: true,
+        transformHeader: (header) => header.toLowerCase().trim()
+    });
+
+    if (parsed.data.length === 0) {
         result.success = false;
         result.errors.push({ row: 0, message: 'File harus memiliki header dan minimal 1 baris data' });
         return result;
     }
 
-    // Parse header
-    const headerLine = lines[0];
-    const headers = parseCSVLine(headerLine).map(h => h.toLowerCase().trim());
-    
-    // Validate required columns
-    const nameIndex = headers.findIndex(h => 
-        ['nama lengkap', 'nama', 'name', 'full_name', 'fullname'].includes(h)
-    );
-    const emailIndex = headers.findIndex(h => 
-        ['email', 'e-mail', 'email address'].includes(h)
-    );
-    const passwordIndex = headers.findIndex(h => 
-        ['password', 'pass', 'kata sandi'].includes(h)
-    );
+    if (parsed.errors.length > 0) {
+        result.success = false;
+        parsed.errors.forEach(err => {
+            result.errors.push({ row: err.row || 0, message: err.message });
+        });
+        return result;
+    }
 
-    if (nameIndex === -1) {
+    const headers = parsed.meta.fields || [];
+
+    // Find correct column names based on common variants
+    const nameField = headers.find(h => ['nama lengkap', 'nama', 'name', 'full_name', 'fullname'].includes(h));
+    const emailField = headers.find(h => ['email', 'e-mail', 'email address'].includes(h));
+    const passwordField = headers.find(h => ['password', 'pass', 'kata sandi'].includes(h));
+
+    if (!nameField) {
         result.success = false;
         result.errors.push({ row: 1, message: 'Kolom "Nama Lengkap" tidak ditemukan' });
         return result;
     }
 
-    if (emailIndex === -1) {
+    if (!emailField) {
         result.success = false;
         result.errors.push({ row: 1, message: 'Kolom "Email" tidak ditemukan' });
         return result;
     }
 
-    if (passwordIndex === -1) {
+    if (!passwordField) {
         result.warnings.push({ row: 1, message: 'Kolom "Password" tidak ditemukan, akan menggunakan password default' });
     }
 
-    // Parse data rows
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue; // Skip empty lines
-
-        const values = parseCSVLine(line);
-        const rowNumber = i + 1;
-
-        const fullName = values[nameIndex]?.trim();
-        const email = values[emailIndex]?.trim();
-        const password = passwordIndex >= 0 ? values[passwordIndex]?.trim() : undefined;
+    // Process rows
+    parsed.data.forEach((row, index) => {
+        const rowNumber = index + 2; // +1 for 0-index, +1 for header row
+        
+        const fullName = row[nameField]?.trim();
+        const email = row[emailField]?.trim();
+        const password = passwordField ? row[passwordField]?.trim() : undefined;
 
         // Validate name
         if (!fullName) {
             result.errors.push({ row: rowNumber, message: 'Nama tidak boleh kosong' });
-            continue;
+            return; // equivalent to continue in forEach
         }
 
         if (fullName.length < 2) {
             result.errors.push({ row: rowNumber, message: 'Nama terlalu pendek (min. 2 karakter)' });
-            continue;
+            return;
         }
 
         // Validate email
         if (!email) {
             result.errors.push({ row: rowNumber, message: 'Email tidak boleh kosong' });
-            continue;
+            return;
         }
 
         if (!isValidEmail(email)) {
             result.errors.push({ row: rowNumber, message: `Email tidak valid: ${email}` });
-            continue;
+            return;
         }
 
-        // Check for duplicate emails
+        // Check for duplicate emails within the file
         if (result.data.some(s => s.email.toLowerCase() === email.toLowerCase())) {
             result.errors.push({ row: rowNumber, message: `Email duplikat: ${email}` });
-            continue;
+            return;
         }
 
         // Validate password if provided
@@ -117,44 +120,12 @@ export function parseCSV(content: string): CSVParseResult {
             password: password || undefined,
             rowNumber,
         });
-    }
+    });
 
     if (result.errors.length > 0) {
         result.success = false;
     }
 
-    return result;
-}
-
-/**
- * Parse a single CSV line, handling quoted values
- */
-function parseCSVLine(line: string): string[] {
-    const result: string[] = [];
-    let current = '';
-    let inQuotes = false;
-
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        const nextChar = line[i + 1];
-
-        if (char === '"') {
-            if (inQuotes && nextChar === '"') {
-                // Escaped quote
-                current += '"';
-                i++;
-            } else {
-                inQuotes = !inQuotes;
-            }
-        } else if ((char === ',' || char === ';') && !inQuotes) {
-            result.push(current.trim());
-            current = '';
-        } else {
-            current += char;
-        }
-    }
-
-    result.push(current.trim());
     return result;
 }
 

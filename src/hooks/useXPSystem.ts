@@ -86,11 +86,13 @@ export function useXPSystem({ userId }: UseXPSystemOptions) {
         setLoading(true);
         try {
             // Get or create user_xp record
-            let { data, error } = await supabase
+            const { data: initialData, error } = await supabase
                 .from('user_xp')
                 .select('*')
                 .eq('user_id', userId)
                 .single();
+
+            let data = initialData;
 
             if (error && error.code === 'PGRST116') {
                 // Record doesn't exist, create it

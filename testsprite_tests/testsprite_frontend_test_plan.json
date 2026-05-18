@@ -1,0 +1,340 @@
+[
+  {
+    "id": "TC001",
+    "title": "Log in and reach the Guru dashboard",
+    "description": "Verifies a teacher can log in with valid credentials and is routed to the Guru dashboard successfully.",
+    "category": "User Authentication",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the Guru dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Log in and reach the Siswa dashboard",
+    "description": "Verifies a student can log in with valid credentials and is routed to the Siswa dashboard successfully.",
+    "category": "User Authentication",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the Siswa dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Require authentication when opening the Guru dashboard directly",
+    "description": "Verifies an unauthenticated visitor who opens the Guru dashboard is redirected to login.",
+    "category": "Guru (Teacher) Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /guru"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user is redirected to the login page"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Register a new account with role selection and reach the correct dashboard",
+    "description": "Verifies a new user can register with required details, select a role, complete onboarding, and land on the role-specific dashboard.",
+    "category": "User Authentication",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill a new email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Select a user role"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "action",
+        "description": "Complete onboarding"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard that matches the selected role"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Manage class roster, record attendance, and enter grades",
+    "description": "Verifies a teacher can complete the end-to-end workflow to manage classes and students, record attendance, enter grades, and see changes reflected in the dashboard.",
+    "category": "Guru (Teacher) Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the class management area"
+      },
+      {
+        "type": "action",
+        "description": "Add a class and add at least one student to the roster"
+      },
+      {
+        "type": "action",
+        "description": "Record attendance for the student"
+      },
+      {
+        "type": "action",
+        "description": "Enter a grade for the student"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the roster and gradebook reflect the saved changes"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "View enrolled classes, attendance status, and grades",
+    "description": "Verifies a student can access the Siswa dashboard to view enrolled classes, see attendance status, and view grades and feedback.",
+    "category": "Siswa (Student) Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /siswa"
+      },
+      {
+        "type": "action",
+        "description": "Open an enrolled class"
+      },
+      {
+        "type": "action",
+        "description": "Open the attendance view for the class"
+      },
+      {
+        "type": "action",
+        "description": "Open the grades or feedback view for the class"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the student can see attendance status and grades/feedback for the class"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Show empty enrolled-classes state with guidance",
+    "description": "Verifies a student with no enrollments sees an empty state and guidance to join a class.",
+    "category": "Siswa (Student) Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /siswa"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty enrolled-classes state is displayed with guidance to join a class"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC008",
+    "title": "Show error for invalid login credentials",
+    "description": "Verifies the login form rejects invalid credentials and displays an error state to the user.",
+    "category": "User Authentication",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill invalid-user@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill wrong-password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an invalid-credentials error is displayed"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC009",
+    "title": "Validate attendance or grade entry invalid input",
+    "description": "Verifies the Guru dashboard prevents saving invalid attendance or grade inputs and shows a validation error.",
+    "category": "Guru (Teacher) Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /guru"
+      },
+      {
+        "type": "action",
+        "description": "Open attendance or grade entry for a class"
+      },
+      {
+        "type": "action",
+        "description": "Enter an invalid value into an attendance or grade field"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to save the changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a validation error is displayed and the invalid change is not saved"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC010",
+    "title": "Block registration when required fields are missing",
+    "description": "Verifies registration cannot be submitted with incomplete required details and the user is shown a validation error.",
+    "category": "User Authentication",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /register"
+      },
+      {
+        "type": "action",
+        "description": "Fill a new email address into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Leave the password field empty"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a required-fields validation error is displayed"
+      }
+    ],
+    "priority": "Low"
+  }
+]

@@ -4,6 +4,10 @@
   /* Fonts */
   --font-inter: "Inter", sans-serif;
   --font-outfit: "Outfit", sans-serif;
+  /* Universe Fonts */
+  --font-fraunces: "Fraunces", Georgia, serif;
+  --font-space-grotesk: "Space Grotesk", system-ui, sans-serif;
+  --font-geist-mono: "Geist Mono", monospace;
 
   /* Border Radius */
   --radius-card-lg: 3.5rem; /* 56px */
@@ -28,7 +32,143 @@
   --z-modal-backdrop: 90;
   --z-modal: 100;
   --z-toast: 110;
+
+  /* ============================================================
+     MORNING ARCHITECT STUDIO — Deep Indigo Night Theme
+     ============================================================ */
+  /* Color Palette */
+  --guru-bg-deep: #080C16;
+  --guru-bg-surface: #0D1526;
+  --guru-bg-elevated: #141E35;
+  --guru-primary: #6366F1;
+  --guru-accent: #A78BFA;
+  --guru-success: #10B981;
+  --guru-warning: #F59E0B;
+  --guru-danger: #EF4444;
+  --guru-text: #E2E8F0;
+  --guru-text-muted: #64748B;
+  --guru-border: rgba(99, 102, 241, 0.15);
+
+  /* Animation Durations */
+  --duration-micro: 200ms;
+  --duration-fast: 300ms;
+  --duration-normal: 500ms;
+  --duration-slow: 700ms;
+
+  /* Animation Easing */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-gentle: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* Glassmorphism */
+  --glass-bg: rgba(13, 21, 38, 0.7);
+  --glass-border: rgba(99, 102, 241, 0.1);
+  --glass-blur: 12px;
+
+  /* Spacing System */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
 }
+
+/* ============================================================
+   UNIVERSE TOKEN SYSTEM — data-role attribute overrides
+   ============================================================ */
+
+/* 🌿 GURU UNIVERSE — "Ruang kerja arsitek pagi hari, FOCUSED" */
+[data-universe="guru"] {
+  --universe-base: #0E0D14;
+  --universe-surface: rgba(26, 24, 36, 0.85);
+  --universe-primary: #6366F1;
+  --universe-primary-glow: rgba(99, 102, 241, 0.25);
+  --universe-accent: #A78BFA;
+  --universe-text: #D6D3D1;
+  --universe-text-muted: #78716C;
+  --universe-border: rgba(99, 102, 241, 0.12);
+  --universe-font-display: var(--font-fraunces);
+  --universe-font-body: var(--font-outfit);
+  --universe-radius: 20px;
+  --universe-shadow: 0 0 40px -10px rgba(99, 102, 241, 0.15);
+  --universe-motion-duration: 300ms;
+  --universe-motion-ease: cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+
+/* 🚀 SISWA UNIVERSE — "Kamar aesthetic dengan LED strip, ENERGIZED" */
+[data-universe="siswa"] {
+  --universe-base: #0F0F1A;
+  --universe-surface: rgba(20, 20, 32, 0.9);
+  --universe-primary: #10B981;
+  --universe-primary-glow: rgba(16, 185, 129, 0.25);
+  --universe-accent: #06B6D4;
+  --universe-xp-color: #F59E0B;
+  --universe-text: #E5E7EB;
+  --universe-text-muted: #6B7280;
+  --universe-border: rgba(16, 185, 129, 0.15);
+  --universe-font-display: var(--font-space-grotesk);
+  --universe-font-body: var(--font-outfit);
+  --universe-radius: 24px;
+  --universe-shadow: 0 0 40px -10px rgba(16, 185, 129, 0.15);
+  --universe-motion-duration: 200ms;
+  --universe-motion-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 🏛️ KEPALA SEKOLAH UNIVERSE — "Ruang eksekutif, CLARITY" */
+[data-universe="kepala_sekolah"] {
+  --universe-base: #040712;
+  --universe-surface: rgba(8, 12, 28, 0.9);
+  --universe-primary: #F59E0B;
+  --universe-primary-glow: rgba(245, 158, 11, 0.2);
+  --universe-accent: #FCD34D;
+  --universe-text: #F1F5F9;
+  --universe-text-muted: #64748B;
+  --universe-border: rgba(245, 158, 11, 0.12);
+  --universe-font-display: var(--font-fraunces);
+  --universe-font-body: var(--font-inter);
+  --universe-radius: 16px;
+  --universe-shadow: 0 0 40px -10px rgba(245, 158, 11, 0.1);
+  --universe-motion-duration: 400ms;
+  --universe-motion-ease: cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+
+/* ⚙️ ADMIN UNIVERSE — "Mission Control, CONTROL" */
+[data-universe="admin"] {
+  --universe-base: #050506;
+  --universe-surface: rgba(10, 10, 14, 0.95);
+  --universe-primary: #F43F5E;
+  --universe-primary-glow: rgba(244, 63, 94, 0.2);
+  --universe-accent: #00E5FF;
+  --universe-text: #E2E8F0;
+  --universe-text-muted: #475569;
+  --universe-border: rgba(244, 63, 94, 0.1);
+  --universe-font-display: var(--font-geist-mono);
+  --universe-font-body: var(--font-inter);
+  --universe-radius: 8px;
+  --universe-shadow: 0 0 40px -10px rgba(244, 63, 94, 0.1);
+  --universe-motion-duration: 120ms;
+  --universe-motion-ease: cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+
+/* 👨‍👩‍👧 ORANG TUA UNIVERSE — "Ruang keluarga hangat, CARING" */
+[data-universe="orang_tua"] {
+  --universe-base: #0D1117;
+  --universe-surface: rgba(20, 26, 36, 0.9);
+  --universe-primary: #EC4899;
+  --universe-primary-glow: rgba(236, 72, 153, 0.2);
+  --universe-accent: #F9A8D4;
+  --universe-text: #F1F5F9;
+  --universe-text-muted: #94A3B8;
+  --universe-border: rgba(236, 72, 153, 0.12);
+  --universe-font-display: var(--font-outfit);
+  --universe-font-body: var(--font-inter);
+  --universe-radius: 20px;
+  --universe-shadow: 0 0 40px -10px rgba(236, 72, 153, 0.15);
+  --universe-motion-duration: 350ms;
+  --universe-motion-ease: cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+
 
 /* ===== Light Mode Variables ===== */
 :root {
@@ -341,6 +481,25 @@ h1, h2, h3, h4, h5, h6 {
   animation: gradient-x 3s ease infinite;
 }
 
+@keyframes scan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+.animate-scan {
+  animation: scan 8s linear infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.animate-twinkle {
+  animation: twinkle var(--twinkle-duration, 3s) ease-in-out infinite;
+}
+
 /* Safe Area */
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom);
@@ -389,3 +548,275 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
 }
 
+/* ===== LANDING PAGE ANIMATIONS ===== */
+/* Moved from inline dangerouslySetInnerHTML for CSP compliance */
+
+@keyframes slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Dark theme scrollbar for landing page */
+::-webkit-scrollbar { height: 6px; width: 6px; }
+::-webkit-scrollbar-track { background: #0F1014; }
+::-webkit-scrollbar-thumb { background: #2A2C35; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #3f4250; }
+
+
+/* ============================================================
+   UNIVERSE UTILITIES — shared component classes
+   ============================================================ */
+
+/* Sidebar entrance animation */
+@keyframes slideInLeft {
+  from { transform: translateX(-24px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+/* Universe-aware card */
+.universe-card {
+  background: var(--universe-surface, rgba(255,255,255,0.03));
+  border: 1px solid var(--universe-border, rgba(255,255,255,0.06));
+  border-radius: var(--universe-radius, 16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all var(--universe-motion-duration, 300ms) var(--universe-motion-ease, ease-out);
+}
+
+.universe-card:hover {
+  background: var(--universe-surface, rgba(255,255,255,0.05));
+  border-color: var(--universe-primary-glow, rgba(255,255,255,0.1));
+  box-shadow: 0 0 40px -10px var(--universe-primary-glow, rgba(99,102,241,0.15));
+}
+
+/* Universe-aware display text */
+.universe-display {
+  font-family: var(--universe-font-display, var(--font-outfit));
+  color: var(--universe-text, white);
+}
+
+/* Universe-aware body text */
+.universe-body {
+  font-family: var(--universe-font-body, var(--font-inter));
+  color: var(--universe-text, #cbd5e1);
+}
+
+/* Universe-aware muted text */
+.universe-muted {
+  color: var(--universe-text-muted, #64748b);
+}
+
+/* Universe primary button */
+.universe-btn-primary {
+  background: var(--universe-primary);
+  color: white;
+  border-radius: calc(var(--universe-radius, 16px) * 0.6);
+  transition: all var(--universe-motion-duration, 300ms) var(--universe-motion-ease, ease-out);
+  box-shadow: 0 0 24px -4px var(--universe-primary-glow);
+}
+
+.universe-btn-primary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 0 40px -4px var(--universe-primary-glow);
+  transform: translateY(-1px);
+}
+
+/* Universe Primitives */
+.universe-input {
+  @apply w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-4 text-sm font-bold text-white focus:outline-none focus:ring-4 transition-all placeholder:text-slate-600;
+  border-radius: var(--universe-radius, 16px);
+}
+
+.universe-section-title {
+  @apply text-xs md:text-sm font-black uppercase tracking-[0.2em] flex items-center gap-2 mb-6;
+  color: var(--universe-primary);
+  font-family: var(--universe-font-display);
+}
+
+.universe-label {
+  @apply text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block ml-1;
+}
+
+.universe-status-dot {
+  @apply w-1.5 h-1.5 rounded-full animate-pulse;
+  background-color: var(--universe-primary);
+  box-shadow: 0 0 10px var(--universe-primary);
+}
+
+/* ============================================================
+   UNIVERSE BACKGROUND ANIMATIONS
+   Used by RoleBackground.tsx inline style animation props
+   ============================================================ */
+
+/* Slow ambient aurora drift — Guru & Kepsek */
+@keyframes ambientFloat {
+  0%   { transform: translate(0px, 0px) scale(1); }
+  33%  { transform: translate(20px, -15px) scale(1.04); }
+  66%  { transform: translate(-15px, 10px) scale(0.97); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+/* Vibrant nebula drift — Siswa */
+@keyframes nebulaFloat {
+  0%   { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+  50%  { transform: translate(-12px, -18px) scale(1.06) rotate(2deg); }
+  100% { transform: translate(0px, 0px) scale(1) rotate(0deg); }
+}
+
+/* Admin radar scan line sweep */
+@keyframes scanLine {
+  0%   { transform: translateY(0vh); opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 0.6; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* Siswa star twinkle */
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.8); }
+  50%       { opacity: 1;    transform: scale(1.4); }
+}
+
+/* Class Heartbeat pulse animation — Guru signature element */
+@keyframes heartbeat {
+  0%   { transform: scale(1); }
+  14%  { transform: scale(1.3); }
+  28%  { transform: scale(1); }
+  42%  { transform: scale(1.2); }
+  70%  { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.6s ease-in-out infinite;
+}
+
+/* Teaching streak fire animation */
+@keyframes fireFlicker {
+  0%, 100% { transform: scaleY(1) rotate(-2deg); }
+  50%       { transform: scaleY(1.1) rotate(2deg); }
+}
+
+.animate-fire {
+  animation: fireFlicker 0.8s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* Shimmer effect for progress bars */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ============================================================
+   MICRO-INTERACTIONS — Morning Architect Studio
+   ============================================================ */
+
+/* Card lift on hover */
+@keyframes card-lift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+/* Button press effect */
+@keyframes button-press {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+/* Glow pulse for active states */
+@keyframes glow-pulse-mini {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(99, 102, 241, 0.3); }
+}
+
+/* Number counter animation */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sidebar expand/collapse */
+@keyframes sidebar-expand {
+  from { width: 64px; }
+  to { width: 260px; }
+}
+
+@keyframes sidebar-collapse {
+  from { width: 260px; }
+  to { width: 64px; }
+}
+
+/* Stagger fade in for bento grid items */
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Micro-interaction utility classes */
+.interaction-card {
+  transition: transform 200ms var(--ease-smooth), box-shadow 200ms var(--ease-smooth);
+}
+
+.interaction-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.2);
+}
+
+.interaction-button {
+  transition: transform 150ms var(--ease-smooth), box-shadow 150ms var(--ease-smooth);
+}
+
+.interaction-button:hover {
+  transform: scale(1.02);
+}
+
+.interaction-button:active {
+  transform: scale(0.98);
+}
+
+.interaction-glow {
+  animation: glow-pulse-mini 2s ease-in-out infinite;
+}
+
+/* Stagger animation delays for bento grid */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+.stagger-6 { animation-delay: 300ms; }
+
+/* Glassmorphism utility */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+/* Number counter animation class */
+.animate-count {
+  animation: count-up 600ms var(--ease-bounce) forwards;
+}

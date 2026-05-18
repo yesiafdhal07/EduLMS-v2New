@@ -51,55 +51,55 @@ export function PembelajaranSiswaTab({
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Sub-Tab Navigation */}
-            <div className="flex overflow-x-auto gap-2 mb-8 bg-white/5 backdrop-blur-md p-2 rounded-2xl w-full md:w-fit border border-white/10 no-scrollbar">
+            {/* Sub-Tab Navigation (Underline Style - Linear Inspired) */}
+            <div className="flex items-center gap-8 border-b border-white/10 mb-8 overflow-x-auto no-scrollbar">
                 <button
                     onClick={() => setActiveSubTab('tugas')}
-                    className={`flex-shrink-0 flex items-center gap-2 px-4 md:px-6 py-3 rounded-xl font-bold text-xs md:text-sm transition-all whitespace-nowrap ${activeSubTab === 'tugas'
-                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                        : 'text-slate-300 hover:bg-white/10'
-                        }`}
+                    className={`pb-4 flex items-center gap-2 font-bold text-sm transition-all relative whitespace-nowrap ${activeSubTab === 'tugas' ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-300'}`}
                 >
-                    <Layers size={18} />
+                    <Layers size={16} />
                     Tugas
                     {pendingCount > 0 && (
-                        <span className="ml-2 px-2 py-0.5 bg-white/20 rounded-full text-[10px] md:text-xs">
+                        <span className="ml-1 px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-md text-[10px] font-black">
                             {pendingCount}
                         </span>
+                    )}
+                    {activeSubTab === 'tugas' && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500 rounded-t-full shadow-[0_-2px_8px_rgba(16,185,129,0.5)]" />
                     )}
                 </button>
                 <button
                     onClick={() => setActiveSubTab('materi')}
-                    className={`flex-shrink-0 flex items-center gap-2 px-4 md:px-6 py-3 rounded-xl font-bold text-xs md:text-sm transition-all whitespace-nowrap ${activeSubTab === 'materi'
-                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                        : 'text-slate-300 hover:bg-white/10'
-                        }`}
+                    className={`pb-4 flex items-center gap-2 font-bold text-sm transition-all relative whitespace-nowrap ${activeSubTab === 'materi' ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-300'}`}
                 >
-                    <BookOpen size={18} />
+                    <BookOpen size={16} />
                     Materi
-                    <span className="ml-2 px-2 py-0.5 bg-white/20 rounded-full text-[10px] md:text-xs">
+                    <span className="ml-1 px-1.5 py-0.5 bg-white/10 text-slate-300 rounded-md text-[10px] font-black">
                         {materials.length}
                     </span>
+                    {activeSubTab === 'materi' && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500 rounded-t-full shadow-[0_-2px_8px_rgba(16,185,129,0.5)]" />
+                    )}
                 </button>
                 <button
                     onClick={() => setActiveSubTab('kuis')}
-                    className={`flex-shrink-0 flex items-center gap-2 px-4 md:px-6 py-3 rounded-xl font-bold text-xs md:text-sm transition-all whitespace-nowrap ${activeSubTab === 'kuis'
-                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                        : 'text-slate-300 hover:bg-white/10'
-                        }`}
+                    className={`pb-4 flex items-center gap-2 font-bold text-sm transition-all relative whitespace-nowrap ${activeSubTab === 'kuis' ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-300'}`}
                 >
-                    <FileQuestion size={18} />
+                    <FileQuestion size={16} />
                     Kuis
+                    {activeSubTab === 'kuis' && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500 rounded-t-full shadow-[0_-2px_8px_rgba(16,185,129,0.5)]" />
+                    )}
                 </button>
                 <button
                     onClick={() => setActiveSubTab('terkirim')}
-                    className={`flex-shrink-0 flex items-center gap-2 px-4 md:px-6 py-3 rounded-xl font-bold text-xs md:text-sm transition-all whitespace-nowrap ${activeSubTab === 'terkirim'
-                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                        : 'text-slate-300 hover:bg-white/10'
-                        }`}
+                    className={`pb-4 flex items-center gap-2 font-bold text-sm transition-all relative whitespace-nowrap ${activeSubTab === 'terkirim' ? 'text-emerald-400' : 'text-slate-400 hover:text-slate-300'}`}
                 >
-                    <Send size={18} />
+                    <Send size={16} />
                     Terkirim
+                    {activeSubTab === 'terkirim' && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500 rounded-t-full shadow-[0_-2px_8px_rgba(16,185,129,0.5)]" />
+                    )}
                 </button>
             </div>
 

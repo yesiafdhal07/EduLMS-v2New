@@ -1,0 +1,80 @@
+version: "2"
+type: frontend
+tech_stack:
+  - TypeScript
+  - Next.js 16
+  - React 19
+  - Tailwind CSS
+  - GSAP
+  - Supabase
+  - TanStack Query
+routes:
+  - path: /
+    file: src/app/page.tsx
+    auth_required: false
+    description: Homepage and landing page
+  - path: /login
+    file: src/app/login/page.tsx
+    auth_required: false
+    description: User authentication login page
+  - path: /register
+    file: src/app/register/page.tsx
+    auth_required: false
+    description: User registration page
+  - path: /guru
+    file: src/app/guru/page.tsx
+    auth_required: true
+    description: Teacher dashboard for class management
+  - path: /siswa
+    file: src/app/siswa/page.tsx
+    auth_required: true
+    description: Student dashboard for viewing grades and attendance
+  - path: /features
+    file: src/app/features/page.tsx
+    auth_required: false
+    description: Features overview page
+  - path: /pricing
+    file: src/app/pricing/page.tsx
+    auth_required: false
+    description: Pricing plans page
+  - path: /about
+    file: src/app/about/page.tsx
+    auth_required: false
+    description: About Us page
+  - path: /contact
+    file: src/app/contact/page.tsx
+    auth_required: false
+    description: Contact information page
+features:
+  - name: User Authentication
+    description: Secure login and registration for teachers and students.
+    files:
+      - src/app/login/page.tsx
+      - src/app/register/page.tsx
+    entry_route: /login
+    user_interactions:
+      - Enter email and password
+      - Click "Masuk" (Login) or "Daftar" (Register)
+      - View error messages for invalid credentials
+    auth_required: false
+  - name: Guru (Teacher) Dashboard
+    description: Dashboard for teachers to manage classes, attendance, and grading.
+    files:
+      - src/app/guru/page.tsx
+    entry_route: /guru
+    user_interactions:
+      - View dashboard overview
+      - Manage classes and students
+      - Track attendance and record grades
+    auth_required: true
+  - name: Siswa (Student) Dashboard
+    description: Dashboard for students to view their educational progress.
+    files:
+      - src/app/siswa/page.tsx
+    entry_route: /siswa
+    user_interactions:
+      - View enrolled classes
+      - Check attendance status
+      - View grades and task feedback
+    auth_required: true
+known_limitations: []

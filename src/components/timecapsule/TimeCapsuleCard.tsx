@@ -11,13 +11,14 @@ interface TimeCapsuleCardProps {
 
 export function TimeCapsuleCard({ capsule, onClick }: TimeCapsuleCardProps) {
     const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0 });
-    const unlockDate = new Date(capsule.unlock_date);
     const createdDate = new Date(capsule.created_at);
+    const unlockDate = new Date(capsule.unlock_date); // Keep for UI rendering if needed below
 
     useEffect(() => {
+        const targetDate = new Date(capsule.unlock_date);
         const updateCountdown = () => {
             const now = new Date();
-            const diff = unlockDate.getTime() - now.getTime();
+            const diff = targetDate.getTime() - now.getTime();
             
             if (diff <= 0) {
                 setCountdown({ days: 0, hours: 0, minutes: 0 });
@@ -35,7 +36,7 @@ export function TimeCapsuleCard({ capsule, onClick }: TimeCapsuleCardProps) {
         const interval = setInterval(updateCountdown, 60000); // Update every minute
 
         return () => clearInterval(interval);
-    }, [unlockDate]);
+    }, [capsule.unlock_date]);
 
     if (capsule.is_unlocked) {
         return (

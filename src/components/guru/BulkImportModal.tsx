@@ -1,383 +1,285 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { X, Upload, Download, AlertCircle, CheckCircle, Loader2, Users, FileSpreadsheet } from 'lucide-react';
-import { parseCSV, downloadCSVTemplate, ParsedStudent, CSVParseResult } from '@/lib/csv-parser';
+import { useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
+import { 
+    X, Upload, FileText, CheckCircle, 
+    AlertCircle, Download, Loader2, Users 
+} from 'lucide-react';
+import { parseCSV, downloadCSVTemplate, type ParsedStudent } from '@/lib/csv-parser';
 import { toast } from 'sonner';
 
 interface BulkImportModalProps {
-    classId: string;
-    className?: string;
     isOpen: boolean;
     onClose: () => void;
+    classId: string;
+    schoolId: string;
     onSuccess?: () => void;
 }
 
-type ImportStep = 'upload' | 'preview' | 'importing' | 'complete';
-
-export function BulkImportModal({ classId, className, isOpen, onClose, onSuccess }: BulkImportModalProps) {
-    const [step, setStep] = useState<ImportStep>('upload');
-    const [parseResult, setParseResult] = useState<CSVParseResult | null>(null);
-    const [importing, setImporting] = useState(false);
-    const [importProgress, setImportProgress] = useState(0);
-    const [importResults, setImportResults] = useState<{
-        success: number;
-        failed: number;
-        errors: string[];
-    }>({ success: 0, failed: 0, errors: [] });
-
-    const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        // Validate file type
-        if (!file.name.endsWith('.csv')) {
-            toast.error('Mohon upload file CSV');
-            return;
-        }
-
-        try {
-            const content = await file.text();
-            const result = parseCSV(content);
-            setParseResult(result);
-            setStep('preview');
-        } catch (error) {
-            toast.error('Gagal membaca file. Pastikan file adalah CSV yang valid.');
-        }
-    }, []);
-
-    const handleImport = async () => {
-        if (!parseResult || parseResult.data.length === 0) return;
-
-        setStep('importing');
-        setImporting(true);
-        setImportProgress(0);
-
-        const results = {
-            success: 0,
-            failed: 0,
-            errors: [] as string[],
-        };
-
-        const total = parseResult.data.length;
-
-        for (let i = 0; i < parseResult.data.length; i++) {
-            const student = parseResult.data[i];
-            setImportProgress(Math.round(((i + 1) / total) * 100));
-
-            try {
-                // Create user account
-                const { data: authData, error: authError } = await supabase.auth.signUp({
-                    email: student.email,
-                    password: student.password || 'siswa123', // Default password
-                    options: {
-                        data: {
-                            full_name: student.fullName,
-                            role: 'siswa',
-                        },
-                    },
-                });
-
-                if (authError) {
-                    results.failed++;
-                    results.errors.push(`${student.email}: ${authError.message}`);
-                    continue;
-                }
-
-                if (authData.user) {
-                    // Add to class
-                    const { error: memberError } = await supabase
-                        .from('class_members')
-                        .insert({
-                            class_id: classId,
-                            user_id: authData.user.id,
-                        });
-
-                    if (memberError) {
-                        results.failed++;
-                        results.errors.push(`${student.email}: Gagal menambahkan ke kelas`);
-                    } else {
-                        results.success++;
-                    }
-                }
-            } catch (error) {
-                results.failed++;
-                results.errors.push(`${student.email}: Unknown error`);
-            }
-
-            // Small delay to prevent rate limiting
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-
-        setImportResults(results);
-        setImporting(false);
-        setStep('complete');
-
-        if (results.success > 0) {
-            toast.success(`Berhasil import ${results.success} siswa`);
-            onSuccess?.();
-        }
-    };
-
-    const handleReset = () => {
-        setStep('upload');
-        setParseResult(null);
-        setImportProgress(0);
-        setImportResults({ success: 0, failed: 0, errors: [] });
-    };
+export function BulkImportModal({ isOpen, onClose, classId, schoolId, onSuccess }: BulkImportModalProps) {
+    const [file, setFile] = useState<File | null>(null);
+    const [parsedData, setParsedData] = useState<ParsedStudent[]>([]);
+    const [errors, setErrors] = useState<{ row: number; message: string }[]>([]);
+    const [isParsing, setIsParsing] = useState(false);
+    const [isImporting, setIsImporting] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     if (!isOpen) return null;
 
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = e.target.files?.[0];
+        if (!selectedFile) return;
+
+        if (!selectedFile.name.endsWith('.csv')) {
+            toast.error('Format file harus .csv');
+            return;
+        }
+
+        setFile(selectedFile);
+        setIsParsing(true);
+        setErrors([]);
+        setParsedData([]);
+
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            const content = event.target?.result as string;
+            const result = parseCSV(content);
+            
+            if (result.success) {
+                setParsedData(result.data);
+                toast.success(`${result.data.length} siswa siap diimpor`);
+            } else {
+                setErrors(result.errors);
+                toast.error('Terdapat kesalahan pada file CSV');
+            }
+            setIsParsing(false);
+        };
+        reader.readAsText(selectedFile);
+    };
+
+    const handleImport = async () => {
+        if (parsedData.length === 0) return;
+
+        setIsImporting(true);
+        setProgress(0);
+
+        let successCount = 0;
+        let failCount = 0;
+
+        // Note: For production, this should be handled by a single API call with Service Role
+        // to avoid rate limits and handle transactions properly.
+        // For now, we'll use a loop as a placeholder for the logic.
+        
+        for (let i = 0; i < parsedData.length; i++) {
+            const student = parsedData[i];
+            try {
+                // Call API route to handle student creation securely
+                const response = await fetch('/api/admin/bulk-register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: student.email,
+                        fullName: student.fullName,
+                        password: student.password || 'Siswa123!', // Default password
+                        classId,
+                        schoolId,
+                        role: 'siswa'
+                    })
+                });
+
+                if (response.ok) {
+                    successCount++;
+                } else {
+                    failCount++;
+                    const err = await response.json();
+                    console.error(`Gagal mengimpor ${student.email}:`, err.message);
+                }
+            } catch (err) {
+                failCount++;
+                console.error(`Error importing ${student.email}:`, err);
+            }
+            
+            setProgress(Math.round(((i + 1) / parsedData.length) * 100));
+        }
+
+        setIsImporting(false);
+        
+        if (successCount > 0) {
+            toast.success(`Berhasil mengimpor ${successCount} siswa.`);
+            if (onSuccess) onSuccess();
+            if (failCount === 0) onClose();
+        }
+
+        if (failCount > 0) {
+            toast.error(`${failCount} siswa gagal diimpor. Periksa konsol untuk detail.`);
+        }
+    };
+
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-white/10 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="w-full max-w-2xl bg-[#181A20] rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 {/* Header */}
-                <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-emerald-500/20 rounded-xl flex items-center justify-center">
-                            <Users className="text-emerald-400" size={20} />
+                <div className="p-8 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-indigo-500/10 to-transparent">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400">
+                            <Upload size={24} />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-white">Import Siswa Massal</h2>
-                            <p className="text-sm text-slate-400">{className || 'Kelas'}</p>
+                            <h3 className="text-xl font-black text-white">Impor Siswa Massal</h3>
+                            <p className="text-slate-400 text-sm font-medium">Unggah file CSV untuk mendaftarkan banyak siswa sekaligus.</p>
                         </div>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="text-slate-400 hover:text-white transition-colors"
-                        disabled={importing}
-                    >
-                        <X size={20} />
+                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-xl transition-colors text-slate-500 hover:text-white">
+                        <X size={24} />
                     </button>
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
-                    {step === 'upload' && (
-                        <UploadStep onFileSelect={handleFileSelect} />
+                <div className="flex-1 overflow-y-auto p-8 space-y-6">
+                    {/* Instructions & Template */}
+                    {!file && (
+                        <div className="bg-white/5 rounded-3xl p-6 border border-white/5 space-y-4">
+                            <h4 className="font-bold text-white flex items-center gap-2">
+                                <FileText size={18} className="text-indigo-400" />
+                                Panduan CSV
+                            </h4>
+                            <p className="text-sm text-slate-400 leading-relaxed">
+                                Pastikan file CSV Anda memiliki kolom berikut: 
+                                <span className="text-indigo-300 font-mono mx-1">Nama Lengkap</span>, 
+                                <span className="text-indigo-300 font-mono mx-1">Email</span>, dan 
+                                <span className="text-indigo-300 font-mono mx-1">Password</span> (opsional).
+                            </p>
+                            <button 
+                                onClick={downloadCSVTemplate}
+                                className="flex items-center gap-2 text-indigo-400 text-sm font-bold hover:text-white transition-colors"
+                            >
+                                <Download size={16} /> Unduh Template CSV
+                            </button>
+                        </div>
                     )}
-                    {step === 'preview' && parseResult && (
-                        <PreviewStep 
-                            result={parseResult} 
-                            onImport={handleImport}
-                            onBack={handleReset}
-                        />
-                    )}
-                    {step === 'importing' && (
-                        <ImportingStep progress={importProgress} />
-                    )}
-                    {step === 'complete' && (
-                        <CompleteStep 
-                            results={importResults}
-                            onClose={onClose}
-                            onReset={handleReset}
-                        />
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-}
 
-function UploadStep({ onFileSelect }: { onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
-    return (
-        <div className="space-y-6">
-            {/* Upload Area */}
-            <label className="block border-2 border-dashed border-white/20 rounded-2xl p-8 text-center cursor-pointer hover:border-indigo-500/50 transition-all">
-                <input type="file" accept=".csv" onChange={onFileSelect} className="hidden" />
-                <FileSpreadsheet className="w-16 h-16 mx-auto text-slate-500 mb-4" />
-                <p className="text-white font-medium mb-1">Klik untuk upload file CSV</p>
-                <p className="text-sm text-slate-400">atau drag & drop file di sini</p>
-            </label>
-
-            {/* Template Download */}
-            <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4">
-                <div className="flex items-start gap-3">
-                    <Download className="text-indigo-400 shrink-0 mt-0.5" size={20} />
-                    <div>
-                        <p className="text-sm text-indigo-200 mb-2">
-                            Belum punya template? Download template CSV kami yang sudah diformat.
-                        </p>
-                        <button
-                            onClick={downloadCSVTemplate}
-                            className="text-sm text-indigo-400 hover:text-indigo-300 font-bold"
+                    {/* Upload Area */}
+                    {!file ? (
+                        <div 
+                            onClick={() => fileInputRef.current?.click()}
+                            className="border-2 border-dashed border-white/10 rounded-[2rem] p-12 text-center hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all cursor-pointer group"
                         >
-                            Download Template CSV →
-                        </button>
-                    </div>
-                </div>
-            </div>
+                            <input 
+                                type="file" 
+                                ref={fileInputRef} 
+                                onChange={handleFileChange} 
+                                accept=".csv" 
+                                className="hidden" 
+                            />
+                            <div className="w-20 h-20 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                                <Upload size={32} className="text-indigo-400" />
+                            </div>
+                            <h4 className="text-lg font-bold text-white mb-2">Klik untuk Unggah CSV</h4>
+                            <p className="text-slate-500 text-sm font-medium">Maksimal ukuran file 2MB</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            {/* File Info */}
+                            <div className="flex items-center justify-between bg-white/5 rounded-2xl p-4 border border-white/10">
+                                <div className="flex items-center gap-3">
+                                    <FileText size={24} className="text-indigo-400" />
+                                    <div>
+                                        <p className="text-white font-bold text-sm">{file.name}</p>
+                                        <p className="text-slate-500 text-xs">{(file.size / 1024).toFixed(1)} KB</p>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => { setFile(null); setParsedData([]); setErrors([]); }}
+                                    className="text-rose-400 text-xs font-black uppercase hover:text-rose-300"
+                                >
+                                    Ganti File
+                                </button>
+                            </div>
 
-            {/* Instructions */}
-            <div className="text-sm text-slate-400 space-y-2">
-                <p><strong className="text-white">Format CSV:</strong></p>
-                <ul className="list-disc list-inside space-y-1">
-                    <li>Kolom wajib: <code className="bg-white/10 px-1 rounded">Nama Lengkap</code>, <code className="bg-white/10 px-1 rounded">Email</code></li>
-                    <li>Kolom opsional: <code className="bg-white/10 px-1 rounded">Password</code> (default: siswa123)</li>
-                    <li>Baris pertama adalah header</li>
-                </ul>
-            </div>
-        </div>
-    );
-}
-
-function PreviewStep({ 
-    result, 
-    onImport, 
-    onBack 
-}: { 
-    result: CSVParseResult; 
-    onImport: () => void;
-    onBack: () => void;
-}) {
-    return (
-        <div className="space-y-4">
-            {/* Summary */}
-            <div className="grid grid-cols-3 gap-4">
-                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 text-center">
-                    <p className="text-2xl font-black text-emerald-400">{result.data.length}</p>
-                    <p className="text-sm text-slate-400">Siswa Valid</p>
-                </div>
-                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-center">
-                    <p className="text-2xl font-black text-red-400">{result.errors.length}</p>
-                    <p className="text-sm text-slate-400">Error</p>
-                </div>
-                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-center">
-                    <p className="text-2xl font-black text-amber-400">{result.warnings.length}</p>
-                    <p className="text-sm text-slate-400">Warning</p>
-                </div>
-            </div>
-
-            {/* Errors */}
-            {result.errors.length > 0 && (
-                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 max-h-40 overflow-y-auto">
-                    <p className="text-sm font-bold text-red-400 mb-2 flex items-center gap-2">
-                        <AlertCircle size={16} /> Errors (Tidak akan diimport)
-                    </p>
-                    <ul className="text-sm text-red-300 space-y-1">
-                        {result.errors.map((err, i) => (
-                            <li key={i}>Baris {err.row}: {err.message}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-
-            {/* Preview Table */}
-            {result.data.length > 0 && (
-                <div className="max-h-60 overflow-y-auto border border-white/10 rounded-xl">
-                    <table className="w-full text-sm">
-                        <thead className="bg-white/5 sticky top-0">
-                            <tr>
-                                <th className="px-4 py-2 text-left text-slate-400">#</th>
-                                <th className="px-4 py-2 text-left text-slate-400">Nama</th>
-                                <th className="px-4 py-2 text-left text-slate-400">Email</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {result.data.slice(0, 10).map((student, i) => (
-                                <tr key={i} className="border-t border-white/5">
-                                    <td className="px-4 py-2 text-slate-500">{i + 1}</td>
-                                    <td className="px-4 py-2 text-white">{student.fullName}</td>
-                                    <td className="px-4 py-2 text-slate-300">{student.email}</td>
-                                </tr>
-                            ))}
-                            {result.data.length > 10 && (
-                                <tr className="border-t border-white/5">
-                                    <td colSpan={3} className="px-4 py-2 text-center text-slate-400">
-                                        ... dan {result.data.length - 10} lainnya
-                                    </td>
-                                </tr>
+                            {/* Parsing State */}
+                            {isParsing && (
+                                <div className="text-center py-10">
+                                    <Loader2 size={32} className="text-indigo-500 animate-spin mx-auto mb-4" />
+                                    <p className="text-slate-400 font-bold">Menganalisis file...</p>
+                                </div>
                             )}
-                        </tbody>
-                    </table>
+
+                            {/* Error List */}
+                            {errors.length > 0 && (
+                                <div className="bg-rose-500/10 border border-rose-500/20 rounded-3xl p-6 space-y-3">
+                                    <h4 className="text-rose-400 font-bold flex items-center gap-2 mb-2">
+                                        <AlertCircle size={18} /> Kesalahan Terdeteksi ({errors.length})
+                                    </h4>
+                                    <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                                        {errors.map((err, i) => (
+                                            <div key={i} className="text-xs text-rose-300 bg-rose-500/5 p-2 rounded-lg border border-rose-500/10">
+                                                <span className="font-black opacity-50 mr-2">Baris {err.row}:</span> {err.message}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Preview List */}
+                            {parsedData.length > 0 && (
+                                <div className="space-y-4">
+                                    <h4 className="text-emerald-400 font-bold flex items-center gap-2">
+                                        <CheckCircle size={18} /> Siap Diimpor ({parsedData.length} Siswa)
+                                    </h4>
+                                    <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                                        {parsedData.map((student, i) => (
+                                            <div key={i} className="bg-white/5 rounded-xl p-3 flex items-center gap-3 border border-white/5">
+                                                <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs font-bold">
+                                                    {i + 1}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-white font-bold text-sm truncate">{student.fullName}</p>
+                                                    <p className="text-slate-500 text-xs truncate">{student.email}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
-            )}
 
-            {/* Actions */}
-            <div className="flex justify-between pt-4">
-                <button
-                    onClick={onBack}
-                    className="px-4 py-2 text-slate-400 hover:text-white transition-colors"
-                >
-                    ← Kembali
-                </button>
-                <button
-                    onClick={onImport}
-                    disabled={result.data.length === 0}
-                    className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold transition-all disabled:opacity-50"
-                >
-                    Import {result.data.length} Siswa
-                </button>
-            </div>
-        </div>
-    );
-}
-
-function ImportingStep({ progress }: { progress: number }) {
-    return (
-        <div className="text-center py-8 space-y-4">
-            <Loader2 className="w-16 h-16 mx-auto text-indigo-400 animate-spin" />
-            <p className="text-lg font-bold text-white">Mengimport siswa...</p>
-            <p className="text-slate-400">{progress}%</p>
-            <div className="w-full bg-white/10 rounded-full h-2 max-w-xs mx-auto">
-                <div 
-                    className="bg-indigo-500 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${progress}%` }}
-                />
-            </div>
-            <p className="text-sm text-slate-500">Mohon tunggu, jangan tutup halaman ini...</p>
-        </div>
-    );
-}
-
-function CompleteStep({ 
-    results, 
-    onClose,
-    onReset 
-}: { 
-    results: { success: number; failed: number; errors: string[] };
-    onClose: () => void;
-    onReset: () => void;
-}) {
-    return (
-        <div className="space-y-6">
-            {/* Success Summary */}
-            <div className="text-center">
-                <CheckCircle className="w-16 h-16 mx-auto text-emerald-400 mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">Import Selesai!</h3>
-                <p className="text-slate-400">
-                    {results.success} siswa berhasil ditambahkan
-                    {results.failed > 0 && `, ${results.failed} gagal`}
-                </p>
-            </div>
-
-            {/* Error Details */}
-            {results.errors.length > 0 && (
-                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 max-h-40 overflow-y-auto">
-                    <p className="text-sm font-bold text-red-400 mb-2">Gagal Diimport:</p>
-                    <ul className="text-sm text-red-300 space-y-1">
-                        {results.errors.map((err, i) => (
-                            <li key={i}>{err}</li>
-                        ))}
-                    </ul>
+                {/* Footer / Progress */}
+                <div className="p-8 border-t border-white/5 bg-[#121418]">
+                    {isImporting ? (
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between text-sm font-bold">
+                                <span className="text-indigo-400">Sedang mengimpor data...</span>
+                                <span className="text-white">{progress}%</span>
+                            </div>
+                            <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                <div 
+                                    className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300"
+                                    style={{ width: `${progress}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex gap-4">
+                            <button 
+                                onClick={onClose}
+                                className="flex-1 px-6 py-4 rounded-2xl bg-white/5 text-white font-black hover:bg-white/10 transition-all uppercase tracking-widest text-sm"
+                            >
+                                Batal
+                            </button>
+                            <button 
+                                onClick={handleImport}
+                                disabled={parsedData.length === 0 || errors.length > 0}
+                                className="flex-[2] px-6 py-4 rounded-2xl bg-indigo-500 text-white font-black hover:bg-indigo-400 transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 uppercase tracking-widest text-sm"
+                            >
+                                <Users size={18} /> Mulai Impor Massal
+                            </button>
+                        </div>
+                    )}
                 </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex justify-center gap-4">
-                <button
-                    onClick={onReset}
-                    className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all"
-                >
-                    Import Lagi
-                </button>
-                <button
-                    onClick={onClose}
-                    className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-bold transition-all"
-                >
-                    Selesai
-                </button>
             </div>
         </div>
     );

@@ -38,10 +38,10 @@ export function QuizResults({ attemptId, classId, onRetry, onExit }: QuizResults
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center">
+            <div className="min-h-screen bg-transparent flex items-center justify-center font-space-grotesk">
                 <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                    <p className="text-white">Memuat hasil...</p>
+                    <div className="w-20 h-20 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto mb-6" />
+                    <p className="text-emerald-500 font-black tracking-widest uppercase text-xs">MENGHITUNG_HASIL...</p>
                 </div>
             </div>
         );
@@ -49,11 +49,11 @@ export function QuizResults({ attemptId, classId, onRetry, onExit }: QuizResults
 
     if (!result) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center">
-                <div className="text-center">
-                    <p className="text-white mb-4">Hasil tidak ditemukan</p>
-                    <button onClick={onExit} className="px-6 py-2 bg-white/10 text-white rounded-xl">
-                        Kembali
+            <div className="min-h-screen bg-transparent flex items-center justify-center font-space-grotesk">
+                <div className="text-center universe-card p-12">
+                    <p className="text-white font-bold mb-6">HASIL_TIDAK_DITEMUKAN</p>
+                    <button onClick={onExit} className="px-8 py-3 bg-white/5 text-white rounded-2xl border border-white/10 font-black text-xs uppercase tracking-widest">
+                        KEMBALI
                     </button>
                 </div>
             </div>
@@ -67,110 +67,116 @@ export function QuizResults({ attemptId, classId, onRetry, onExit }: QuizResults
     const totalQuestions = result.answers?.length || 0;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 py-12">
-            <div className="max-w-2xl mx-auto px-4">
-                {/* Result Card */}
-                <div className="bg-white/5 backdrop-blur-md rounded-[2rem] p-8 border border-white/10 mb-6">
-                    {/* Trophy/Grade Icon */}
-                    <div className="text-center mb-8">
-                        <div className={`
-                            w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center
-                            ${passed
-                                ? 'bg-gradient-to-br from-emerald-500 to-teal-500'
-                                : 'bg-gradient-to-br from-amber-500 to-orange-500'
-                            }
-                            shadow-2xl
-                        `}>
-                            <Trophy size={48} className="text-white" />
+        <div className="min-h-screen bg-transparent py-20 font-space-grotesk overflow-y-auto">
+            <div className="max-w-3xl mx-auto px-6">
+                {/* Header — Achievement Celebration */}
+                <div className="relative mb-12 text-center animate-in fade-in zoom-in duration-1000">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-emerald-500/20 blur-[100px] rounded-full" />
+                    
+                    <div className={`
+                        w-32 h-32 rounded-3xl mx-auto mb-8 flex items-center justify-center relative z-10 rotate-3 transition-transform hover:rotate-0 duration-500
+                        ${passed
+                            ? 'bg-gradient-to-br from-emerald-400 to-cyan-500 shadow-[0_20px_50px_rgba(16,185,129,0.3)]'
+                            : 'bg-gradient-to-br from-amber-400 to-orange-500 shadow-[0_20px_50px_rgba(245,158,11,0.3)]'
+                        }
+                    `}>
+                        <Trophy size={64} className="text-white drop-shadow-lg" />
+                        <div className="absolute -top-4 -right-4 w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center animate-bounce">
+                            <span className="text-xl">✨</span>
                         </div>
+                    </div>
 
-                        <h1 className={`text-4xl font-black mb-2 ${passed ? 'text-emerald-400' : 'text-amber-400'}`}>
-                            {percentage.toFixed(0)}%
-                        </h1>
-                        <p className={`text-lg font-bold ${passed ? 'text-emerald-300' : 'text-amber-300'}`}>
-                            {passed ? 'Selamat, Anda Lulus!' : 'Belum Lulus'}
+                    <h1 className={`text-6xl font-black mb-2 tracking-tighter ${passed ? 'text-white' : 'text-amber-400'}`}>
+                        {percentage.toFixed(0)}<span className="text-2xl opacity-50">%</span>
+                    </h1>
+                    <p className={`text-xl font-black uppercase tracking-[0.3em] ${passed ? 'text-emerald-400' : 'text-amber-500'}`}>
+                        {passed ? 'LEVEL_COMPLETE' : 'MISSION_FAILED'}
+                    </p>
+                    {result.quiz && (
+                        <p className="text-slate-500 mt-4 font-bold text-sm tracking-widest uppercase">
+                            MODUL: {result.quiz.title}
                         </p>
-                        {result.quiz && (
-                            <p className="text-slate-400 mt-2">{result.quiz.title}</p>
-                        )}
-                    </div>
+                    )}
+                </div>
 
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-3 gap-4 mb-8">
-                        <div className="bg-white/5 rounded-xl p-4 text-center">
-                            <CheckCircle size={24} className="mx-auto mb-2 text-emerald-400" />
-                            <p className="text-2xl font-black text-white">{correctCount}</p>
-                            <p className="text-xs text-slate-400">Benar</p>
+                {/* Primary Reward Card */}
+                <div className="universe-card p-1 animate-in slide-in-from-bottom-8 duration-700 delay-300 mb-8">
+                    <div className="bg-[#0F0F1A]/80 backdrop-blur-2xl rounded-[calc(var(--universe-radius)-4px)] p-8">
+                        {/* XP Section */}
+                        <div className="flex flex-col items-center mb-10 pb-10 border-b border-white/5">
+                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-4">ESTIMATED_REWARD</span>
+                            <div className="flex items-center gap-4">
+                                <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
+                                    <span className="text-3xl">💎</span>
+                                </div>
+                                <div>
+                                    <h2 className="text-4xl font-black text-white leading-none">+{Math.round(percentage * 5)} <span className="text-amber-500">XP</span></h2>
+                                    <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mt-1">Siswa_Rank: GOLD_III</p>
+                                </div>
+                            </div>
                         </div>
-                        <div className="bg-white/5 rounded-xl p-4 text-center">
-                            <XCircle size={24} className="mx-auto mb-2 text-red-400" />
-                            <p className="text-2xl font-black text-white">{totalQuestions - correctCount}</p>
-                            <p className="text-xs text-slate-400">Salah</p>
-                        </div>
-                        <div className="bg-white/5 rounded-xl p-4 text-center">
-                            <Clock size={24} className="mx-auto mb-2 text-indigo-400" />
-                            <p className="text-2xl font-black text-white">{formatTime(timeSpent)}</p>
-                            <p className="text-xs text-slate-400">Waktu</p>
-                        </div>
-                    </div>
 
-                    {/* Score Details */}
-                    <div className="bg-white/5 rounded-xl p-4 mb-8">
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="text-slate-400">Nilai</span>
-                            <span className="text-white font-bold">
-                                {result.score?.toFixed(0) || 0} / {result.max_score || 0}
-                            </span>
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 text-center group hover:bg-emerald-500/5 transition-all">
+                                <CheckCircle size={24} className="mx-auto mb-4 text-emerald-500" />
+                                <p className="text-3xl font-black text-white">{correctCount}</p>
+                                <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mt-1">TERJAWAB_BENAR</p>
+                            </div>
+                            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 text-center group hover:bg-rose-500/5 transition-all">
+                                <XCircle size={24} className="mx-auto mb-4 text-rose-500" />
+                                <p className="text-3xl font-black text-white">{totalQuestions - correctCount}</p>
+                                <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mt-1">JAWABAN_SALAH</p>
+                            </div>
+                            <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 text-center group hover:bg-indigo-500/5 transition-all">
+                                <Clock size={24} className="mx-auto mb-4 text-indigo-400" />
+                                <p className="text-3xl font-black text-white">{formatTime(timeSpent)}</p>
+                                <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mt-1">WAKTU_TEMPUH</p>
+                            </div>
                         </div>
-                        <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                            <div
-                                className={`h-full rounded-full transition-all duration-1000 ${passed ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-amber-500 to-orange-500'
-                                    }`}
-                                style={{ width: `${percentage}%` }}
-                            />
-                        </div>
-                        <p className="text-xs text-slate-500 mt-2 text-right">
-                            Nilai minimum: {result.quiz?.passing_score || 60}%
-                        </p>
-                    </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-3">
-                        {onRetry && result.quiz && (result.quiz.max_attempts > 1) && (
+                        {/* Action Buttons */}
+                        <div className="flex flex-col sm:flex-row gap-4">
                             <button
-                                onClick={onRetry}
-                                className="flex-1 flex items-center justify-center gap-2 py-3 bg-white/10 text-white font-bold rounded-xl hover:bg-white/20 transition-all"
+                                onClick={onExit}
+                                className="flex-1 h-16 flex items-center justify-center gap-3 bg-white text-black font-black text-sm rounded-2xl hover:bg-emerald-500 hover:text-white transition-all shadow-xl hover:shadow-emerald-500/20 uppercase tracking-widest"
                             >
-                                <RefreshCcw size={18} />
-                                Coba Lagi
+                                <Home size={18} />
+                                KEMBALI_KE_DASHBOARD
                             </button>
-                        )}
-                        <button
-                            onClick={onExit}
-                            className="flex-1 flex items-center justify-center gap-2 py-3 bg-indigo-500 text-white font-bold rounded-xl hover:bg-indigo-600 transition-all"
-                        >
-                            <Home size={18} />
-                            Kembali
-                        </button>
+                            {onRetry && result.quiz && (result.quiz.max_attempts > 1) && (
+                                <button
+                                    onClick={onRetry}
+                                    className="px-8 h-16 flex items-center justify-center gap-3 bg-white/5 text-white font-black text-sm rounded-2xl border border-white/10 hover:bg-white/10 transition-all uppercase tracking-widest"
+                                >
+                                    <RefreshCcw size={18} />
+                                    ULANGI
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                {/* Answer Review */}
+                {/* Answer Review Section */}
                 {result.quiz?.show_answers_after && result.answers && (
-                    <div className="bg-white/5 backdrop-blur-md rounded-[2rem] border border-white/10 overflow-hidden">
+                    <div className="animate-in slide-in-from-bottom-8 duration-700 delay-500">
                         <button
                             onClick={() => setShowAnswers(!showAnswers)}
-                            className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-all"
+                            className="w-full universe-card flex items-center justify-between p-6 hover:bg-white/5 transition-all mb-4"
                         >
-                            <div className="flex items-center gap-3">
-                                <BarChart3 size={20} className="text-indigo-400" />
-                                <span className="font-bold text-white">Lihat Pembahasan</span>
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 border border-indigo-500/20">
+                                    <BarChart3 size={20} />
+                                </div>
+                                <span className="font-black text-sm text-white uppercase tracking-widest">LIHAT_PEMBAHASAN_DETAIL</span>
                             </div>
-                            {showAnswers ? <ChevronUp size={20} className="text-slate-400" /> : <ChevronDown size={20} className="text-slate-400" />}
+                            <div className="w-10 h-10 flex items-center justify-center text-slate-500">
+                                {showAnswers ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                            </div>
                         </button>
 
                         {showAnswers && (
-                            <div className="p-6 pt-0 space-y-4">
+                            <div className="space-y-4 mb-20">
                                 {result.answers.map((answer, index) => (
                                     <AnswerReview
                                         key={answer.id}

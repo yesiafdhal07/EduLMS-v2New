@@ -39,6 +39,8 @@ export function useGuruMaterials({ classId, page = 1, pageSize = 50, enabled = t
             };
         },
         enabled: !!classId && enabled,
+        staleTime: 5 * 60 * 1000, // 5 minutes — materials rarely change mid-session
+        gcTime: 30 * 60 * 1000,   // 30 minutes garbage collection
     });
 
     return {

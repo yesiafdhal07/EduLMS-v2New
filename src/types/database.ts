@@ -1,16 +1,39 @@
-export type Role = 'admin' | 'guru' | 'siswa';
+export type Role = 'admin' | 'kepala_sekolah' | 'guru' | 'siswa';
 
 export interface User {
     id: string;
     email: string;
     full_name: string;
     role: Role;
+    school_id?: string;
+}
+
+export interface School {
+    id: string;
+    name: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+    logo_url?: string;
+    is_active: boolean;
+    created_at: string;
+}
+
+export interface SchoolCode {
+    id: string;
+    school_id: string;
+    code: string;
+    role: 'guru' | 'siswa';
+    is_active: boolean;
+    created_at: string;
+    school?: School;
 }
 
 export interface Class {
     id: string;
     name: string;
     teacher_id: string;
+    school_id?: string;
 }
 
 export interface Subject {

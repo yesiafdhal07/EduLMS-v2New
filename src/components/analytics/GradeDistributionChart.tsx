@@ -5,6 +5,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 import { PieChartIcon, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { logError } from '@/lib/error-handler';
+import { ErrorBoundary } from '@/components/ui';
 
 interface DistributionData {
     name: string;
@@ -35,12 +36,24 @@ export function GradeDistributionChart({ classId }: GradeDistributionChartProps)
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
-            // Fetch all grades
-            const query = supabase
-                .from('grades')
-                .select('score');
+            // 1. Fetch Grades via Members (following success pattern)
+            const { data: memberData } = await supabase
+                .from('class_members')
+                .select(`
+                    user_id,
+                    users!inner (
+                        id,
+                        grades (score)
+                    )
+                `)
+                .eq('class_id', classId);
 
-            const { data: grades } = await query;
+            const grades = (memberData || [])
+                .flatMap(m => {
+                    const user = Array.isArray(m.users) ? m.users[0] : m.users;
+                    return (user as any)?.grades || [];
+                })
+                .filter(g => g.score !== null);
 
             if (!grades || grades.length === 0) {
                 setData([]);
@@ -74,7 +87,7 @@ export function GradeDistributionChart({ classId }: GradeDistributionChartProps)
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [classId]);
 
     useEffect(() => {
         fetchDistribution();
@@ -135,36 +148,38 @@ export function GradeDistributionChart({ classId }: GradeDistributionChartProps)
             </div>
 
             <div className="h-64 w-full min-w-0">
-                <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
-                    <PieChart>
-                        <Pie
-                            data={data}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={50}
-                            outerRadius={80}
-                            paddingAngle={5}
-                            dataKey="value"
-                        >
-                            {data.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                        </Pie>
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: '#1e293b',
-                                borderColor: '#334155',
-                                borderRadius: '12px',
-                                color: '#f8fafc'
-                            }}
-                            formatter={(value) => [`${value} siswa`, '']}
-                        />
-                        <Legend
-                            wrapperStyle={{ paddingTop: '20px' }}
-                            formatter={(value) => <span className="text-slate-300 text-sm">{value}</span>}
-                        />
-                    </PieChart>
-                </ResponsiveContainer>
+                <ErrorBoundary>
+                    <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
+                        <PieChart>
+                            <Pie
+                                data={data}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={50}
+                                outerRadius={80}
+                                paddingAngle={5}
+                                dataKey="value"
+                            >
+                                {data.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                ))}
+                            </Pie>
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: '#1e293b',
+                                    borderColor: '#334155',
+                                    borderRadius: '12px',
+                                    color: '#f8fafc'
+                                }}
+                                formatter={(value) => [`${value} siswa`, '']}
+                            />
+                            <Legend
+                                wrapperStyle={{ paddingTop: '20px' }}
+                                formatter={(value) => <span className="text-slate-300 text-sm">{value}</span>}
+                            />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </ErrorBoundary>
             </div>
 
             {/* Summary Stats */}

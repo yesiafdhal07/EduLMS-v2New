@@ -9,6 +9,7 @@ import { Users, BookOpen, CheckCircle, TrendingUp, Loader2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase';
 import { logError } from '@/lib/error-handler';
 import { SkeletonCardGrid } from '@/components/ui/SkeletonLoading';
+import { ErrorBoundary } from '@/components/ui';
 
 interface TeacherStats {
     totalStudents: number;
@@ -19,9 +20,10 @@ interface TeacherStats {
 
 interface TeacherStatsPanelProps {
     classId?: string;
+    teacherId?: string;
 }
 
-export function TeacherStatsPanel({ classId }: TeacherStatsPanelProps) {
+export function TeacherStatsPanel({ classId, teacherId }: TeacherStatsPanelProps) {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState<TeacherStats>({
         totalStudents: 0,
@@ -36,14 +38,19 @@ export function TeacherStatsPanel({ classId }: TeacherStatsPanelProps) {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            let currentTeacherId = teacherId;
+            
+            if (!currentTeacherId) {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                currentTeacherId = user.id;
+            }
 
             // 1. Get teacher's classes
             const { data: classes } = await supabase
                 .from('classes')
                 .select('id')
-                .eq('teacher_id', user.id);
+                .eq('teacher_id', currentTeacherId);
 
             const classIds = classId ? [classId] : (classes?.map(c => c.id) || []);
             if (classIds.length === 0) {
@@ -71,12 +78,17 @@ export function TeacherStatsPanel({ classId }: TeacherStatsPanelProps) {
                 .in('subject_id', subjectIds)
                 .gte('deadline', new Date().toISOString());
 
-            // 4. Class Average (from grades)
-            const { data: grades } = await supabase
-                .from('grades')
-                .select('score');
+            // 4. Class Average & Grade Distribution (from members of these classes)
+            const { data: memberGrades } = await supabase
+                .from('class_members')
+                .select('users(id, grades(score))')
+                .in('class_id', classIds);
 
-            const allScores = grades?.map(g => g.score).filter((s): s is number => s !== null) || [];
+            const allScores = (memberGrades || [])
+                .flatMap(m => (m.users as any)?.grades || [])
+                .map((g: any) => g.score)
+                .filter((s): s is number => s !== null);
+
             const classAverage = allScores.length > 0
                 ? allScores.reduce((sum, s) => sum + s, 0) / allScores.length
                 : 0;
@@ -192,6 +204,16 @@ export function TeacherStatsPanel({ classId }: TeacherStatsPanelProps) {
         };
     }, [classId]);
 
+    // Calculate health score (0-100)
+    const healthScore = Math.round(
+        (stats.attendanceRate * 0.3) + 
+        (Math.min(stats.classAverage, 100) * 0.4) + 
+        (stats.activeAssignments > 0 ? 20 : 30)
+    );
+    
+    const isHealthy = healthScore >= 80;
+    const isWarning = healthScore >= 60 && healthScore < 80;
+
     const statsConfig = [
         { label: 'Total Siswa', value: stats.totalStudents.toString(), icon: Users, gradient: 'from-indigo-500 to-blue-600', shadow: 'shadow-indigo-500/20' },
         { label: 'Tugas Aktif', value: stats.activeAssignments.toString(), icon: BookOpen, gradient: 'from-blue-500 to-cyan-500', shadow: 'shadow-blue-500/20' },
@@ -206,55 +228,100 @@ export function TeacherStatsPanel({ classId }: TeacherStatsPanelProps) {
     return (
         <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
 
-            {/* Quick Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {statsConfig.map((stat, idx) => (
-                    <div key={idx} className="glass-panel rounded-2xl p-5 flex items-center gap-5 hover:bg-white/10 transition-all duration-300 group hover:-translate-y-1 relative overflow-hidden">
-                         {/* Background Glow */}
-                        <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-gradient-to-br ${stat.gradient} opacity-10 blur-2xl group-hover:opacity-20 transition-opacity`}></div>
-                        
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${stat.gradient} text-white shadow-lg ${stat.shadow} group-hover:scale-110 transition-transform`}>
-                            <stat.icon size={26} />
+            {/* Quick Stats Cards (Bento Bento) */}
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
+                {/* Class Health Score - USP Feature */}
+                <div className="group relative overflow-hidden rounded-[2rem] p-6 border border-white/5 bg-gradient-to-br from-emerald-500/10 to-indigo-500/5 hover:bg-emerald-500/15 transition-all duration-500 hover:-translate-y-1">
+                    <div className="flex flex-col gap-3 relative z-10">
+                        <div className="flex items-center justify-between">
+                            <p className="text-slate-500 text-[9px] font-black uppercase tracking-[0.2em]">Class Health</p>
+                            <div className={`w-2 h-2 rounded-full ${isHealthy ? 'bg-emerald-500' : isWarning ? 'bg-amber-500' : 'bg-rose-500'} animate-pulse`} />
                         </div>
-                        <div className="relative z-10">
-                            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">{stat.label}</p>
-                            <h3 className="text-3xl font-black text-white tracking-tight">{stat.value}</h3>
+                        <div className="flex items-baseline gap-1">
+                            <h3 className="text-3xl font-black text-white tracking-tighter tabular-nums">{healthScore}</h3>
+                            <span className="text-sm text-slate-500 font-bold">/100</span>
+                        </div>
+                        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                            <div 
+                                className={`h-full rounded-full transition-all duration-1000 ${isHealthy ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : isWarning ? 'bg-gradient-to-r from-amber-500 to-orange-500' : 'bg-gradient-to-r from-rose-500 to-red-600'}`}
+                                style={{ width: `${healthScore}%` }}
+                            />
+                        </div>
+                        <p className={`text-[10px] font-bold ${isHealthy ? 'text-emerald-400' : isWarning ? 'text-amber-400' : 'text-rose-400'}`}>
+                            {isHealthy ? '✨ Excellent' : isWarning ? '⚠️ Needs Attention' : '🔴 Critical'}
+                        </p>
+                    </div>
+                    {/* Glow effect */}
+                    <div className={`absolute -right-8 -bottom-8 w-24 h-24 rounded-full blur-2xl transition-all ${isHealthy ? 'bg-emerald-500/20 group-hover:bg-emerald-500/30' : isWarning ? 'bg-amber-500/20 group-hover:bg-amber-500/30' : 'bg-rose-500/20 group-hover:bg-rose-500/30'}`} />
+                </div>
+
+                {statsConfig.map((stat, idx) => (
+                    <div 
+                        key={idx} 
+                        className="group relative overflow-hidden rounded-[2rem] p-6 border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20"
+                    >
+                        <div className="flex flex-col gap-4 relative z-10">
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${stat.gradient} text-white shadow-lg ${stat.shadow} group-hover:scale-110 transition-transform duration-500`}>
+                                <stat.icon size={22} strokeWidth={2.5} />
+                            </div>
+                            
+                            <div>
+                                <p className="text-slate-500 text-[9px] font-black uppercase tracking-[0.2em] mb-1">{stat.label}</p>
+                                <div className="flex items-baseline gap-1">
+                                    <h3 className="text-3xl font-black text-white tracking-tighter tabular-nums">
+                                        {stat.value}
+                                    </h3>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Grade Distribution Chart */}
-                <div className="glass-panel rounded-2xl p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="font-bold text-lg text-white">Distribusi Nilai Siswa</h3>
-                        <span className="text-xs text-slate-400 font-medium px-2 py-1 rounded-lg bg-white/5">Data Real-time</span>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Grade Distribution Chart (Bento Style) */}
+                <div className="glass-panel rounded-[2.5rem] p-8 border border-white/5 bg-white/[0.02] backdrop-blur-xl shadow-2xl shadow-black/20">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center border border-indigo-500/20">
+                                <TrendingUp className="text-indigo-400" size={18} />
+                            </div>
+                            <div>
+                                <h3 className="font-black text-lg text-white tracking-tight">Distribusi Performa</h3>
+                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Analisis Nilai Kumulatif</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[9px] text-slate-400 font-black uppercase tracking-tighter">Live Sync</span>
+                        </div>
                     </div>
                     <div className="h-64 w-full">
                         {gradeDistribution.some(g => g.value > 0) ? (
-                            <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={100}>
-                                <PieChart>
-                                    <Pie
-                                        data={gradeDistribution}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={80}
-                                        paddingAngle={5}
-                                        dataKey="value"
-                                        stroke="none"
-                                    >
-                                        {gradeDistribution.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
-                                        ))}
-                                    </Pie>
-                                    <RechartsTooltip
-                                        contentStyle={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)' }}
-                                        itemStyle={{ color: '#f8fafc', fontWeight: 600 }}
-                                    />
-                                </PieChart>
-                            </ResponsiveContainer>
+                            <ErrorBoundary>
+                                <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={100}>
+                                    <PieChart>
+                                        <Pie
+                                            data={gradeDistribution}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={80}
+                                            paddingAngle={5}
+                                            dataKey="value"
+                                            stroke="none"
+                                        >
+                                            {gradeDistribution.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                            ))}
+                                        </Pie>
+                                        <RechartsTooltip
+                                            contentStyle={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)' }}
+                                            itemStyle={{ color: '#f8fafc', fontWeight: 600 }}
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </ErrorBoundary>
                         ) : (
                             <div className="h-full flex items-center justify-center text-slate-500 text-sm">
                                 Belum ada data nilai
@@ -271,28 +338,37 @@ export function TeacherStatsPanel({ classId }: TeacherStatsPanelProps) {
                     </div>
                 </div>
 
-                {/* Attendance Trend Chart */}
-                <div className="glass-panel rounded-2xl p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="font-bold text-lg text-white">Tren Kehadiran Mingguan</h3>
-                        <span className="text-xs text-slate-400 font-medium px-2 py-1 rounded-lg bg-white/5">7 Hari Terakhir</span>
+                {/* Attendance Trend Chart (Bento Style) */}
+                <div className="glass-panel rounded-[2.5rem] p-8 border border-white/5 bg-white/[0.02] backdrop-blur-xl shadow-2xl shadow-black/20">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/20">
+                                <CheckCircle className="text-emerald-400" size={18} />
+                            </div>
+                            <div>
+                                <h3 className="font-black text-lg text-white tracking-tight">Tren Kehadiran</h3>
+                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Ringkasan Mingguan</p>
+                            </div>
+                        </div>
                     </div>
                     <div className="h-64 w-full">
                         {attendanceTrend.some(t => t.hadir > 0) ? (
-                            <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={100}>
-                                <BarChart data={attendanceTrend}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
-                                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} domain={[0, 100]} />
-                                    <RechartsTooltip
-                                        cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                                        contentStyle={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)' }}
-                                        formatter={(value) => [`${value}%`, 'Kehadiran']}
-                                        labelStyle={{ color: '#94a3b8' }}
-                                    />
-                                    <Bar dataKey="hadir" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={40} name="Kehadiran (%)" />
-                                </BarChart>
-                            </ResponsiveContainer>
+                            <ErrorBoundary>
+                                <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={100}>
+                                    <BarChart data={attendanceTrend}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
+                                        <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} dy={10} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} domain={[0, 100]} />
+                                        <RechartsTooltip
+                                            cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                                            contentStyle={{ backgroundColor: '#1e293b', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)' }}
+                                            formatter={(value) => [`${value}%`, 'Kehadiran']}
+                                            labelStyle={{ color: '#94a3b8' }}
+                                        />
+                                        <Bar dataKey="hadir" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={40} name="Kehadiran (%)" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </ErrorBoundary>
                         ) : (
                             <div className="h-full flex items-center justify-center text-slate-500 text-sm">
                                 Belum ada data kehadiran minggu ini

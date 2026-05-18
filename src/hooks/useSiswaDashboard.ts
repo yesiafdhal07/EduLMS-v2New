@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { logError } from '@/lib/error-handler';
+import { triggerXPEffect } from '@/components/widgets/XPFlowParticles';
 import type { Assignment, Material, AttendanceSession, AttendanceRecord, StudentAssignment, StudentUser } from '@/types';
 
 // ========================================================
@@ -46,6 +47,11 @@ export function useSiswaDashboard() {
     const [showExportModal, setShowExportModal] = useState(false);
     const [studentClassId, setStudentClassId] = useState<string | null>(null); // NEW: For filtered subscriptions
 
+    // Gamification State
+    const [currentXP, setCurrentXP] = useState(0);
+    const [level, setLevel] = useState(1);
+    const nextLevelXP = level * 100;
+
     // ========================================================
     // DATA FETCHING
     // ========================================================
@@ -65,9 +71,15 @@ export function useSiswaDashboard() {
                 .single();
 
             if (dbError || dbUser?.role !== 'siswa') {
-                if (dbUser?.role === 'guru') {
-                    toast.info('Mengalihkan ke Dashboard Guru...');
-                    router.push('/guru');
+                const roleRoutes: Record<string, string> = {
+                    admin: '/admin',
+                    kepala_sekolah: '/kepala-sekolah',
+                    guru: '/guru',
+                };
+                const redirect = roleRoutes[dbUser?.role || ''];
+                if (redirect) {
+                    toast.info('Mengalihkan ke dashboard Anda...');
+                    router.push(redirect);
                 } else {
                     await supabase.auth.signOut();
                     router.push('/login');
@@ -85,8 +97,9 @@ export function useSiswaDashboard() {
             // Fetch class membership
             const { data: classMemberData, error: classError } = await supabase
                 .from('class_members')
-                .select(`class_id, classes (name)`)
+                .select(`class_id, classes!inner(name, deleted_at)`)
                 .eq('user_id', authUser.id)
+                .is('classes.deleted_at', null)
                 .single();
 
             if (classError || !classMemberData) {
@@ -102,18 +115,20 @@ export function useSiswaDashboard() {
             setStudentClassId(classId);
 
             // Parallel fetch
-            const [assignResult, matResult, sessResult, keaktifanResult] = await Promise.all([
+            const [assignResult, matResult, sessResult, keaktifanResult, pointsResult] = await Promise.all([
                 // Assignments
                 supabase
                     .from('assignments')
                     .select(`id, title, deadline, required_format, submissions(id, file_url, submitted_at, grades(id, score, type, feedback)), subjects!inner(class_id)`)
                     .eq('subjects.class_id', classId)
-                    .order('deadline', { ascending: true }),
+                    .order('deadline', { ascending: true })
+                    .limit(50),
                 // Materials
                 supabase
                     .from('materials')
                     .select(`*, subjects!inner(class_id)`)
-                    .eq('subjects.class_id', classId),
+                    .eq('subjects.class_id', classId)
+                    .limit(50),
                 // Today's attendance
                 supabase
                     .from('attendance')
@@ -126,13 +141,27 @@ export function useSiswaDashboard() {
                     .from('grades')
                     .select('score, feedback')
                     .eq('type', 'keaktifan')
-                    .eq('student_id', authUser.id)
+                    .eq('student_id', authUser.id),
+                // User points
+                supabase
+                    .from('user_points')
+                    .select('total_points, level')
+                    .eq('user_id', authUser.id)
+                    .maybeSingle()
             ]);
 
             setAssignments((assignResult.data || []) as unknown as StudentAssignment[]);
             setMaterials((matResult.data || []) as Material[]);
             setAttendanceSession(sessResult.data as AttendanceSession | null);
             setKeaktifanGrades((keaktifanResult.data || []) as KeaktifanGrade[]);
+            
+            if (pointsResult.data) {
+                setCurrentXP(pointsResult.data.total_points);
+                setLevel(pointsResult.data.level);
+            } else {
+                setCurrentXP(0);
+                setLevel(1);
+            }
 
             // Fetch attendance record if session exists
             if (sessResult.data) {
@@ -179,8 +208,8 @@ export function useSiswaDashboard() {
         };
 
         const channel = supabase
-            .channel(`student_sync_${studentClassId}`)
-            // FILTERED subscriptions - Only react to changes in THIS student's class
+            .channel(`student_sync_${studentClassId}_${user?.id}`)
+            // FILTERED subscriptions
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
@@ -190,27 +219,20 @@ export function useSiswaDashboard() {
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
-                table: 'attendance_records'
+                table: 'attendance_records',
+                filter: `student_id=eq.${user?.id}`
             }, debouncedRefetch)
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
-                table: 'submissions'
+                table: 'submissions',
+                filter: `student_id=eq.${user?.id}`
             }, debouncedRefetch)
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
-                table: 'materials'
-            }, debouncedRefetch)
-            .on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'assignments'
-            }, debouncedRefetch)
-            .on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'grades'
+                table: 'grades',
+                filter: `student_id=eq.${user?.id}`
             }, debouncedRefetch)
             .subscribe();
 
@@ -219,7 +241,7 @@ export function useSiswaDashboard() {
             supabase.removeChannel(channel);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [studentClassId]); // Only re-subscribe when classId changes. fetchInitialData is stable.
+    }, [studentClassId, user?.id]); // Only re-subscribe when classId or userId changes.
 
     // ========================================================
     // ACTIONS
@@ -238,6 +260,9 @@ export function useSiswaDashboard() {
             if (error) throw error;
             setAttendanceRecord(data);
             toast.success('Berhasil! Kehadiran Anda hari ini telah dicatat.');
+            
+            // Sprint 4: XP Reward
+            void gainXPLocal(20, 'Absensi Harian');
         } catch (error: unknown) {
             toast.error(`Gagal Absen: ${getErrorMessage(error)}`);
         }
@@ -268,6 +293,10 @@ export function useSiswaDashboard() {
             });
 
             toast.success('Tugas berhasil dikirim!');
+            
+            // Sprint 4: XP Reward
+            void gainXPLocal(50, 'Pengumpulan Tugas');
+            
             fetchInitialData();
         } catch (error: unknown) {
             toast.error(`Gagal: ${getErrorMessage(error)}`);
@@ -285,12 +314,58 @@ export function useSiswaDashboard() {
     // COMPUTED
     // ========================================================
     const progressData = assignments
-        .filter(a => a.submissions?.[0]?.grades?.score !== undefined && a.submissions?.[0]?.grades?.score !== null)
-        .map((a, idx) => ({
-            week: `Tugas ${idx + 1}`,
-            nilai: a.submissions?.[0]?.grades?.score || 0,
-            target: 75
-        }));
+        .filter(a => {
+            const gradeObj = a.submissions?.[0]?.grades as unknown as { score: number | null } | { score: number | null }[];
+            const score = Array.isArray(gradeObj) ? gradeObj[0]?.score : gradeObj?.score;
+            return score !== undefined && score !== null;
+        })
+        .map((a, idx) => {
+            const gradeObj = a.submissions?.[0]?.grades as unknown as { score: number | null } | { score: number | null }[];
+            const score = Array.isArray(gradeObj) ? gradeObj[0]?.score : gradeObj?.score;
+            return {
+                week: `Tugas ${idx + 1}`,
+                nilai: score || 0,
+                target: 75
+            };
+        });
+
+    // ========================================================
+    // GAMIFICATION ACTIONS (Sprint 4)
+    // ========================================================
+    const gainXPLocal = async (points: number, reason: string) => {
+        if (!user) return;
+        
+        const newXP = currentXP + points;
+        const newLevel = Math.max(1, Math.floor(newXP / 100) + 1);
+        
+        setCurrentXP(newXP);
+        triggerXPEffect(points);
+        
+        // Simulating DB update for zero-cost immediate feedback
+        if (newLevel > level) {
+            setLevel(newLevel);
+            toast.success(`🎉 LEVEL UP! Kamu sekarang Level ${newLevel}!`, {
+                description: `Selamat! Kamu mendapatkan ${points} XP dari ${reason}.`,
+                duration: 5000,
+            });
+        } else {
+            toast.success(`+${points} XP Diperoleh!`, {
+                description: `Dari ${reason}`,
+            });
+        }
+
+        // Real DB update via RPC (if exists)
+        try {
+            await supabase.rpc('add_points', {
+                p_user_id: user.id,
+                p_points: points,
+                p_source: 'activity',
+                p_description: reason
+            });
+        } catch (e) {
+            console.warn('DB Points update failed, using local state only', e);
+        }
+    };
 
     // ========================================================
     // RETURN
@@ -302,6 +377,9 @@ export function useSiswaDashboard() {
         user,
         loading,
         uploading,
+        currentXP,
+        level,
+        nextLevelXP,
 
         // Data
         assignments,
@@ -320,5 +398,6 @@ export function useSiswaDashboard() {
         handleCheckIn,
         handleUpload,
         handleLogout,
+        gainXPLocal,
     };
 }

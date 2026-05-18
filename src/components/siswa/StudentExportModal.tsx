@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Download, Calendar, FileSpreadsheet, Archive, CheckCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { exportToExcel, type ExcelColumn } from '@/lib/utils/excel';
 
 interface StudentExportModalProps {
     isOpen: boolean;
@@ -60,20 +61,24 @@ export function StudentExportModal({ isOpen, onClose, studentId, studentName }: 
 
         if (error) throw error;
 
-        // Transform
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const columns: ExcelColumn[] = [
+            { header: 'Tanggal', key: 'date', width: 20 },
+            { header: 'Status', key: 'status', width: 15 },
+            { header: 'Waktu Catat', key: 'time', width: 15 }
+        ];
+
         const rows = data?.map((rec: any) => ({
-            Tanggal: new Date(rec.attendance?.date).toLocaleDateString('id-ID'),
-            Status: rec.status.toUpperCase(),
-            Waktu: rec.recorded_at ? new Date(rec.recorded_at).toLocaleTimeString('id-ID') : '-',
+            date: rec.attendance?.date ? new Date(rec.attendance.date).toLocaleDateString('id-ID') : '-',
+            status: rec.status.toUpperCase(),
+            time: rec.recorded_at ? new Date(rec.recorded_at).toLocaleTimeString('id-ID') : '-',
         })) || [];
 
-        // Dynamic import xlsx
-        const XLSX = await import('xlsx');
-        const ws = XLSX.utils.json_to_sheet(rows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Riwayat Absensi");
-        XLSX.writeFile(wb, `ABSENSI_SAYA_${studentName.replace(/\s+/g, '_')}.xlsx`);
+        await exportToExcel(
+            rows, 
+            columns, 
+            `ABSENSI_SAYA_${studentName.replace(/\s+/g, '_')}`, 
+            "Riwayat Absensi"
+        );
     };
 
     const exportGrades = async () => {
@@ -102,17 +107,25 @@ export function StudentExportModal({ isOpen, onClose, studentId, studentName }: 
 
         if (partError) throw partError;
 
+        const columns: ExcelColumn[] = [
+            { header: 'Kategori', key: 'category', width: 15 },
+            { header: 'Item / Tugas', key: 'item', width: 35 },
+            { header: 'Nilai', key: 'score', width: 10 },
+            { header: 'Feedback', key: 'feedback', width: 40 },
+            { header: 'Tanggal', key: 'date', width: 15 }
+        ];
+
         const rows: any[] = [];
 
         // Assignments
         submissions?.forEach((sub: any) => {
             if (sub.grades && sub.grades.length > 0) {
                 rows.push({
-                    Kategori: 'Tugas',
-                    Item: sub.assignments?.title,
-                    Nilai: sub.grades[0].score,
-                    Feedback: sub.grades[0].feedback,
-                    Tanggal: '-'
+                    category: 'Tugas',
+                    item: sub.assignments?.title,
+                    score: sub.grades[0].score,
+                    feedback: sub.grades[0].feedback || '-',
+                    date: '-'
                 });
             }
         });
@@ -120,24 +133,24 @@ export function StudentExportModal({ isOpen, onClose, studentId, studentName }: 
         // Participation
         participation?.forEach((p: any) => {
             rows.push({
-                Kategori: 'Keaktifan',
-                Item: 'Partisipasi Kelas',
-                Nilai: p.score,
-                Feedback: p.feedback || '-',
-                Tanggal: new Date(p.created_at).toLocaleDateString('id-ID')
+                category: 'Keaktifan',
+                item: 'Partisipasi Kelas',
+                score: p.score,
+                feedback: p.feedback || '-',
+                date: new Date(p.created_at).toLocaleDateString('id-ID')
             });
         });
 
         if (rows.length === 0) {
-            rows.push({ Kategori: '-', Item: 'Belum ada nilai', Nilai: 0, Feedback: '-', Tanggal: '-' });
+            rows.push({ category: '-', item: 'Belum ada nilai', score: 0, feedback: '-', date: '-' });
         }
 
-        // Dynamic import xlsx
-        const XLSX = await import('xlsx');
-        const ws = XLSX.utils.json_to_sheet(rows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Transkrip Nilai");
-        XLSX.writeFile(wb, `TRANSKRIP_NILAI_${studentName.replace(/\s+/g, '_')}.xlsx`);
+        await exportToExcel(
+            rows, 
+            columns, 
+            `TRANSKRIP_NILAI_${studentName.replace(/\s+/g, '_')}`, 
+            "Transkrip Nilai"
+        );
     };
 
     return (

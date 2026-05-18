@@ -245,7 +245,7 @@ export function PeerReviewStatusModal({ assignmentId, isOpen, onClose }: PeerRev
                                                                 type="number"
                                                                 value={editForm.score}
                                                                 onChange={e => setEditForm({ ...editForm, score: Number(e.target.value) })}
-                                                                className="w-full mt-1 px-3 py-2 rounded-lg text-lg font-bold border-indigo-200 focus:ring-indigo-500"
+                                                                className="w-full mt-1 px-3 py-2 rounded-lg text-lg font-bold border-indigo-200 focus:ring-indigo-500 text-slate-800"
                                                             />
                                                         </div>
                                                         <div>
@@ -254,7 +254,7 @@ export function PeerReviewStatusModal({ assignmentId, isOpen, onClose }: PeerRev
                                                                 type="text"
                                                                 value={editForm.feedback}
                                                                 onChange={e => setEditForm({ ...editForm, feedback: e.target.value })}
-                                                                className="w-full mt-1 px-3 py-2 rounded-lg border-indigo-200 focus:ring-indigo-500"
+                                                                className="w-full mt-1 px-3 py-2 rounded-lg border-indigo-200 focus:ring-indigo-500 text-slate-800"
                                                             />
                                                         </div>
                                                         <div className="flex gap-2 justify-end pt-2">

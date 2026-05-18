@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 test.describe('Gamification Elements', () => {
     // Shared login helper
-    async function loginAsStudent(page: any) {
+    async function loginAsStudent(page: Page) {
         await page.goto('/login');
         await page.fill('input[type="email"]', 'siswa@example.com');
         await page.fill('input[type="password"]', 'password123');
@@ -43,13 +43,12 @@ test.describe('Gamification Elements', () => {
     });
 
     test('should display badges', async ({ page }) => {
-        // Navigate to profile or dashboard where badges are shown
-        await page.goto('/siswa/profile'); // Assuming profile route, adjust if needed
-        
-        // If profile route exists
-        if (page.url().includes('profile')) {
-            await expect(page.getByText(/Badge|Pencapaian/)).toBeVisible();
-            await expect(page.locator('.badge-grid')).toBeVisible();
+        await page.goto('/siswa');
+        // Navigate to "Prestasi" tab if available (UI-driven, not route-driven)
+        const prestasi = page.getByText('Prestasi');
+        if (await prestasi.isVisible()) {
+            await prestasi.click();
+            await expect(page.getByText(/Lencana|Papan Peringkat|Pencapaian/i)).toBeVisible();
         }
     });
 });

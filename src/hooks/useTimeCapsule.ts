@@ -127,7 +127,7 @@ export function useTimeCapsule(): UseTimeCapsuleReturn {
 
             setCapsules(capsuleData);
         } catch (error) {
-            console.error('Error fetching time capsules:', error);
+            console.error('Error fetching time capsules - Full error object:', JSON.stringify(error, null, 2));
         } finally {
             setLoading(false);
         }

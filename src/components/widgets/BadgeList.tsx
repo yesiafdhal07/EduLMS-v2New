@@ -47,49 +47,67 @@ function BadgeCard({ badge, index }: { badge: Badge; index: number }) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className={`
-                relative group rounded-3xl p-6 transition-all duration-300 overflow-hidden cursor-default
+                relative group rounded-[2.5rem] p-8 transition-all duration-500 overflow-hidden cursor-default
                 ${isUnlocked
-                    ? `bg-gradient-to-br ${getRarityColor(badge.rarity)} border-t border-white/20 shadow-lg hover:shadow-2xl hover:-translate-y-2`
-                    : 'bg-white/5 border border-white/5 grayscale opacity-60 hover:opacity-80 hover:scale-105'
+                    ? `bg-gradient-to-br ${getRarityColor(badge.rarity)} border-t border-white/30 shadow-[0_20px_50px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_80px_rgba(180,163,255,0.4)] hover:-translate-y-3`
+                    : 'bg-white/5 border border-white/5 grayscale opacity-40 hover:opacity-60 hover:scale-105'
                 }
             `}
             style={{ animationDelay: `${index * 100}ms` }}
         >
-            {/* Shiny Effect for unlocked badges */}
+            {/* Holographic / Glass Shine Effect */}
             {isUnlocked && (
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shine z-10 pointer-events-none"></div>
+                <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-white/20 transition-colors duration-500"></div>
+                </div>
             )}
 
-            <div className="relative z-20 flex flex-col items-center text-center gap-4">
+            <div className="relative z-20 flex flex-col items-center text-center">
                 <div className={`
-                    w-20 h-20 rounded-2xl flex items-center justify-center text-4xl shadow-inner
-                    ${isUnlocked ? 'bg-black/20 backdrop-blur-sm' : 'bg-white/5'}
+                    w-24 h-24 rounded-[2rem] flex items-center justify-center text-5xl mb-6 shadow-2xl relative
+                    ${isUnlocked ? 'bg-black/30 backdrop-blur-xl border border-white/20' : 'bg-white/5'}
                 `}>
                     {isUnlocked ? (
-                        <span className="transform group-hover:scale-110 transition-transform duration-300">{badge.icon}</span>
+                        <span className="transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-500 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)]">
+                            {badge.icon}
+                        </span>
                     ) : (
-                        <Lock size={24} className="text-slate-500" />
+                        <Lock size={28} className="text-slate-600" />
+                    )}
+                    
+                    {/* Rare Aura */}
+                    {isUnlocked && (badge.rarity === 'epic' || badge.rarity === 'legendary') && (
+                        <div className={`absolute inset-0 rounded-[2rem] animate-pulse opacity-50 ${badge.rarity === 'legendary' ? 'bg-amber-400/30' : 'bg-purple-400/30'}`}></div>
                     )}
                 </div>
                 
-                <div>
-                    <h4 className={`font-black text-lg mb-1 ${isUnlocked ? 'text-white' : 'text-slate-400'}`}>
+                <div className="space-y-2">
+                    <h4 className={`font-black text-xl tracking-tight leading-tight ${isUnlocked ? 'text-white' : 'text-slate-500'}`}>
                         {badge.name}
                     </h4>
-                    <p className="text-xs font-medium opacity-80 leading-relaxed mb-3 text-slate-200">
+                    <p className={`text-xs font-bold leading-relaxed px-2 ${isUnlocked ? 'text-white/70' : 'text-slate-600'}`}>
                         {badge.description}
                     </p>
-                    <span className={`
-                        inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest
-                        ${isUnlocked ? 'bg-white/20 text-white' : 'bg-white/5 text-slate-500'}
-                    `}>
-                        {badge.rarity}
-                    </span>
-                    {isUnlocked && badge.unlockedAt && (
-                        <p className="text-[9px] text-white/60 mt-2 border-t border-white/10 pt-2">
-                            Diraih: {new Date(badge.unlockedAt).toLocaleDateString()}
-                        </p>
-                    )}
+                    
+                    <div className="pt-4 flex flex-col items-center gap-3">
+                        <span className={`
+                            px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm border
+                            ${isUnlocked 
+                                ? 'bg-white/20 text-white border-white/20' 
+                                : 'bg-white/5 text-slate-700 border-white/5'}
+                        `}>
+                            {badge.rarity}
+                        </span>
+                        
+                        {isUnlocked && badge.unlockedAt && (
+                            <div className="w-full pt-3 border-t border-white/10">
+                                <p className="text-[9px] font-black text-white/50 uppercase tracking-widest">
+                                    Unlocked On {new Date(badge.unlockedAt).toLocaleDateString()}
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

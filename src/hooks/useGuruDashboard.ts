@@ -8,15 +8,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { useClasses } from '@/hooks/useClasses';
 import { useAttendance } from '@/hooks/useAttendance';
 import { logError } from '@/lib/error-handler';
-import { useGuruStats, DashboardStudent, DashboardStats } from '@/hooks/useGuruStats';
+import { useGuruStats } from '@/hooks/useGuruStats';
 import { useGuruMaterials } from '@/hooks/useGuruMaterials';
 import { useGuruAssignments } from '@/hooks/useGuruAssignments';
-import type { TeacherProfile, Assignment, Material, PortfolioStats } from '@/types';
-
-// ========================================================
-// TYPES
-// ========================================================
-type Tab = 'dashboard' | 'pembelajaran' | 'kuis' | 'analytics' | 'absensi' | 'portofolio' | 'trash' | 'diskusi';
+import { useGuruUI } from '@/hooks/useGuruUI';
+import type { TeacherProfile, PortfolioStats } from '@/types';
 
 // ========================================================
 // HOOK
@@ -43,9 +39,8 @@ export function useGuruDashboard() {
         deleteClass
     } = useClasses(user?.id);
 
-    const [statsPage, setStatsPage] = useState(1);
-    const [materialsPage, setMaterialsPage] = useState(1);
-    const [assignmentsPage, setAssignmentsPage] = useState(1);
+    // UI Hook (Separated State)
+    const ui = useGuruUI();
 
     // Atomic Data Hooks (TanStack Query)
     const { 
@@ -54,21 +49,21 @@ export function useGuruDashboard() {
         pagination: statsPagination,
         loading: statsLoading, 
         refetch: refetchStats 
-    } = useGuruStats({ classId: selectedClassId, page: statsPage, pageSize: 50 });
+    } = useGuruStats({ classId: selectedClassId, page: ui.statsPage, pageSize: 50 });
 
     const { 
         materials, 
         pagination: materialsPagination,
         loading: materialsLoading, 
         refetch: refetchMaterials 
-    } = useGuruMaterials({ classId: selectedClassId, page: materialsPage, pageSize: 50 });
+    } = useGuruMaterials({ classId: selectedClassId, page: ui.materialsPage, pageSize: 50 });
 
     const { 
         assignments, 
         pagination: assignmentsPagination,
         loading: assignmentsLoading, 
         refetch: refetchAssignments 
-    } = useGuruAssignments({ classId: selectedClassId, page: assignmentsPage, pageSize: 50 });
+    } = useGuruAssignments({ classId: selectedClassId, page: ui.assignmentsPage, pageSize: 50 });
 
     const {
         session: attendanceSession,
@@ -85,28 +80,11 @@ export function useGuruDashboard() {
     } = useAttendance(selectedClassId);
 
     // ========================================================
-    // UI STATE
+    // DATA STATE (Still here for now as they involve fetching)
     // ========================================================
-    const [activeTab, setActiveTab] = useState<Tab>('dashboard');
-
-    // Portfolio State
     const [teacherProfile, setTeacherProfile] = useState<TeacherProfile | null>(null);
     const [portfolioStats, setPortfolioStats] = useState<PortfolioStats>({ total_students: 0, total_classes: 0 });
     const [teacherName, setTeacherName] = useState('Guru');
-    const [teacherSubjectId, setTeacherSubjectId] = useState<string | null>(null);
-
-    // Modal States
-    const [showMaterialModal, setShowMaterialModal] = useState(false);
-    const [showAssignmentModal, setShowAssignmentModal] = useState(false);
-    const [showSubmissionModal, setShowSubmissionModal] = useState(false);
-    const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
-    const [showClassModal, setShowClassModal] = useState(false);
-    const [showManualGradeModal, setShowManualGradeModal] = useState(false);
-    const [showArchiveModal, setShowArchiveModal] = useState(false);
-    const [manualGradeAssignment, setManualGradeAssignment] = useState<Assignment | null>(null);
-
-    // Form State
-    const [newClassName, setNewClassName] = useState('');
 
     const loading = authLoading || classesLoading || statsLoading || materialsLoading || assignmentsLoading;
 
@@ -133,19 +111,15 @@ export function useGuruDashboard() {
     // ========================================================
     // EFFECTS
     // ========================================================
-    // Update teacher name when user is loaded
     useEffect(() => {
         if (user?.full_name) {
             setTeacherName(user.full_name);
         }
     }, [user]);
 
-    // Realtime Subscriptions via Query Invalidation is handled by the atomic hooks if needed
-    // or we can keep the subscription logic here to refetch queries.
     useEffect(() => {
         if (!selectedClassId) return;
 
-        // Simple debounce for realtime events
         let debounceTimeout: NodeJS.Timeout | null = null;
         const debouncedRefetchAll = () => {
              if (debounceTimeout) clearTimeout(debounceTimeout);
@@ -159,10 +133,7 @@ export function useGuruDashboard() {
 
         const classChannel = supabase
             .channel(`class_sync_${selectedClassId}`)
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'materials' }, debouncedRefetchAll)
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'assignments' }, debouncedRefetchAll)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'attendance', filter: `class_id=eq.${selectedClassId}` }, debouncedRefetchAll)
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'submissions' }, debouncedRefetchAll) // Refresh stats on submission
             .subscribe();
 
         return () => {
@@ -172,10 +143,10 @@ export function useGuruDashboard() {
     }, [selectedClassId, refetchMaterials, refetchAssignments, refetchAttendance, refetchStats]);
 
     useEffect(() => {
-        if (activeTab === 'portofolio') {
+        if (ui.activeTab === 'portofolio') {
             fetchTeacherPortfolio();
         }
-    }, [activeTab, fetchTeacherPortfolio]);
+    }, [ui.activeTab, fetchTeacherPortfolio]);
 
     useEffect(() => {
         if (!attendanceSession?.id) return;
@@ -192,16 +163,16 @@ export function useGuruDashboard() {
     // ACTIONS
     // ========================================================
     const handleCreateClass = async () => {
-        if (!newClassName.trim()) {
+        if (!ui.newClassName.trim()) {
             toast.warning('Nama kelas wajib diisi!');
             return;
         }
-        const success = await createClass(newClassName);
+        const success = await createClass(ui.newClassName);
         if (success) {
             toast.success('Kelas berhasil dibuat!');
-            setNewClassName('');
-            setShowClassModal(false);
-            setActiveTab('dashboard');
+            ui.setNewClassName('');
+            ui.setShowClassModal(false);
+            ui.setActiveTab('dashboard');
         } else {
             toast.error('Gagal membuat kelas.');
         }
@@ -225,8 +196,6 @@ export function useGuruDashboard() {
         // Auth & Loading
         user,
         loading,
-        localLoading: false, // Deprecated
-        dashboardError: null, // TanStack Query handles error states internally
 
         // Classes
         classes,
@@ -248,7 +217,7 @@ export function useGuruDashboard() {
         approveCheckIn,
         rejectCheckIn,
 
-        // Data (from Atomic Hooks)
+        // Data
         students,
         materials,
         assignments,
@@ -258,47 +227,22 @@ export function useGuruDashboard() {
         statsPagination,
         materialsPagination,
         assignmentsPagination,
-        setStatsPage,
-        setMaterialsPage,
-        setAssignmentsPage,
 
+        // UI Exposed State & Setters (Proxy from UI Hook)
+        ...ui,
+
+        // Portfolio
         teacherName,
-        teacherSubjectId,
         teacherProfile,
         portfolioStats,
         setTeacherProfile,
-
-        // Tab
-        activeTab,
-        setActiveTab,
-
-        // Modals
-        showMaterialModal,
-        setShowMaterialModal,
-        showAssignmentModal,
-        setShowAssignmentModal,
-        showSubmissionModal,
-        setShowSubmissionModal,
-        selectedAssignment,
-        setSelectedAssignment,
-        showClassModal,
-        setShowClassModal,
-        showManualGradeModal,
-        setShowManualGradeModal,
-        showArchiveModal,
-        setShowArchiveModal,
-        manualGradeAssignment,
-        setManualGradeAssignment,
-
-        // Form
-        newClassName,
-        setNewClassName,
 
         // Actions
         handleCreateClass,
         handleToggleAttendance,
         handleLogout,
-        fetchMaterials: refetchMaterials, // Map to refetch
-        fetchAssignments: refetchAssignments, // Map to refetch
+        fetchMaterials: refetchMaterials,
+        fetchAssignments: refetchAssignments,
+        fetchStudents: refetchStats,
     };
 }

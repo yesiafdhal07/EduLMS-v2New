@@ -54,24 +54,24 @@ export function AssignmentPanel({ assignments, submissionCounts = {}, onAddAssig
     });
 
     return (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="flex flex-col xl:flex-row justify-between xl:items-center gap-6 mb-10">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 pb-8">
+            <div className="flex flex-col xl:flex-row justify-between xl:items-center gap-6 mb-8 px-1">
                 <div>
-                    <h3 className="text-2xl font-black text-white tracking-tight leading-none">Daftar Penugasan</h3>
-                    <p className="text-slate-400 text-sm font-medium mt-2">Kelola tugas kelas atau tugas individu untuk siswa.</p>
+                    <h3 className="gs-title text-2xl">Daftar Tugas</h3>
+                    <p className="gs-body text-xs mt-1">Kelola dan pantau seluruh penugasan kelas</p>
                 </div>
                 
                 <div className="flex flex-wrap items-center gap-4">
                     {/* Filter Bar */}
-                    <div className="flex gap-1 bg-white/5 p-1 rounded-xl border border-white/5">
+                    <div className="flex gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/5">
                         {(['all', 'pdf', 'doc', 'video', 'link'] as AssignmentFilter[]).map((f) => (
                             <button
                                 key={f}
                                 onClick={() => handleFilterChange(f)}
                                 className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
                                     filter === f 
-                                    ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20' 
-                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                    ? 'bg-[var(--guru-accent)] text-white shadow-lg' 
+                                    : 'text-slate-500 hover:text-white hover:bg-white/5'
                                 }`}
                             >
                                 {f === 'all' ? 'Semua' : f}
@@ -81,79 +81,86 @@ export function AssignmentPanel({ assignments, submissionCounts = {}, onAddAssig
 
                     <button
                         onClick={onAddAssignment}
-                        className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-black flex items-center gap-2 shadow-xl shadow-indigo-600/20 hover:shadow-indigo-600/40 hover:-translate-y-1 transition-all uppercase text-[10px] tracking-widest border border-white/10"
+                        className="px-6 py-3 bg-[var(--guru-accent)] text-white rounded-xl font-black flex items-center gap-2 shadow-lg shadow-[var(--guru-accent)]/20 hover:opacity-90 hover:scale-[1.02] active:scale-95 transition-all uppercase text-[10px] tracking-widest"
                     >
                         <Plus size={16} />
-                        Tambah Tugas
+                        Tugas Baru
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredAssignments.length === 0 ? (
-                    <div className="col-span-full p-20 bg-white/5 rounded-[3rem] border-4 border-dashed border-white/10 flex flex-col items-center justify-center text-center">
-                        <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 text-slate-500">
-                            <FileText size={48} />
+                    <div className="col-span-full py-24 gs-card border-dashed flex flex-col items-center justify-center text-center px-6">
+                        <div className="w-20 h-20 bg-white/[0.03] rounded-full flex items-center justify-center mb-6 text-[var(--guru-text-ghost)] border border-white/5">
+                            <FileText size={36} />
                         </div>
-                        <h4 className="font-black text-white text-lg mb-2">Tugas Tidak Ditemukan</h4>
-                        <p className="text-slate-400 text-sm max-w-sm mx-auto leading-relaxed">
-                            {filter === 'all' ? 'Klik tombol "Tambah Tugas" untuk mulai memberikan penugasan.' : `Tidak ada tugas dengan format ${filter.toUpperCase()}.`}
+                        <h4 className="gs-title text-xl mb-3">Belum Ada Tugas</h4>
+                        <p className="gs-body text-sm max-w-sm mx-auto leading-relaxed">
+                            {filter === 'all' ? 'Belum ada tugas di kelas ini. Buat tugas baru untuk memulai.' : `Tidak ada tugas dengan format ${filter.toUpperCase()}.`}
                         </p>
                     </div>
                 ) : filteredAssignments.map(a => (
                     <div 
                         key={a.id} 
                         data-flip-id={a.id}
-                        className="assignment-card bg-white/5 backdrop-blur-md p-10 rounded-[3.5rem] border border-white/10 shadow-xl shadow-black/20 hover:shadow-2xl hover:-translate-y-2 transition-all group overflow-hidden relative flex flex-col hover:bg-white/10"
+                        className="assignment-card gs-card p-8 group overflow-hidden relative flex flex-col hover:border-[var(--guru-accent)]/30 transition-all duration-500"
                     >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-bl-[4rem] group-hover:scale-150 transition-transform opacity-30"></div>
-                        <div className="relative z-10 flex flex-col h-full justify-between">
-                            <div>
-                                <div className="flex justify-between items-start mb-6">
-                                    <div className="w-16 h-16 bg-white/10 rounded-[1.5rem] flex items-center justify-center text-indigo-400 shadow-inner group-hover:rotate-12 transition-transform border border-white/5">
-                                        <FileText size={28} />
-                                    </div>
-                                    <span className="px-4 py-1.5 bg-slate-900 text-white border border-white/10 rounded-full text-[9px] font-black uppercase tracking-[0.2em]">
-                                        {a.required_format}
-                                    </span>
+                        {/* Decorative Gradient */}
+                        <div className="absolute -top-20 -right-20 w-40 h-40 bg-[var(--guru-accent)]/5 blur-[60px] rounded-full group-hover:bg-[var(--guru-accent)]/10 transition-all duration-700"></div>
+
+                        <div className="relative z-10 flex flex-col h-full">
+                            <div className="mb-6 flex justify-between items-start">
+                                <div className="w-12 h-12 bg-white/[0.03] rounded-xl flex items-center justify-center text-[var(--guru-accent-text)] border border-white/5 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                                    <FileText size={22} />
                                 </div>
-                                <h4 className="font-black text-white text-xl mb-2 tracking-tight line-clamp-2 uppercase group-hover:text-indigo-300 transition-colors">{a.title}</h4>
-                                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-6">
-                                    <Calendar size={14} className="text-indigo-400" /> Deadline: {a.deadline ? new Date(a.deadline).toLocaleDateString('id-ID') : '-'}
-                                </p>
-                                <p className="text-slate-400 text-sm font-medium line-clamp-3 leading-relaxed mb-6">{a.description || 'Tidak ada deskripsi.'}</p>
+                                <div className="gs-badge gs-badge-accent">
+                                    {a.required_format}
+                                </div>
                             </div>
-                            <div className="pt-6 border-t border-white/10 mt-auto flex flex-col gap-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3 text-slate-500 text-[10px] font-black uppercase tracking-widest">
-                                        <History size={14} />
+
+                            <div className="flex-1 mb-6">
+                                <h4 className="gs-title text-lg mb-2 group-hover:text-[var(--guru-accent-text)] transition-colors">{a.title}</h4>
+                                <div className="flex items-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-3">
+                                    <Calendar size={12} className="text-rose-500/50" />
+                                    <span>Deadline: <span className="text-rose-400">{a.deadline ? new Date(a.deadline).toLocaleDateString('id-ID') : 'Tanpa Batas'}</span></span>
+                                </div>
+                                <p className="gs-body text-xs leading-relaxed line-clamp-3 group-hover:text-slate-300 transition-colors">{a.description || 'Belum ada deskripsi untuk tugas ini.'}</p>
+                            </div>
+
+                            <div className="pt-6 border-t border-white/5 mt-auto space-y-4">
+                                <div className="flex items-center justify-between px-1">
+                                    <div className="flex items-center gap-2 text-[var(--guru-text-ghost)] text-[9px] font-bold uppercase tracking-widest">
+                                        <History size={11} />
                                         <span>Dibuat {new Date(a.created_at || new Date().toISOString()).toLocaleDateString('id-ID')}</span>
                                     </div>
                                     {submissionCounts[a.id] !== undefined && (
-                                        <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold">
-                                            <Users size={14} />
-                                            <span>{submissionCounts[a.id]} submit</span>
+                                        <div className="flex items-center gap-1.5 text-emerald-400 text-[10px] font-bold uppercase tracking-widest bg-emerald-400/5 px-2 py-1 rounded-lg border border-emerald-400/10">
+                                            <Users size={11} />
+                                            <span>{submissionCounts[a.id]} Masuk</span>
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex gap-3 flex-wrap">
+                                <div className="grid grid-cols-2 gap-2">
                                     <button
                                         onClick={() => onViewSubmissions(a)}
-                                        className="flex-1 py-3 bg-slate-50 hover:bg-white text-slate-600 hover:text-indigo-600 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors border border-slate-200 hover:border-indigo-200"
+                                        className="py-3 bg-white/[0.03] hover:bg-white/[0.08] text-white border border-white/10 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95"
                                     >
-                                        Submisi
+                                        Jawaban
                                     </button>
                                     <button
                                         onClick={() => onManualGrade && onManualGrade(a)}
-                                        className="py-3 px-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 hover:text-emerald-700 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors border border-emerald-200"
+                                        className="py-3 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/20 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95"
                                     >
                                         Nilai
                                     </button>
-                                    <PeerReviewButton
-                                        assignment={a}
-                                        submissionCount={submissionCounts[a.id] || 0}
-                                        onPeerReviewEnabled={() => setShowStatusModal(a.id)}
-                                    />
+                                    <div className="col-span-2">
+                                        <PeerReviewButton
+                                            assignment={a}
+                                            submissionCount={submissionCounts[a.id] || 0}
+                                            onPeerReviewEnabled={() => setShowStatusModal(a.id)}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -135,48 +135,50 @@ export function ClassMoodOverview({ classId, className = '' }: ClassMoodOverview
     };
 
     return (
-        <div className={`bg-white/5 backdrop-blur-lg rounded-2xl p-5 border border-white/10 ${className}`}>
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                    {getMoodIcon(moodData.avgMood)}
+        <div className={`universe-card p-6 ${className}`}>
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                        {getMoodIcon(moodData.avgMood)}
+                    </div>
                     <div>
-                        <h3 className="font-bold text-white">Mood Kelas</h3>
-                        <p className="text-xs text-slate-400">{moodData.totalCheckins} check-in minggu ini</p>
+                        <h3 className="font-bold text-white text-base">Class Mood</h3>
+                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{moodData.totalCheckins} check-ins</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-1">
-                    {moodData.trend === 'up' && <TrendingUp className="text-emerald-400" size={18} />}
-                    {moodData.trend === 'down' && <TrendingDown className="text-rose-400" size={18} />}
-                    <span className={`text-sm font-bold ${
-                        moodData.trend === 'up' ? 'text-emerald-400' : 
-                        moodData.trend === 'down' ? 'text-rose-400' : 'text-slate-400'
-                    }`}>
-                        {getMoodLabel(moodData.avgMood)}
-                    </span>
+                <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter flex items-center gap-1.5 ${
+                    moodData.trend === 'up' ? 'bg-emerald-500/10 text-emerald-400' : 
+                    moodData.trend === 'down' ? 'bg-rose-500/10 text-rose-400' : 'bg-white/5 text-slate-400'
+                }`}>
+                    {moodData.trend === 'up' && <TrendingUp size={12} />}
+                    {moodData.trend === 'down' && <TrendingDown size={12} />}
+                    {getMoodLabel(moodData.avgMood)}
                 </div>
             </div>
 
             {/* Mood Distribution Bar */}
-            <div className="flex gap-1 h-8 mb-3">
+            <div className="flex gap-1 h-6 mb-6 px-1">
                 {moodData.distribution.map((count, i) => {
                     const percentage = (count / moodData.totalCheckins) * 100;
+                    if (percentage === 0) return null;
                     return (
                         <div
                             key={i}
-                            className={`${MOOD_COLORS[i]} rounded-lg flex items-center justify-center transition-all`}
-                            style={{ width: `${Math.max(percentage, 5)}%` }}
+                            className={`${MOOD_COLORS[i]} rounded-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 hover:scale-[1.02]`}
+                            style={{ width: `${Math.max(percentage, 8)}%` }}
                             title={`${MOOD_EMOJIS[i]}: ${count} siswa`}
                         >
-                            {percentage > 15 && <span className="text-xs">{MOOD_EMOJIS[i]}</span>}
+                            <span className="text-[10px]">{MOOD_EMOJIS[i]}</span>
                         </div>
                     );
                 })}
             </div>
 
             {/* Average Score */}
-            <div className="flex items-center justify-center gap-2 bg-white/5 rounded-xl py-2">
-                <span className="text-2xl font-black text-white">{moodData.avgMood.toFixed(1)}</span>
-                <span className="text-xs text-slate-400">/ 5.0 rata-rata</span>
+            <div className="flex items-center justify-center gap-3 bg-white/[0.02] border border-white/5 rounded-2xl py-3 group-hover:bg-white/[0.04] transition-all">
+                <span className="text-3xl font-black text-white tracking-tighter tabular-nums">{moodData.avgMood.toFixed(1)}</span>
+                <div className="h-6 w-px bg-white/10" />
+                <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Global Index</span>
             </div>
         </div>
     );

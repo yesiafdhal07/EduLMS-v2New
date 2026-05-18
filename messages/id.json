@@ -1,100 +1,21 @@
 {
-    "common": {
-        "dashboard": "Dasbor",
-        "students": "Siswa",
-        "assignments": "Tugas",
-        "materials": "Materi",
-        "attendance": "Presensi",
-        "grades": "Nilai",
-        "portfolio": "Portofolio",
-        "analytics": "Analitik",
-        "settings": "Pengaturan",
-        "logout": "Keluar",
-        "save": "Simpan",
-        "cancel": "Batal",
-        "delete": "Hapus",
-        "edit": "Edit",
-        "add": "Tambah",
-        "search": "Cari",
-        "loading": "Memuat...",
-        "error": "Terjadi kesalahan",
-        "success": "Berhasil",
-        "confirm": "Konfirmasi",
-        "noData": "Tidak ada data"
-    },
-    "auth": {
-        "login": "Masuk",
-        "register": "Daftar",
-        "email": "Email",
-        "password": "Kata Sandi",
-        "confirmPassword": "Konfirmasi Kata Sandi",
-        "fullName": "Nama Lengkap",
-        "forgotPassword": "Lupa kata sandi?",
-        "noAccount": "Belum punya akun?",
-        "hasAccount": "Sudah punya akun?",
-        "loginSuccess": "Login berhasil!",
-        "loginFailed": "Login gagal",
-        "registerSuccess": "Pendaftaran berhasil!",
-        "registerFailed": "Pendaftaran gagal"
-    },
-    "teacher": {
-        "manageClass": "Kelola Kelas",
-        "createClass": "Buat Kelas Baru",
-        "addClass": "Tambah Kelas",
-        "classCode": "Kode Kelas",
-        "totalStudents": "Total Siswa",
-        "uploadMaterial": "Upload Materi",
-        "createAssignment": "Buat Tugas",
-        "gradeSubmission": "Beri Nilai",
-        "startAttendance": "Mulai Absensi",
-        "stopAttendance": "Hentikan Absensi",
-        "exportData": "Export Data",
-        "archiveData": "Arsipkan Data"
-    },
-    "student": {
-        "myGrades": "Nilai Saya",
-        "myAttendance": "Kehadiran Saya",
-        "submitAssignment": "Kumpulkan Tugas",
-        "viewMaterials": "Lihat Materi",
-        "downloadMaterial": "Download Materi",
-        "attendanceHistory": "Riwayat Kehadiran",
-        "gradeHistory": "Riwayat Nilai",
-        "exportMyData": "Export Data Saya"
-    },
-    "grades": {
-        "average": "Rata-rata",
-        "passed": "TUNTAS",
-        "failed": "REMEDIAL",
-        "assignment": "Tugas",
-        "participation": "Keaktifan",
-        "exam": "Ujian",
-        "finalGrade": "Nilai Akhir",
-        "gradeTrend": "Tren Nilai",
-        "distribution": "Distribusi",
-        "topPerformers": "Peringkat Teratas"
-    },
-    "attendance": {
-        "present": "Hadir",
-        "absent": "Alpha",
-        "sick": "Sakit",
-        "permitted": "Izin",
-        "scanQR": "Scan QR",
-        "manualEntry": "Input Manual",
-        "attendanceRate": "Tingkat Kehadiran"
-    },
-    "landing": {
-        "heroTitle": "Satu Platform.",
-        "heroTitleAccent": "Nol Ribet.",
-        "heroSubtitle": "Tim 1 guru terasa seperti 10. Absensi, nilai, tugas, rapor — semuanya otomatis.",
-        "getStarted": "Coba Gratis",
-        "learnMore": "Lihat Demo",
-        "features": "Fitur",
-        "pricing": "Harga",
-        "about": "Tentang",
-        "contact": "Kontak",
-        "heroBadge": "Dipakai 500+ sekolah di seluruh Indonesia",
-        "trustedBy": "Dipercaya oleh",
-        "teachers": "Guru",
-        "noCreditCard": "Gratis selamanya — tanpa kartu kredit"
-    }
+  "Navigation": {
+    "dashboard": "Dasbor",
+    "classes": "Daftar Kelas",
+    "students": "Daftar Siswa",
+    "assignments": "Tugas",
+    "analytics": "Analisis Data",
+    "settings": "Pengaturan"
+  },
+  "Auth": {
+    "login": "Masuk",
+    "logout": "Keluar",
+    "register": "Daftar"
+  },
+  "Common": {
+    "loading": "Memuat...",
+    "error": "Terjadi kesalahan",
+    "save": "Simpan",
+    "cancel": "Batal"
+  }
 }

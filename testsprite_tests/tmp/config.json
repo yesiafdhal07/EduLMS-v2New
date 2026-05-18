@@ -1,0 +1,19 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "diff",
+  "localEndpoint": "http://localhost:3000/guru",
+  "loginUser": "yesiafdhal07@guru.sma.belajar.id",
+  "loginPassword": "Alhamdulillah",
+  "executionArgs": {
+    "projectName": "Klolakelas",
+    "projectPath": "c:\\Users\\USER\\Desktop\\Project\\Klolakelas",
+    "testIds": [],
+    "additionalInstruction": "",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-7NSpFyCjQSGKywB0mWVSfRtaMe3tWU6Oki7yP91hUo0fegebOAvF7ujZojy2vaiT5B_XYe03T1OOL7um5gXv2J91oQjZBGtRRS4OJv6PKXKzw3RG8_6ooOKqYG1IE3iMrUo"
+    }
+  },
+  "serverPort": 63183
+}

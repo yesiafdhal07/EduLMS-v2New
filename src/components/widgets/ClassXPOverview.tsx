@@ -57,16 +57,16 @@ export function ClassXPOverview({ classId, className = '' }: ClassXPOverviewProp
                 .select('id, full_name')
                 .in('id', userIds);
 
-            // Try to get XP data (table may not exist yet)
-            let xpData: any[] = [];
+            // Try to get XP data
+            let xpData: { user_id: string; total_points: number; level: number }[] = [];
             try {
                 const { data } = await supabase
-                    .from('user_xp')
-                    .select('user_id, xp_total, level')
+                    .from('user_points')
+                    .select('user_id, total_points, level')
                     .in('user_id', userIds);
                 xpData = data || [];
             } catch {
-                // user_xp table doesn't exist yet, use empty array
+                // table doesn't exist yet, use empty array
             }
 
             // Combine data
@@ -77,7 +77,7 @@ export function ClassXPOverview({ classId, className = '' }: ClassXPOverviewProp
                     return {
                         user_id: userId,
                         full_name: user?.full_name || 'Siswa',
-                        xp_total: xp?.xp_total || 0,
+                        xp_total: xp?.total_points || 0,
                         level: xp?.level || 1
                     };
                 })
@@ -117,48 +117,50 @@ export function ClassXPOverview({ classId, className = '' }: ClassXPOverviewProp
     }
 
     return (
-        <div className={`bg-white/5 backdrop-blur-lg rounded-2xl p-5 border border-white/10 ${className}`}>
-            <div className="flex items-center gap-3 mb-4">
-                <Trophy className="text-amber-400" size={24} />
+        <div className={`universe-card p-6 ${className}`}>
+            <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center group-hover:rotate-12 transition-transform duration-500">
+                    <Trophy className="text-amber-400" size={24} />
+                </div>
                 <div>
-                    <h3 className="font-bold text-white">Top Siswa XP</h3>
-                    <p className="text-xs text-slate-400">Leaderboard minggu ini</p>
+                    <h3 className="font-bold text-white text-base">Top Performance</h3>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">XP Leaderboard</p>
                 </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
                 {leaderboard.map((student, index) => {
                     const levelColor = LEVEL_COLORS[Math.min(student.level - 1, LEVEL_COLORS.length - 1)];
                     return (
                         <div 
                             key={student.user_id}
-                            className="flex items-center gap-3 bg-white/5 rounded-xl p-3"
+                            className="flex items-center gap-3 bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 rounded-2xl p-3 transition-all group/item"
                         >
-                            {/* Rank */}
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm ${
-                                index === 0 ? 'bg-amber-500 text-white' :
+                            {/* Rank Badge */}
+                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-[10px] ${
+                                index === 0 ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' :
                                 index === 1 ? 'bg-slate-400 text-white' :
                                 index === 2 ? 'bg-amber-700 text-white' :
-                                'bg-slate-700 text-slate-300'
+                                'bg-white/5 text-slate-500'
                             }`}>
                                 {index + 1}
                             </div>
 
-                            {/* Name & Level */}
+                            {/* Info */}
                             <div className="flex-1 min-w-0">
-                                <p className="font-bold text-white text-sm truncate">{student.full_name}</p>
-                                <div className="flex items-center gap-1">
-                                    <div className={`w-4 h-4 rounded bg-gradient-to-br ${levelColor} flex items-center justify-center`}>
-                                        <span className="text-[8px] font-black text-white">{student.level}</span>
+                                <p className="font-bold text-white text-xs truncate group-hover/item:text-indigo-400 transition-colors">{student.full_name}</p>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                    <div className={`w-3.5 h-3.5 rounded-sm bg-gradient-to-br ${levelColor} flex items-center justify-center shadow-sm`}>
+                                        <span className="text-[7px] font-black text-white">{student.level}</span>
                                     </div>
-                                    <span className="text-[10px] text-slate-400">Level {student.level}</span>
+                                    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-tighter">LVL {student.level}</span>
                                 </div>
                             </div>
 
-                            {/* XP */}
-                            <div className="flex items-center gap-1 text-amber-400">
-                                <Star size={14} fill="currentColor" />
-                                <span className="text-sm font-bold">{student.xp_total}</span>
+                            {/* XP Value */}
+                            <div className="flex items-center gap-1 text-amber-400 bg-amber-400/5 px-2 py-1 rounded-lg border border-amber-400/10">
+                                <Star size={10} fill="currentColor" />
+                                <span className="text-xs font-black tabular-nums">{student.xp_total}</span>
                             </div>
                         </div>
                     );
