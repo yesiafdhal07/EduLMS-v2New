@@ -63,12 +63,12 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '*.supabase.co' },
     ],
   },
-  
-  // Performance optimizations
-  experimental: {
-    optimizePackageImports: ['lucide-react', 'recharts', 'date-fns'],
-  },
 };
 
-export default withBundleAnalyzer(withPWA(withNextIntl(nextConfig)));
+// Bypass PWA plugin on Vercel to prevent Turbopack crash
+const isVercel = process.env.VERCEL === '1';
+const configWithIntl = withNextIntl(nextConfig);
+const configWithPWA = isVercel ? configWithIntl : withPWA(configWithIntl);
+
+export default withBundleAnalyzer(configWithPWA);
 

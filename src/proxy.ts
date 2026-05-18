@@ -78,9 +78,9 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
 }
 
 // ========================================================
-// MAIN MIDDLEWARE
+// MAIN PROXY (formerly middleware)
 // ========================================================
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
     try {
         const ip = getRateLimitKey(request);
         
@@ -221,7 +221,7 @@ export async function middleware(request: NextRequest) {
 
         return response;
     } catch (error) {
-        console.error('Middleware Error:', error);
+        console.error('Proxy Error:', error);
         // SECURITY: Fail CLOSED for protected routes — redirect to login
         const isProtected = request.nextUrl.pathname.match(/^\/(admin|guru|siswa|kepala-sekolah|ortu)/);
         if (isProtected) {
