@@ -86,7 +86,7 @@ export async function POST(req: Request) {
                 "X-Title": "Klolakelas AI Chat"
             },
             body: JSON.stringify({
-                model: model || "deepseek/deepseek-chat-v3-0324:free",
+                model: model || "google/gemini-2.0-flash-lite-preview-02-05:free",
                 messages: sanitizedMessages,
                 max_tokens: Math.min(max_tokens || 1000, 2000),
                 temperature: Math.min(Math.max(temperature || 0.7, 0), 1.5),

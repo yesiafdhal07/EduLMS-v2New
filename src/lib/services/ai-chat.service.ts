@@ -181,7 +181,7 @@ export async function sendStreamingChatMessage(
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 messages: apiMessages,
-                model: "deepseek/deepseek-chat-v3-0324:free",
+                model: "google/gemini-2.0-flash-lite-preview-02-05:free",
                 max_tokens: 1000,
                 temperature: 0.7,
                 stream: true,
@@ -277,7 +277,7 @@ export async function sendChatMessage(
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 messages: apiMessages,
-                model: "deepseek/deepseek-chat-v3-0324:free",
+                model: "google/gemini-2.0-flash-lite-preview-02-05:free",
                 max_tokens: 1000,
                 temperature: 0.7,
                 stream: false,
