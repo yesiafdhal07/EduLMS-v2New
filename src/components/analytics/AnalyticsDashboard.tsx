@@ -215,7 +215,7 @@ export function AnalyticsDashboard({ classId, className }: AnalyticsDashboardPro
     return (
         <div className={`space-y-6 ${className}`}>
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center">
                         <BarChart3 size={24} className="text-indigo-400" />

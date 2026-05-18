@@ -70,7 +70,7 @@ export function DataTable<T extends Record<string, any>>({
             )}
             <div className="bg-[#181A20] border border-white/5 rounded-2xl overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-sm whitespace-nowrap">
                         <thead>
                             <tr className="border-b border-white/5">
                                 {columns.map(col => (

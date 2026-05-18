@@ -35,7 +35,7 @@ export function RoleTopbar({
       <div className="flex flex-col gap-3">
         {/* Top row: kicker + right actions */}
         {(kicker || right) && (
-          <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
             {kicker && (
               <div className="flex items-center gap-2">
                 <div className="universe-status-dot" />
@@ -45,7 +45,7 @@ export function RoleTopbar({
               </div>
             )}
             {right && (
-              <div className="flex items-center gap-3 flex-wrap ml-auto">
+              <div className="flex items-center gap-3 flex-wrap sm:ml-auto w-full sm:w-auto">
                 {right}
               </div>
             )}

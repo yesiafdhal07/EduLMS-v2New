@@ -146,7 +146,7 @@ export function AttendanceReport({ data }: { data: any[] }) {
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                    <table className="w-full text-left border-collapse whitespace-nowrap">
                         <thead>
                             <tr className="bg-white/[0.02] border-b border-white/5">
                                 <th className="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Siswa</th>

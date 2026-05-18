@@ -200,7 +200,7 @@ export function UserManagement({ users, schools, onUpdateRole, onUpdateSchool, c
             {/* User Table — High Density Grid */}
             <div className="universe-card overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-[12px] border-collapse">
+                    <table className="w-full text-[12px] border-collapse whitespace-nowrap">
                         <thead>
                             <tr className="bg-white/[0.02] border-b border-white/5 text-slate-500">
                                 <th className="px-6 py-4 w-10">

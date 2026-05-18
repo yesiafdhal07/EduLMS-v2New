@@ -54,10 +54,13 @@ export function MobileNavigation({ role, items, onLogout, extraContent }: Mobile
                 
                 {isSiswa && (
                     <div className="flex items-center gap-3">
-                         {/* Stats could go here for Siswa Header */}
-                         <div className="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/30 overflow-hidden">
-                             <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${role}`} alt="profile" />
-                         </div>
+                        <button 
+                            onClick={onLogout}
+                            className="w-8 h-8 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 hover:bg-rose-500/20 transition-colors"
+                            aria-label="Logout"
+                        >
+                            <LogOut size={14} />
+                        </button>
                     </div>
                 )}
             </div>
