@@ -102,7 +102,7 @@ Format JSON array:
                 'X-Title': 'Klolakelas Soal Generator',
             },
             body: JSON.stringify({
-                model: 'deepseek/deepseek-chat-v3-0324:free',
+                model: process.env.AI_GENERAL_MODEL || 'deepseek/deepseek-chat:free',
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: userMessage },

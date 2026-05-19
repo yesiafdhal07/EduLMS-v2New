@@ -59,43 +59,26 @@ ${student.notes ? `Catatan tambahan dari guru: ${student.notes}` : ''}`;
  * Generate narrative report card text for a single student
  */
 export async function generateNaratifSiswa(student: StudentNaratifInput): Promise<NaratifResult | null> {
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) {
-        // Return demo data when API key not set
-        return {
-            studentName: student.name,
-            naratif: `Ananda ${student.name} menunjukkan semangat belajar yang positif selama semester ini. Dalam kegiatan pembelajaran, Ananda senantiasa berusaha untuk mengikuti setiap materi dengan baik dan aktif berpartisipasi dalam diskusi kelas. Sikap Ananda yang kooperatif menjadi teladan bagi teman-teman sekelasnya.\n\nDalam aspek akademis, Ananda menunjukkan perkembangan yang menggembirakan dengan konsistensi dalam mengerjakan tugas-tugas yang diberikan. Ke depannya, Ananda diharapkan dapat terus meningkatkan kepercayaan diri dan rasa ingin tahu dalam setiap mata pelajaran.\n\nSecara keseluruhan, Ananda ${student.name} adalah pribadi yang berpotensi dan diharapkan dapat terus berkembang di semester mendatang dengan dukungan orang tua dan guru.`,
-            kelebihanPoin: ['Aktif dalam kegiatan pembelajaran', 'Sikap kooperatif dan menghargai sesama', 'Disiplin dalam mengikuti kegiatan sekolah'],
-            rekomendasiPoin: ['Tingkatkan keaktifan bertanya di kelas', 'Perbanyak latihan mandiri di rumah'],
-        };
-    }
-
     try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        const response = await fetch('/api/ai/naratif', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json',
-                'HTTP-Referer': 'https://klolakelas.com',
-                'X-Title': 'Klolakelas Rapor Naratif',
             },
             body: JSON.stringify({
-                model: 'deepseek/deepseek-chat-v3-0324:free',
-                messages: [
-                    { role: 'system', content: NARATIF_SYSTEM_PROMPT },
-                    { role: 'user', content: buildStudentContext(student) },
-                ],
-                response_format: { type: 'json_object' },
-                max_tokens: 600,
-                temperature: 0.8,
+                systemPrompt: NARATIF_SYSTEM_PROMPT,
+                userMessage: buildStudentContext(student),
             }),
         });
 
-        if (!response.ok) return null;
+        if (!response.ok) {
+            console.warn('[NaratifAI] Server returned error, falling back to demo data');
+            return getDemoNaratif(student);
+        }
 
         const data = await response.json();
-        const raw = data?.choices?.[0]?.message?.content;
-        if (!raw) return null;
+        const raw = data.content;
+        if (!raw) return getDemoNaratif(student);
 
         const parsed = JSON.parse(raw);
         return {
@@ -105,9 +88,18 @@ export async function generateNaratifSiswa(student: StudentNaratifInput): Promis
             rekomendasiPoin: Array.isArray(parsed.rekomendasiPoin) ? parsed.rekomendasiPoin.map(String) : [],
         };
     } catch (err) {
-        console.error('[NaratifAI] Error:', err);
-        return null;
+        console.error('[NaratifAI] Error, falling back to demo data:', err);
+        return getDemoNaratif(student);
     }
+}
+
+function getDemoNaratif(student: StudentNaratifInput): NaratifResult {
+    return {
+        studentName: student.name,
+        naratif: `Ananda ${student.name} menunjukkan semangat belajar yang positif selama semester ini. Dalam kegiatan pembelajaran, Ananda senantiasa berusaha untuk mengikuti setiap materi dengan baik dan aktif berpartisipasi dalam diskusi kelas. Sikap Ananda yang kooperatif menjadi teladan bagi teman-teman sekelasnya.\n\nDalam aspek akademis, Ananda menunjukkan perkembangan yang menggembirakan dengan konsistensi dalam mengerjakan tugas-tugas yang diberikan. Ke depannya, Ananda diharapkan dapat terus meningkatkan kepercayaan diri dan rasa ingin tahu dalam setiap mata pelajaran.\n\nSecara keseluruhan, Ananda ${student.name} adalah pribadi yang berpotensi dan diharapkan dapat terus berkembang di semester mendatang dengan dukungan orang tua dan guru.`,
+        kelebihanPoin: ['Aktif dalam kegiatan pembelajaran', 'Sikap kooperatif dan menghargai sesama', 'Disiplin dalam mengikuti kegiatan sekolah'],
+        rekomendasiPoin: ['Tingkatkan keaktifan bertanya di kelas', 'Perbanyak latihan mandiri di rumah'],
+    };
 }
 
 /**

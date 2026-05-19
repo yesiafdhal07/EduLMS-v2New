@@ -137,7 +137,7 @@ ${context.extraContext ? `\nKonteks Tambahan: ${context.extraContext}` : ''}`;
                 "X-Title": "Klolakelas AI Insights"
             },
             body: JSON.stringify({
-                model: "deepseek/deepseek-chat-v3-0324:free",
+                model: process.env.AI_GENERAL_MODEL || "deepseek/deepseek-chat:free",
                 messages: [
                     { role: "system", content: systemPrompt },
                     { role: "user", content: userMessage }
@@ -221,7 +221,7 @@ ${briefingPoints.map((p, i) => `${i + 1}. [${p.type.toUpperCase()}] ${p.text}${p
                 "X-Title": "Klolakelas Executive Summary"
             },
             body: JSON.stringify({
-                model: "deepseek/deepseek-chat-v3-0324:free",
+                model: process.env.AI_GENERAL_MODEL || "deepseek/deepseek-chat:free",
                 messages: [
                     { role: "system", content: systemPrompt },
                     { role: "user", content: userMessage }

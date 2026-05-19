@@ -23,7 +23,7 @@ export async function POST(req: Request) {
                 'X-Title': 'Klolakelas Soal Generator',
             },
             body: JSON.stringify({
-                model: 'deepseek/deepseek-chat-v3-0324:free',
+                model: process.env.AI_GENERAL_MODEL || 'deepseek/deepseek-chat:free',
                 messages: [
                     { role: 'system', content: 'Anda adalah pembuat soal ahli kurikulum Indonesia. Output HANYA JSON array yang valid, tidak ada teks lain. Pastikan output diawali dengan [ dan diakhiri dengan ].' },
                     { role: 'user', content: prompt },

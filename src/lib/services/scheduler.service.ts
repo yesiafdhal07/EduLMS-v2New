@@ -38,7 +38,7 @@ export const schedulerService = {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    "model": "deepseek/deepseek-chat-v3-0324:free",
+                    "model": process.env.AI_GENERAL_MODEL || "deepseek/deepseek-chat:free",
                     "messages": [
                         { "role": "system", "content": "Anda adalah pakar manajemen sekolah (Smart Scheduler)." },
                         { "role": "user", "content": prompt }
