@@ -55,7 +55,7 @@ ATURAN PENGGUNAAN TOOL:
         const apiMessages = [systemMessage, ...messages];
 
         // 4. Call OpenRouter
-        const agentModel = process.env.AI_AGENT_MODEL || "qwen/qwen-2.5-72b-instruct:free";
+        const agentModel = process.env.AI_AGENT_MODEL || "deepseek/deepseek-v4-flash:free";
         const openRouterPayload: any = {
             model: agentModel,
             messages: apiMessages,
