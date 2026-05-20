@@ -475,6 +475,8 @@ export default function StudentDashboard() {
                 <AIChatbot
                     userRole="siswa"
                     userName={user?.full_name || 'Siswa'}
+                    userId={user?.id || ''}
+                    schoolId={user?.school_id || null}
                 />
             </RoleShell>
         </EntranceAnimation>

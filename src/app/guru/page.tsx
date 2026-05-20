@@ -342,6 +342,8 @@ export default function GuruDashboard() {
                 <AIChatbot
                     userRole="guru"
                     userName={teacherName || 'Guru'}
+                    userId={user?.id || ''}
+                    schoolId={user?.school_id || null}
                     className={classes.find(c => c.id === selectedClassId)?.name}
                     stats={{
                         totalStudents: students.length,

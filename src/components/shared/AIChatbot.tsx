@@ -14,6 +14,8 @@ import type { AppRole } from '@/types';
 interface AIChatbotProps {
     userRole: AppRole;
     userName: string;
+    userId: string;
+    schoolId: string | null;
     schoolName?: string;
     className?: string;
     stats?: ChatContext['stats'];
@@ -35,7 +37,7 @@ const ROLE_LABEL: Record<string, string> = {
     orang_tua: 'Asisten Orang Tua',
 };
 
-export function AIChatbot({ userRole, userName, schoolName, className, stats }: AIChatbotProps) {
+export function AIChatbot({ userRole, userName, userId, schoolId, schoolName, className, stats }: AIChatbotProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -100,7 +102,7 @@ export function AIChatbot({ userRole, userName, schoolName, className, stats }: 
             setMessages(prev => prev.map(m => 
                 m.id === streamId ? { ...m, content: partialText } : m
             ));
-        });
+        }, userId, schoolId);
 
         // Replace streaming placeholder with final message
         if (finalMsg) {

@@ -417,13 +417,11 @@ export default function AdminDashboard() {
                 </DetailDrawer>
 
                 {/* AI Chatbot */}
-                <AIChatbot
-                    userRole="admin"
-                    userName={user.full_name || 'Admin'}
-                    stats={{
-                        totalStudents: stats?.totalSiswa,
-                        totalClasses: stats?.totalClasses,
-                    }}
+                <AIChatbot 
+                    userRole="admin" 
+                    userName={user?.full_name || 'Admin'}
+                    userId={user?.id || ''}
+                    schoolId={null}
                 />
             </RoleShell>
         </EntranceAnimation>

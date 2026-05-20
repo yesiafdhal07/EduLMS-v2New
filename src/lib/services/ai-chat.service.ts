@@ -100,30 +100,30 @@ Panduan:
 
 const QUICK_PROMPTS: Record<string, { label: string; prompt: string; icon: string }[]> = {
     guru: [
+        { label: 'Buat Tugas dari Materi 🤖', prompt: 'Buatkan draf tugas lengkap dari materi yang terakhir saya unggah, level kognitif C4.', icon: '🤖' },
+        { label: 'Siapa Siswa Berisiko? ⚠️', prompt: 'Tolong analisis data kelas saya, siapa saja siswa yang berisiko karena nilai atau kehadiran rendah?', icon: '⚠️' },
         { label: 'RPP Berdiferensiasi', prompt: 'Bantu saya membuat RPP Berdiferensiasi berdasarkan Kurikulum Merdeka. Tanyakan topik, kelas, dan tujuan pembelajaran yang ingin dicapai.', icon: '📋' },
-        { label: 'Buat Soal HOTS/AKM', prompt: 'Buatkan 3 soal pilihan ganda berbasis HOTS/AKM lengkap dengan stimulus bacaan/grafik, kunci jawaban, dan pembahasan mendalam. Tanyakan topiknya terlebih dahulu.', icon: '🧠' },
-        { label: 'Saran Remedial & Pengayaan', prompt: 'Berikan rekomendasi program remedial untuk siswa yang kesulitan dan pengayaan untuk siswa cerdas berdasarkan data kelas saya.', icon: '🎯' },
-        { label: 'Ide Proyek P5', prompt: 'Berikan 3 ide tema dan aktivitas Proyek Penguatan Profil Pelajar Pancasila (P5) yang kreatif untuk jenjang SMA.', icon: '🌱' },
-        { label: 'Deskripsi Rapor Rapi', prompt: 'Bantu saya menulis deskripsi naratif rapor untuk siswa berdasarkan pencapaian belajar mereka. Tanyakan data apa saja yang perlu saya input.', icon: '📄' },
+        { label: 'Saran Remedial', prompt: 'Berikan rekomendasi program remedial untuk siswa yang kesulitan berdasarkan data kelas saya.', icon: '🎯' },
     ],
     admin: [
-        { label: 'Migrasi & Backup Data', prompt: 'Bagaimana langkah-langkah melakukan backup data tabel secara berkala menggunakan Supabase CLI?', icon: '💾' },
-        { label: 'Keamanan Akun Sekolah', prompt: 'Berikan panduan dan checklist keamanan siber untuk melindungi akun guru dan siswa dari akses ilegal.', icon: '🛡️' },
-        { label: 'Template Broadcast Pengumuman', prompt: 'Buatkan draf pengumuman resmi sekolah tentang jadwal ujian akhir semester untuk dikirim via WhatsApp/Email.', icon: '📢' },
+        { label: 'Cek Anomali Platform 🔍', prompt: 'Tolong jalankan pemeriksaan anomali platform hari ini. Adakah sekolah yang kritis?', icon: '🔍' },
+        { label: 'Cek Log Terbaru', prompt: 'Tampilkan aktivitas terbaru di platform (audit logs).', icon: '📋' },
+        { label: 'Sekolah Tidak Aktif', prompt: 'Adakah sekolah yang sudah tidak aktif dalam 30 hari terakhir?', icon: '📉' },
     ],
     kepala_sekolah: [
-        { label: 'Rekomendasi Kebijakan Kehadiran', prompt: 'Analisis masalah kehadiran siswa berdasarkan data tren dan rekomendasikan kebijakan strategis untuk mengatasinya.', icon: '📈' },
-        { label: 'Rencana Pelatihan Guru', prompt: 'Buat draf program pengembangan kompetensi guru dalam pemanfaatan teknologi di era Kurikulum Merdeka.', icon: '🏫' },
-        { label: 'Bahan Rapat Komite', prompt: 'Bantu saya menyusun poin-poin presentasi untuk rapat evaluasi semester bersama Komite Sekolah.', icon: '🗣️' },
+        { label: 'Buat Laporan Komite 📋', prompt: 'Buatkan laporan eksekutif untuk rapat komite sekolah semester ini.', icon: '📋' },
+        { label: 'Peringkat Kelas', prompt: 'Tampilkan peringkat performa kelas di sekolah ini.', icon: '🏆' },
+        { label: 'Peta Kelemahan', prompt: 'Mata pelajaran apa yang paling banyak masalah di sekolah ini?', icon: '🗺️' },
     ],
     siswa: [
-        { label: 'Bimbing Kerjakan Soal', prompt: 'Saya ada kesulitan mengerjakan soal pelajaran. Jangan beri tahu jawabannya langsung, tapi bimbing saya langkah demi langkah.', icon: '🧭' },
-        { label: 'Analogi Sederhana', prompt: 'Jelaskan konsep fisika/matematika/sains yang sulit ini dengan menggunakan analogi kehidupan sehari-hari yang seru:', icon: '💡' },
-        { label: 'Kuis Singkat Latihan', prompt: 'Berikan saya kuis singkat berupa 3 pertanyaan konsep untuk menguji pemahaman saya tentang materi sekolah.', icon: '🎮' },
+        { label: 'Buat Jadwal Belajar 📅', prompt: 'Bantu aku buat jadwal belajar 7 hari ke depan berdasarkan tugasku yang belum selesai dan nilai-nilaiku.', icon: '📅' },
+        { label: 'Tugas yang Belum 🔔', prompt: 'Tugas apa saja yang belum aku kumpulkan?', icon: '🔔' },
+        { label: 'Kuis Latihan Praktis', prompt: 'Buatkan aku kuis latihan pilihan ganda dari materi terakhir yang diajarkan.', icon: '🎮' },
     ],
     orang_tua: [
-        { label: 'Mendampingi Belajar Rumah', prompt: 'Bagaimana cara mendampingi putra/putri saya belajar untuk persiapan ujian tanpa membuat mereka stres?', icon: '🏠' },
-        { label: 'Tafsirkan Rapor Anak', prompt: 'Bagaimana cara memahami nilai rata-rata dan catatan guru di rapor agar saya bisa memberikan dukungan yang tepat?', icon: '📊' },
+        { label: 'Kondisi Akademik Anak 👦', prompt: 'Bagaimana kondisi akademik anak saya saat ini?', icon: '👦' },
+        { label: 'Saran Belajar Spesifik 💡', prompt: 'Mata pelajaran apa yang paling lemah bagi anak saya, dan bagaimana saran membantunya di rumah?', icon: '💡' },
+        { label: 'Tugas Mendatang', prompt: 'Apakah ada tugas anak saya yang belum dikumpulkan dan hampir deadline?', icon: '📅' },
     ],
 };
 
@@ -184,88 +184,56 @@ export async function sendStreamingChatMessage(
     messages: ChatMessage[],
     context: ChatContext,
     onChunk: (text: string) => void,
+    userId: string,
+    schoolId: string | null
 ): Promise<ChatMessage | null> {
     const apiMessages = buildApiMessages(messages, context);
 
     try {
-        const response = await fetch("/api/ai/chat", {
+        // We use the new agent endpoint which handles tool calling. 
+        // It currently returns a standard JSON response to ensure tool execution completes safely.
+        const response = await fetch("/api/ai/agent", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 messages: apiMessages,
-                model: "google/gemini-2.0-flash-lite:free",
-                max_tokens: 1000,
-                temperature: 0.7,
-                stream: true,
+                userRole: context.userRole,
+                userId: userId,
+                schoolId: schoolId
             })
         });
 
         if (!response.ok) {
-            console.error(`[AI Chat] Stream error: ${response.status}`);
+            console.error(`[AI Agent] Error: ${response.status}`);
             return {
                 id: generateId(), role: 'assistant',
-                content: '❌ Maaf, terjadi kesalahan saat menghubungi AI. Silakan coba lagi.',
+                content: '❌ Maaf, terjadi kesalahan saat menghubungi AI Agent. Silakan coba lagi.',
                 timestamp: new Date(),
             };
         }
 
-        const reader = response.body?.getReader();
-        if (!reader) {
+        const data = await response.json();
+        const content = data.content;
+
+        if (!content) {
             return {
                 id: generateId(), role: 'assistant',
-                content: '❌ Streaming tidak didukung oleh browser ini.',
+                content: '❌ AI tidak menghasilkan respons.',
                 timestamp: new Date(),
             };
         }
 
-        const decoder = new TextDecoder();
-        let fullContent = '';
-        let buffer = '';
-
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n');
-            buffer = lines.pop() || ''; // keep incomplete line in buffer
-
-            for (const line of lines) {
-                const trimmed = line.trim();
-                if (!trimmed || !trimmed.startsWith('data: ')) continue;
-
-                const data = trimmed.slice(6);
-                if (data === '[DONE]') continue;
-
-                try {
-                    const parsed = JSON.parse(data);
-                    const delta = parsed?.choices?.[0]?.delta?.content;
-                    if (typeof delta === 'string' && delta.length > 0) {
-                        fullContent += delta;
-                        onChunk(fullContent);
-                    }
-                } catch {
-                    // Skip malformed SSE lines
-                }
-            }
-        }
-
-        if (!fullContent) {
-            return {
-                id: generateId(), role: 'assistant',
-                content: '❌ AI tidak menghasilkan respons. Coba pertanyaan lain.',
-                timestamp: new Date(),
-            };
-        }
+        // Simulate streaming for the UI
+        onChunk(content);
 
         return {
             id: generateId(),
             role: 'assistant',
-            content: fullContent.trim(),
+            content: content.trim(),
             timestamp: new Date(),
         };
     } catch (error) {
-        console.error('[AI Chat] Stream error:', error);
+        console.error('[AI Chat] Agent error:', error);
         return {
             id: generateId(), role: 'assistant',
             content: '❌ Koneksi ke AI terputus. Periksa koneksi internet Anda.',
@@ -279,33 +247,34 @@ export async function sendStreamingChatMessage(
  */
 export async function sendChatMessage(
     messages: ChatMessage[],
-    context: ChatContext
+    context: ChatContext,
+    userId: string,
+    schoolId: string | null
 ): Promise<ChatMessage | null> {
     const apiMessages = buildApiMessages(messages, context);
 
     try {
-        const response = await fetch("/api/ai/chat", {
+        const response = await fetch("/api/ai/agent", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 messages: apiMessages,
-                model: "google/gemini-2.0-flash-lite:free",
-                max_tokens: 1000,
-                temperature: 0.7,
-                stream: false,
+                userRole: context.userRole,
+                userId: userId,
+                schoolId: schoolId
             })
         });
 
         if (!response.ok) {
             return {
                 id: generateId(), role: 'assistant',
-                content: '❌ Maaf, terjadi kesalahan saat menghubungi AI.',
+                content: '❌ Maaf, terjadi kesalahan saat menghubungi AI Agent.',
                 timestamp: new Date(),
             };
         }
 
         const data = await response.json();
-        const content = extractContent(data);
+        const content = data.content;
 
         if (!content) {
             return {

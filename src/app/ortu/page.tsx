@@ -195,6 +195,8 @@ export default function ParentPage() {
             <AIChatbot
                 userRole="orang_tua"
                 userName={user.full_name || 'Orang Tua'}
+                userId={user.id}
+                schoolId={user.school_id || null}
             />
         </RoleShell>
     );

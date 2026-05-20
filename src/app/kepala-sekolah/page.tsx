@@ -189,6 +189,8 @@ export default function KepalaSekolahDashboard() {
                 <AIChatbot
                     userRole="kepala_sekolah"
                     userName={user.full_name || 'Kepala Sekolah'}
+                    userId={user.id}
+                    schoolId={user.school_id || null}
                     schoolName={schoolName}
                     stats={{
                         totalStudents: stats?.totalSiswa,
