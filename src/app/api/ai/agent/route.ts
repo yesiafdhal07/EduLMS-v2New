@@ -4,8 +4,6 @@ import { cookies } from "next/headers";
 import { getToolsForRole } from "@/lib/ai-tools/tools.registry";
 import { executeTool } from "@/lib/ai-tools/tools.executor";
 
-export const runtime = "edge";
-
 export async function POST(req: NextRequest) {
     try {
         const cookieStore = await cookies();
@@ -14,9 +12,8 @@ export async function POST(req: NextRequest) {
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
             {
                 cookies: {
-                    get(name: string) {
-                        return cookieStore.get(name)?.value;
-                    },
+                    getAll() { return cookieStore.getAll(); },
+                    setAll() { /* no-op */ },
                 },
             }
         );
@@ -33,7 +30,8 @@ export async function POST(req: NextRequest) {
         }
 
         // 1. Ensure the requesting user is the authenticated user
-        if (userId !== user.id) {
+        const targetUserId = userId || user.id;
+        if (targetUserId !== user.id) {
              return new NextResponse("Forbidden", { status: 403 });
         }
 
@@ -102,7 +100,7 @@ ATURAN PENGGUNAAN TOOL:
                 const functionArgs = JSON.parse(toolCall.function.arguments);
                 
                 // Execute the actual tool
-                const toolResult = await executeTool(userRole, userId, schoolId, functionName, functionArgs);
+                const toolResult = await executeTool(userRole, targetUserId, schoolId, functionName, functionArgs);
                 
                 // Append the tool result to the conversation
                 apiMessages.push({
