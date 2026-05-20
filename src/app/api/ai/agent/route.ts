@@ -55,8 +55,9 @@ ATURAN PENGGUNAAN TOOL:
         const apiMessages = [systemMessage, ...messages];
 
         // 4. Call OpenRouter
+        const agentModel = process.env.AI_AGENT_MODEL || "qwen/qwen-2.5-72b-instruct:free";
         const openRouterPayload: any = {
-            model: "google/gemini-2.5-pro", // Need a capable model for function calling
+            model: agentModel,
             messages: apiMessages,
             temperature: 0.7,
             max_tokens: 1500,
@@ -113,7 +114,7 @@ ATURAN PENGGUNAAN TOOL:
 
             // 6. Call OpenRouter again with the tool results
             const secondPayload = {
-                model: "google/gemini-2.5-pro",
+                model: agentModel,
                 messages: apiMessages,
                 temperature: 0.7,
             };
